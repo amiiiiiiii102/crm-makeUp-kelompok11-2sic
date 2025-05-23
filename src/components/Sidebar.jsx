@@ -1,3 +1,4 @@
+import { Chart } from 'chart.js'
 import {
   LayoutDashboard,
   Users,         // untuk pelanggan
@@ -8,12 +9,14 @@ import {
   User,
   LogIn,
   UserPlus,
+  User2Icon,
 } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 
 const menuItems = [
   { name: 'Dashboard', icon: <LayoutDashboard />, path: '/' },
   { name: 'Produk', icon: <Box />, path: '/produk' },
+  { name: 'Pelanggan', icon: <User2Icon />, path: '/pelanggan' },
   { name: 'Laporan', icon: <BarChart2 />, path: '/laporan' },
 ]
 
