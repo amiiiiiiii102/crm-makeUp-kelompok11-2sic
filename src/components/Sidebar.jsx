@@ -1,4 +1,4 @@
-import { Chart } from 'chart.js'
+
 import {
   LayoutDashboard,
   Users,         // untuk pelanggan
