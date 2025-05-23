@@ -11,6 +11,7 @@ import {
   UserPlus,
   User2Icon,
 } from 'lucide-react'
+import { Chart } from 'react-chartjs-2'
 import { Link, useLocation } from 'react-router-dom'
 
 const menuItems = [
@@ -18,6 +19,7 @@ const menuItems = [
   { name: 'Produk', icon: <Box />, path: '/produk' },
   { name: 'Pelanggan', icon: <User2Icon />, path: '/pelanggan' },
   { name: 'Laporan', icon: <BarChart2 />, path: '/laporan' },
+  { name: 'Penjualan', icon: <ShoppingCart />, path: '/penjualan' },
 ]
 
 const accountItems = [

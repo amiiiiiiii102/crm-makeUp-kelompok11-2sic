@@ -5,6 +5,7 @@ import Dashboard from "./pages/Dashboard";
 import { Route } from "react-router-dom";
 import Pelanggan from "./pages/Pelanggan";
 import ProductManagement from "./pages/ProductManagement";
+import SalesManagement from "./pages/SalesManagement";
 
 function App(){
   return(
@@ -16,6 +17,7 @@ function App(){
       
 
       <Route path="/produk" element={<ProductManagement/>}/>
+      <Route path="/penjualan" element={<SalesManagement/>}/>
       </Route>
     </Routes>
   )
