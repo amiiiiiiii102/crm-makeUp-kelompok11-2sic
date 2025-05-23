@@ -4,6 +4,7 @@ import Dashboard from "./pages/Dashboard";
 
 import { Route } from "react-router-dom";
 import Pelanggan from "./pages/Pelanggan";
+import ProductManagement from "./pages/ProductManagement";
 
 function App(){
   return(
@@ -14,9 +15,10 @@ function App(){
       <Route path="/pelanggan" element={<Pelanggan/>}/>
       
 
+      <Route path="/produk" element={<ProductManagement/>}/>
       </Route>
     </Routes>
   )
 }
 
-export default pp;
+export default App;
