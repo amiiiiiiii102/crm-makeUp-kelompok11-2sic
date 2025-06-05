@@ -12,6 +12,7 @@ import {
   LogIn,
   UserPlus,
   User2Icon,
+  MessageCircle,
 } from 'lucide-react'
 import { Chart } from 'react-chartjs-2'
 import { Link, useLocation } from 'react-router-dom'
@@ -23,7 +24,8 @@ const menuItems = [
   { name: 'Laporan', icon: <BarChart2 />, path: '/laporan' },
   { name: 'Penjualan', icon: <ShoppingCart />, path: '/penjualan' },
   { name: 'FAQ', icon: <HelpCircle />, path: '/FAQ' },
-  { name: 'Form Produk', icon: <ClipboardList />, path: '/ProductForm' }
+  { name: 'Form Produk', icon: <ClipboardList />, path: '/ProductForm' },
+  { name: 'Chat Pelanggan', icon: <MessageCircle />, path: '/ChatPelanggan' }
 ]
 
 const accountItems = [
@@ -39,7 +41,7 @@ const Sidebar = () => {
 
   return (
 <aside className="fixed top-0 left-0 h-screen w-64 bg-white shadow-lg px-4 py-6 hidden md:block z-20">
-      <div className="text-xl font-bold mb-8 text-orange-700">UMKM CRM</div>
+      <div className="text-xl font-bold mb-8 text-orange-700">ISTANA COSMETIC</div>
       <nav className="space-y-1">
         {menuItems.map((item) => (
           <Link
