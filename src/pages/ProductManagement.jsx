@@ -1,207 +1,197 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
+import { ChevronLeft, ChevronRight, Star } from 'lucide-react';
 
-const initialProducts = [
-  {
-    id: 1,
-    name: "Laptop ABC",
-    category: "Elektronik",
-    stock: 10,
-    price: 7500000,
-    active: true,
-  },
-  {
-    id: 2,
-    name: "Kursi Gaming",
-    category: "Furniture",
-    stock: 5,
-    price: 1250000,
-    active: false,
-  },
-];
+const ProductManagement = () => {
+  const [currentSlide, setCurrentSlide] = useState(0);
 
-function formatCurrency(num) {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-  }).format(num);
-}
-
-export default function ProductManagement() {
-  const [products, setProducts] = useState(initialProducts);
-  const [showForm, setShowForm] = useState(false);
-  const [formData, setFormData] = useState({
-    name: "",
-    category: "",
-    stock: "",
-    price: "",
-    active: true,
-  });
-
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
-  };
-
-  const handleAddProduct = () => {
-    if (!formData.name || !formData.category || !formData.stock || !formData.price) {
-      alert("Semua kolom harus diisi");
-      return;
+  const products = [
+    {
+      id: 1,
+      name: "Tartan Shirt Icy",
+      price: "Rp 189,000",
+      rating: 4.83,
+      image: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/White_domesticated_duck%2C_stretching.jpg/1200px-White_domesticated_duck%2C_stretching.jpg",
+      status: "In Stock",
+      isNew: true,
+      endsSoon: "Ends in 5 days"
+    },
+    {
+      id: 2,
+      name: "Loose Shirt Denim",
+      price: "Rp 189,000",
+      rating: 5,
+      image: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/White_domesticated_duck%2C_stretching.jpg/1200px-White_domesticated_duck%2C_stretching.jpg",
+      status: "In Stock",
+      isNew: true,
+      endsSoon: "Ends in 5 days"
+    },
+    {
+      id: 3,
+      name: "Tweed Blazer Gla...",
+      price: "Rp 339,000",
+      rating: 4.8,
+      image: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/White_domesticated_duck%2C_stretching.jpg/1200px-White_domesticated_duck%2C_stretching.jpg",
+      status: "In Stock",
+      isNew: true,
+      endsSoon: "Ends in 5 days"
+    },
+    {
+      id: 4,
+      name: "Andante Cardigan...",
+      price: "Rp 259,000",
+      rating: 5,
+      image: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/White_domesticated_duck%2C_stretching.jpg/1200px-White_domesticated_duck%2C_stretching.jpg",
+      status: "In Stock",
+    },
+    {
+      id: 5,
+      name: "Tweed Blazer Ha...",
+      price: "Rp 339,000",
+      rating: 5,
+      image: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/White_domesticated_duck%2C_stretching.jpg/1200px-White_domesticated_duck%2C_stretching.jpg",
+      status: "In Stock",
+      isNew: true,
+    },
+    {
+      id: 6,
+      name: "Basic Shirt Black",
+      price: "Rp 179,000",
+      rating: 4.93,
+      image: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/White_domesticated_duck%2C_stretching.jpg/1200px-White_domesticated_duck%2C_stretching.jpg",
+      status: "Available",
+      isRestocked: true,
     }
-    const newProduct = {
-      ...formData,
-      id: products.length + 1,
-      stock: parseInt(formData.stock),
-      price: parseFloat(formData.price),
-    };
-    setProducts([...products, newProduct]);
-    setFormData({ name: "", category: "", stock: "", price: "", active: true });
-    setShowForm(false);
+  ];
+
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % Math.max(1, products.length - 4));
   };
 
-  const handleDelete = (id) => {
-    if (window.confirm("Yakin ingin menghapus produk ini?")) {
-      setProducts(products.filter((p) => p.id !== id));
-    }
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + Math.max(1, products.length - 4)) % Math.max(1, products.length - 4));
   };
+
+  const visibleProducts = products.slice(currentSlide, currentSlide + 5);
 
   return (
-    <div className="p-6 max-w-5xl mx-auto">
-      <h1 className="text-2xl font-semibold mb-4">Manajemen Produk</h1>
-
-      <button
-        onClick={() => setShowForm((prev) => !prev)}
-        className="mb-4 px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition"
-      >
-        {showForm ? "Batal Tambah Produk" : "Tambah Produk"}
-      </button>
-
-      {showForm && (
-        <div className="mb-6 p-4 border border-gray-300 rounded bg-white shadow-sm">
-          <div className="mb-2">
-            <label className="block mb-1 font-medium">Nama Produk</label>
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border rounded focus:ring-indigo-400 focus:outline-none"
-              placeholder="Masukkan nama produk"
-            />
-          </div>
-          <div className="mb-2">
-            <label className="block mb-1 font-medium">Kategori</label>
-            <input
-              type="text"
-              name="category"
-              value={formData.category}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border rounded focus:ring-indigo-400 focus:outline-none"
-              placeholder="Contoh: Elektronik"
-            />
-          </div>
-          <div className="mb-2">
-            <label className="block mb-1 font-medium">Stok</label>
-            <input
-              type="number"
-              name="stock"
-              value={formData.stock}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border rounded focus:ring-indigo-400 focus:outline-none"
-              min="0"
-            />
-          </div>
-          <div className="mb-2">
-            <label className="block mb-1 font-medium">Harga</label>
-            <input
-              type="number"
-              name="price"
-              value={formData.price}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border rounded focus:ring-indigo-400 focus:outline-none"
-              min="0"
-            />
-          </div>
-          <div className="mb-4">
-            <label className="inline-flex items-center">
-              <input
-                type="checkbox"
-                name="active"
-                checked={formData.active}
-                onChange={handleChange}
-                className="mr-2"
-              />
-              Aktif
-            </label>
-          </div>
-
-          <button
-            onClick={handleAddProduct}
-            className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+    <div className="max-w-7xl mx-auto p-6 bg-gray-50 min-h-screen">
+      <div className="mb-8">
+        <h2 className="text-2xl font-semibold text-gray-800 mb-6">Produk Terlaris</h2>
+        
+        <div className="relative">
+          {/* Navigation Buttons */}
+          <button 
+            onClick={prevSlide}
+            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-lg hover:shadow-xl transition-shadow duration-200"
+            disabled={currentSlide === 0}
           >
-            Simpan Produk
+            <ChevronLeft className="w-6 h-6 text-gray-600" />
           </button>
-        </div>
-      )}
+          
+          <button 
+            onClick={nextSlide}
+            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-lg hover:shadow-xl transition-shadow duration-200"
+            disabled={currentSlide >= products.length - 5}
+          >
+            <ChevronRight className="w-6 h-6 text-gray-600" />
+          </button>
 
-      <div className="overflow-x-auto bg-white shadow rounded">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nama</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Kategori</th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Stok</th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Harga</th>
-              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Status</th>
-              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Aksi</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100">
-            {products.map((product) => (
-              <tr key={product.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4">{product.name}</td>
-                <td className="px-6 py-4">{product.category}</td>
-                <td className="px-6 py-4 text-right">{product.stock}</td>
-                <td className="px-6 py-4 text-right">{formatCurrency(product.price)}</td>
-                <td className="px-6 py-4 text-center">
-                  {product.active ? (
-                    <span className="inline-block px-2 py-1 text-xs text-green-800 bg-green-100 rounded">
-                      Aktif
-                    </span>
-                  ) : (
-                    <span className="inline-block px-2 py-1 text-xs text-gray-600 bg-gray-200 rounded">
-                      Nonaktif
-                    </span>
+          {/* Product Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 px-12">
+            {visibleProducts.map((product) => (
+              <div key={product.id} className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden group">
+                {/* Product Image Container */}
+                <div className="relative aspect-square overflow-hidden bg-gray-100">
+                  <img 
+                    src={product.image} 
+                    alt={product.name}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                  
+                  {/* Top Badges */}
+                  <div className="absolute top-3 left-3 flex flex-col gap-1">
+                    {product.isNew && (
+                      <span className="bg-orange-500 text-white text-xs font-semibold px-2 py-1 rounded">
+                        New
+                      </span>
+                    )}
+                    {product.isRestocked && (
+                      <span className="bg-blue-500 text-white text-xs font-semibold px-2 py-1 rounded">
+                        Restocked
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Ends Soon Badge */}
+                  {product.endsSoon && (
+                    <div className="absolute top-3 right-3">
+                      <span className="bg-red-500 text-white text-xs font-medium px-2 py-1 rounded">
+                        {product.endsSoon}
+                      </span>
+                    </div>
                   )}
-                </td>
-                <td className="px-6 py-4 text-center space-x-2">
-                  <button
-                    className="text-indigo-600 hover:text-indigo-900"
-                    onClick={() => alert("Fitur Edit belum tersedia")}
-                  >
-                    Edit
-                  </button>
-                  <button
-                    className="text-red-600 hover:text-red-900"
-                    onClick={() => handleDelete(product.id)}
-                  >
-                    Hapus
-                  </button>
-                </td>
-              </tr>
+
+                  {/* Status Badge */}
+                  <div className="absolute bottom-3 left-3">
+                    <span className={`text-xs font-medium px-2 py-1 rounded flex items-center gap-1 ${
+                      product.status === 'In Stock' 
+                        ? 'bg-green-100 text-green-800' 
+                        : 'bg-blue-100 text-blue-800'
+                    }`}>
+                      {product.status}
+                      <div className="w-2 h-2 rounded-full bg-current opacity-60"></div>
+                    </span>
+                  </div>
+                </div>
+
+                {/* Product Info */}
+                <div className="p-4">
+                  <h3 className="text-gray-800 font-medium text-sm mb-2 line-clamp-2">
+                    {product.name}
+                  </h3>
+                  
+                  <div className="flex items-center justify-between">
+                    <span className="text-lg font-semibold text-gray-900">
+                      {product.price}
+                    </span>
+                    
+                    <div className="flex items-center gap-1">
+                      <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                      <span className="text-sm font-medium text-gray-700">
+                        {product.rating}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             ))}
-            {products.length === 0 && (
-              <tr>
-                <td colSpan="6" className="text-center py-4 text-gray-500">
-                  Tidak ada produk tersedia.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+          </div>
+        </div>
+      </div>
+
+      {/* Product Categories or Additional Sections */}
+      <div className="mt-12">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="bg-white p-6 rounded-lg shadow-sm text-center hover:shadow-md transition-shadow duration-200">
+            <div className="text-2xl font-bold text-blue-600 mb-2">{products.length}</div>
+            <div className="text-gray-600 text-sm">Total Products</div>
+          </div>
+          <div className="bg-white p-6 rounded-lg shadow-sm text-center hover:shadow-md transition-shadow duration-200">
+            <div className="text-2xl font-bold text-green-600 mb-2">{products.filter(p => p.status === 'In Stock').length}</div>
+            <div className="text-gray-600 text-sm">In Stock</div>
+          </div>
+          <div className="bg-white p-6 rounded-lg shadow-sm text-center hover:shadow-md transition-shadow duration-200">
+            <div className="text-2xl font-bold text-orange-600 mb-2">{products.filter(p => p.isNew).length}</div>
+            <div className="text-gray-600 text-sm">New Items</div>
+          </div>
+          <div className="bg-white p-6 rounded-lg shadow-sm text-center hover:shadow-md transition-shadow duration-200">
+            <div className="text-2xl font-bold text-purple-600 mb-2">4.8</div>
+            <div className="text-gray-600 text-sm">Avg Rating</div>
+          </div>
+        </div>
       </div>
     </div>
   );
-}
+};
+
+export default ProductManagement;
