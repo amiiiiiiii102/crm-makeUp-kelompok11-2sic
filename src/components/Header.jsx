@@ -1,9 +1,15 @@
 import { Search, User } from 'lucide-react'
+import { useLocation } from 'react-router-dom'
 
 const Header = () => {
+  const location = useLocation();
+  const currentPage = location.pathname.split('/')[1] || 'dashboard';
+
   return (
     <header className="flex justify-between items-center px-6 py-4 bg-white shadow-sm border-b sticky top-0 z-10">
-      <div className="text-sm text-gray-500">Pages / <span className="text-gray-900 font-semibold">Dashboard</span></div>
+      <div className="text-sm text-gray-500">
+        Pages / <span className="text-gray-900 font-semibold capitalize">{currentPage}</span>
+      </div>
       <div className="flex items-center gap-4">
         <div className="relative">
           <input
@@ -19,7 +25,7 @@ const Header = () => {
         </div>
       </div>
     </header>
-  )
-}
+  );
+};
 
-export default Header
+export default Header;

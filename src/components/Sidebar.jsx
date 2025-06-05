@@ -7,6 +7,8 @@ import {
   BarChart2,     // untuk laporan
   Settings,      // untuk pengaturan akun
   User,
+  HelpCircle,
+  ClipboardList,
   LogIn,
   UserPlus,
   User2Icon,
@@ -20,6 +22,8 @@ const menuItems = [
   { name: 'Pelanggan', icon: <User2Icon />, path: '/pelanggan' },
   { name: 'Laporan', icon: <BarChart2 />, path: '/laporan' },
   { name: 'Penjualan', icon: <ShoppingCart />, path: '/penjualan' },
+  { name: 'FAQ', icon: <HelpCircle />, path: '/FAQ' },
+  { name: 'Form Produk', icon: <ClipboardList />, path: '/ProductForm' }
 ]
 
 const accountItems = [
@@ -34,16 +38,16 @@ const Sidebar = () => {
   const isActive = (path) => location.pathname === path
 
   return (
-    <aside className="bg-white w-64 h-screen shadow-lg px-4 py-6 hidden md:block">
-      <div className="text-xl font-bold mb-8 text-purple-700">UMKM CRM</div>
+<aside className="fixed top-0 left-0 h-screen w-64 bg-white shadow-lg px-4 py-6 hidden md:block z-20">
+      <div className="text-xl font-bold mb-8 text-orange-700">UMKM CRM</div>
       <nav className="space-y-1">
         {menuItems.map((item) => (
           <Link
             key={item.name}
             to={item.path}
-            className={`flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-purple-100 transition ${
+            className={`flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-orange-100 transition ${
               isActive(item.path)
-                ? 'bg-purple-200 text-purple-800 font-semibold'
+                ? 'bg-orange-200 text-orange-800 font-semibold'
                 : 'text-gray-700'
             }`}
           >
@@ -59,9 +63,9 @@ const Sidebar = () => {
           <Link
             key={item.name}
             to={item.path}
-            className={`flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-purple-100 transition ${
+            className={`flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-orange-100 transition ${
               isActive(item.path)
-                ? 'bg-purple-200 text-purple-800 font-semibold'
+                ? 'bg-orange-200 text-orange-800 font-semibold'
                 : 'text-gray-700'
             }`}
           >

@@ -59,7 +59,7 @@ const Dashboard = () => {
       {
         label: "Jumlah Pelanggan",
         data: [50, 75, 120, 180, 220, 260, 300, 350, 400, 430, 460, 500],
-        borderColor: "rgba(59, 130, 246, 1)", // blue-500
+        borderColor: "rgb(246, 168, 59)", // blue-500
         backgroundColor: "rgba(59, 130, 246, 0.3)",
         fill: true,
         tension: 0.3,
