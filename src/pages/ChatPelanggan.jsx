@@ -23,6 +23,7 @@ const ChatPelanggan = () => {
   const [selectedUser, setSelectedUser] = useState(null)
   const [inputText, setInputText] = useState('')
   const [editMode, setEditMode] = useState({ chatId: null, msgIndex: null })
+  const [isChatRoom, setIsChatRoom] = useState(false)
 
   const getCurrentTime = () => {
     const now = new Date()
@@ -38,11 +39,9 @@ const ChatPelanggan = () => {
           const updatedMessages = [...chat.messages]
 
           if (editMode.chatId === chat.id && editMode.msgIndex !== null) {
-            // Edit mode
             updatedMessages[editMode.msgIndex].text = inputText
             updatedMessages[editMode.msgIndex].time = getCurrentTime()
           } else {
-            // New message
             updatedMessages.push({
               from: 'admin',
               text: inputText,
@@ -69,40 +68,31 @@ const ChatPelanggan = () => {
 
   return (
     <div className="max-w-5xl mx-auto p-6 bg-white rounded-lg shadow-lg">
-      <h2 className="text-2xl font-extrabold mb-6 flex items-center gap-3 text-[#C0360C]">
-        <MessageCircle size={28} />
-        Chat Pelanggan
-      </h2>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-extrabold flex items-center gap-3 text-[#C0360C]">
+          <MessageCircle size={28} />
+          Chat Pelanggan
+        </h2>
+        {isChatRoom && (
+          <button
+            className="bg-[#C0360C] text-white px-4 py-2 rounded-md hover:bg-[#A42C07]"
+            onClick={() => {
+              setIsChatRoom(false)
+              setSelectedUser(null)
+              setInputText('')
+              setEditMode({ chatId: null, msgIndex: null })
+            }}
+          >
+            Kembali ke Daftar
+          </button>
+        )}
+      </div>
 
-      <div className="flex h-[70vh] border border-gray-200 rounded-lg overflow-hidden">
-        {/* Sidebar User */}
-        <div className="w-1/3 border-r border-gray-300 bg-[#FFF7F3] p-4 overflow-y-auto">
-          <h4 className="font-bold mb-3 text-[#C0360C]">Daftar User</h4>
-          {chats.map((chat) => (
-            <div
-              key={chat.id}
-              onClick={() => {
-                setSelectedUser(chat.user)
-                setInputText('')
-                setEditMode({ chatId: null, msgIndex: null })
-              }}
-              className={`p-3 rounded-md cursor-pointer hover:bg-[#FFE3D9] mb-2 ${
-                selectedUser === chat.user ? 'bg-[#FFD2B5]' : ''
-              }`}
-            >
-              <p className="font-semibold text-[#C0360C]">{chat.user}</p>
-              <p className="text-sm text-gray-600 italic">
-                {chat.messages[chat.messages.length - 1].text.slice(0, 30)}...
-              </p>
-            </div>
-          ))}
-        </div>
-
-        {/* Chat Room */}
-        <div className="w-2/3 p-6 flex flex-col justify-between">
+      {isChatRoom ? (
+        // Chat Room View
+        <div className="h-[70vh] border border-gray-200 rounded-lg overflow-hidden p-6 flex flex-col justify-between">
           {selectedChat ? (
             <>
-              {/* Chat bubble list */}
               <div className="flex-1 space-y-4 overflow-y-auto pr-2">
                 {selectedChat.messages.map((msg, idx) => (
                   <div key={idx} className={`flex ${msg.from === 'user' ? 'justify-start' : 'justify-end'}`}>
@@ -133,7 +123,6 @@ const ChatPelanggan = () => {
                 ))}
               </div>
 
-              {/* Input form */}
               <div className="flex gap-3 mt-4 items-end">
                 <input
                   type="text"
@@ -151,10 +140,36 @@ const ChatPelanggan = () => {
               </div>
             </>
           ) : (
-            <p className="text-gray-500 italic">Pilih salah satu user untuk mulai chat.</p>
+            <p className="text-gray-500 italic">Pilih salah satu pertanyaan untuk mulai membalas.</p>
           )}
         </div>
-      </div>
+      ) : (
+        // List View
+        <div className="grid gap-4">
+          {chats.map((chat) => (
+            <div key={chat.id} className="border rounded-md p-4 shadow-sm">
+              <div className="flex justify-between items-center">
+                <div>
+                  <p className="font-semibold text-[#C0360C]">{chat.user}</p>
+                  <p className="text-gray-800">
+                    “{chat.messages[0].text.length > 60 ? chat.messages[0].text.slice(0, 60) + '...' : chat.messages[0].text}”
+                  </p>
+                  <p className="text-sm text-gray-500">{chat.messages[0].time}</p>
+                </div>
+                <button
+                  onClick={() => {
+                    setSelectedUser(chat.user)
+                    setIsChatRoom(true)
+                  }}
+                  className="text-sm text-[#C0360C] border border-[#C0360C] px-3 py-1 rounded-md hover:bg-[#FFEDE5]"
+                >
+                  Balas Pesan
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
