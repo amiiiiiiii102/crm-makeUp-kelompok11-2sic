@@ -1,8 +1,67 @@
 import React, { useState, useMemo } from "react";
 import { ChevronLeft, ChevronRight, Star } from "lucide-react";
 
-const ProductManagement = ({ products = [] }) => {
+const ProductManagement = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
+
+  const products = [
+    {
+      id: 1,
+      name: "Tartan Shirt Icy",
+      price: "Rp 189,000",
+      rating: 4.83,
+      image: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/White_domesticated_duck%2C_stretching.jpg/1200px-White_domesticated_duck%2C_stretching.jpg",
+      status: "In Stock",
+      isNew: true,
+      endsSoon: "Ends in 5 days"
+    },
+    {
+      id: 2,
+      name: "Loose Shirt Denim",
+      price: "Rp 189,000",
+      rating: 5,
+      image: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/White_domesticated_duck%2C_stretching.jpg/1200px-White_domesticated_duck%2C_stretching.jpg",
+      status: "In Stock",
+      isNew: true,
+      endsSoon: "Ends in 5 days"
+    },
+    {
+      id: 3,
+      name: "Tweed Blazer Gla...",
+      price: "Rp 339,000",
+      rating: 4.8,
+      image: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/White_domesticated_duck%2C_stretching.jpg/1200px-White_domesticated_duck%2C_stretching.jpg",
+      status: "In Stock",
+      isNew: true,
+      endsSoon: "Ends in 5 days"
+    },
+    {
+      id: 4,
+      name: "Andante Cardigan...",
+      price: "Rp 259,000",
+      rating: 5,
+      image: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/White_domesticated_duck%2C_stretching.jpg/1200px-White_domesticated_duck%2C_stretching.jpg",
+      status: "In Stock",
+    },
+    {
+      id: 5,
+      name: "Tweed Blazer Ha...",
+      price: "Rp 339,000",
+      rating: 5,
+      image: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/White_domesticated_duck%2C_stretching.jpg/1200px-White_domesticated_duck%2C_stretching.jpg",
+      status: "In Stock",
+      isNew: true,
+    },
+    {
+      id: 6,
+      name: "Basic Shirt Black",
+      price: "Rp 179,000",
+      rating: 4.93,
+      image: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/White_domesticated_duck%2C_stretching.jpg/1200px-White_domesticated_duck%2C_stretching.jpg",
+      status: "Available",
+      isRestocked: true,
+    }
+  ];
 
   const maxVisible = 5;
   const maxSlide = Math.max(0, products.length - maxVisible);
@@ -37,16 +96,13 @@ const ProductManagement = ({ products = [] }) => {
                 onClick={prevSlide}
                 className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-lg hover:shadow-xl transition"
                 disabled={currentSlide === 0}
-                aria-label="Sebelumnya"
               >
                 <ChevronLeft className="w-6 h-6 text-gray-600" />
               </button>
-
               <button
                 onClick={nextSlide}
                 className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-lg hover:shadow-xl transition"
                 disabled={currentSlide >= maxSlide}
-                aria-label="Selanjutnya"
               >
                 <ChevronRight className="w-6 h-6 text-gray-600" />
               </button>
@@ -66,7 +122,6 @@ const ProductManagement = ({ products = [] }) => {
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     onError={(e) => (e.target.src = "/fallback.png")}
                   />
-
                   <div className="absolute top-3 left-3 flex flex-col gap-1">
                     {product.isNew && (
                       <span className="bg-orange-500 text-white text-xs font-semibold px-2 py-1 rounded">
@@ -79,15 +134,13 @@ const ProductManagement = ({ products = [] }) => {
                       </span>
                     )}
                   </div>
-
-                  {product.discountPercent && (
+                  {product.endsSoon && (
                     <div className="absolute top-3 right-3">
                       <span className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
-                        -{product.discountPercent}%
+                        {product.endsSoon}
                       </span>
                     </div>
                   )}
-
                   <div className="absolute bottom-3 left-3">
                     <span
                       className={`text-xs font-medium px-2 py-1 rounded flex items-center gap-1 ${
@@ -103,14 +156,13 @@ const ProductManagement = ({ products = [] }) => {
                 </div>
 
                 <div className="p-4">
-                  <h3 className="text-gray-800 font-medium text-sm mb-1 line-clamp-2">
+                  <h3 className="text-gray-800 font-medium text-sm mb-2 line-clamp-2">
                     {product.name}
                   </h3>
-                  <p className="text-xs text-gray-500 mb-3 line-clamp-2">
-                    {product.description}
-                  </p>
                   <div className="flex items-center justify-between">
-                    <span className="text-lg font-semibold text-gray-900">{product.price}</span>
+                    <span className="text-lg font-semibold text-gray-900">
+                      {product.price}
+                    </span>
                     <div className="flex items-center gap-1">
                       <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
                       <span className="text-sm font-medium text-gray-700">
@@ -125,7 +177,6 @@ const ProductManagement = ({ products = [] }) => {
         </div>
       </div>
 
-      {/* Stats */}
       <div className="mt-12">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <StatCard color="blue" value={products.length} label="Total Products" />
@@ -146,7 +197,6 @@ const ProductManagement = ({ products = [] }) => {
   );
 };
 
-// Reusable stat card component
 const StatCard = ({ color = "gray", value, label }) => {
   const colorClass = {
     blue: "text-blue-600",

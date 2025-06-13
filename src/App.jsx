@@ -1,24 +1,38 @@
-import { Routes } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
+import Home from "./components/Home"; // Halaman utama (tanpa layout dashboard)
 import MainLayout from "./components/MainLayout";
 import Dashboard from "./pages/Dashboard";
-import { Route } from "react-router-dom";
+import Pelanggan from "./pages/Pelanggan";
+import ProductManagement from "./pages/ProductManagement";
 import SalesManagement from "./pages/SalesManagement";
-import FAQ from "./pages/FAQ";
 import ProductForm from "./pages/ProductForm";
 import Pemesanan from "./pages/Pemesanan";
+import ChatPelanggan from "./pages/ChatPelanggan";
+import FAQ from "./pages/FAQ";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 
-function App(){
-  return(
+function App() {
+  return (
     <Routes>
-      <Route element={<MainLayout/>}>
-      <Route path="/" element={<Dashboard/>}/>
+      {/* Halaman Home dan Auth tanpa layout */}
+      <Route path="/" element={<Home />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+
+      {/* Semua halaman yang membutuhkan layout dashboard */}
+      <Route element={<MainLayout />}>
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/pelanggan" element={<Pelanggan />} />
+        <Route path="/produk" element={<ProductManagement />} />
+        <Route path="/penjualan" element={<SalesManagement />} />
+        <Route path="/productform" element={<ProductForm />} />
         <Route path="/pemesanan" element={<Pemesanan />} />
-      <Route path="/penjualan" element={<SalesManagement/>}/>
-      <Route path="/ProductForm" element={<ProductForm/>}/>
-      <Route path="/FAQ" element={<FAQ/>}></Route>
+        <Route path="/chatpelanggan" element={<ChatPelanggan />} />
+        <Route path="/faq" element={<FAQ />} />
       </Route>
     </Routes>
-  )
+  );
 }
 
 export default App;
