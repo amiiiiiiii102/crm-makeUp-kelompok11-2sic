@@ -12,6 +12,7 @@ import {
   UserPlus,
   User2Icon,
   MessageCircle,
+  Newspaper,
 } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 
@@ -24,6 +25,7 @@ const menuItems = [
   { name: 'FAQ', icon: <HelpCircle size={20} />, path: '/FAQ' },
   { name: 'Form Produk', icon: <ClipboardList size={20} />, path: '/ProductForm' },
   { name: 'Chat Pelanggan', icon: <MessageCircle size={20} />, path: '/ChatPelanggan' },
+  { name: 'Artikel', icon: <Newspaper size={20} />, path: '/artikel' },
 ]
 
 const accountItems = [

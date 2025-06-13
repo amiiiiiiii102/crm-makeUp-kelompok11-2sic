@@ -10,6 +10,7 @@ import ChatPelanggan from "./pages/ChatPelanggan";
 import FAQ from "./pages/FAQ";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import Artikel from "./pages/Artikel";
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
         <Route path="/productform" element={<ProductForm />} />
         <Route path="/chatpelanggan" element={<ChatPelanggan />} />
         <Route path="/faq" element={<FAQ />} />
+        <Route path="/artikel" element={<Artikel />} />
       </Route>
     </Routes>
   );
