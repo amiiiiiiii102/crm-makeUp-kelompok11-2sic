@@ -6,6 +6,7 @@ import Pelanggan from "./pages/Pelanggan";
 import ProductManagement from "./pages/ProductManagement";
 import SalesManagement from "./pages/SalesManagement";
 import ProductForm from "./pages/ProductForm";
+import Pemesanan from "./pages/Pemesanan";
 import ChatPelanggan from "./pages/ChatPelanggan";
 import FAQ from "./pages/FAQ";
 import Login from "./pages/Login";
@@ -26,6 +27,7 @@ function App() {
         <Route path="/produk" element={<ProductManagement />} />
         <Route path="/penjualan" element={<SalesManagement />} />
         <Route path="/productform" element={<ProductForm />} />
+        <Route path="/pemesanan" element={<Pemesanan />} />
         <Route path="/chatpelanggan" element={<ChatPelanggan />} />
         <Route path="/faq" element={<FAQ />} />
       </Route>
