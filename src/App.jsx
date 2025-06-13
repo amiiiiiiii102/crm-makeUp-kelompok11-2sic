@@ -1,5 +1,5 @@
 import { Routes, Route } from "react-router-dom";
-import Home from "./components/Home"; // Halaman utama (di luar layout dashboard)
+import Home from "./components/Home"; // Halaman utama (tanpa layout dashboard)
 import MainLayout from "./components/MainLayout";
 import Dashboard from "./pages/Dashboard";
 import Pelanggan from "./pages/Pelanggan";
@@ -8,23 +8,18 @@ import SalesManagement from "./pages/SalesManagement";
 import ProductForm from "./pages/ProductForm";
 import ChatPelanggan from "./pages/ChatPelanggan";
 import FAQ from "./pages/FAQ";
-import Login from "./pages/Login"
-import Register from "./pages/Register"
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 
 function App() {
   return (
     <Routes>
-      {/* Halaman Home (tanpa layout) */}
-      <Route path="/" element={<Home />} />
-
-      {/* Halaman Dashboard dan lainnya (dengan MainLayout) */}
-      {/* Semua route lain menggunakan MainLayout */}
-      {/* Route ke halaman Home */}
+      {/* Halaman Home dan Auth tanpa layout */}
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
 
-      {/* Nested Routes di dalam MainLayout */}
+      {/* Semua halaman yang membutuhkan layout dashboard */}
       <Route element={<MainLayout />}>
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/pelanggan" element={<Pelanggan />} />
