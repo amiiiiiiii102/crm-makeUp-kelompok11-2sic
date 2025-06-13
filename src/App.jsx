@@ -9,21 +9,23 @@ import SalesManagement from "./pages/SalesManagement";
 import FAQ from "./pages/FAQ";
 import ProductForm from "./pages/ProductForm";
 import ChatPelanggan from "./pages/ChatPelanggan";
+import Home from "./components/Home";
 
 function App(){
   return(
     <Routes>
-      <Route element={<MainLayout/>}>
-      <Route path="/" element={<Dashboard/>}/>
-     
-      <Route path="/pelanggan" element={<Pelanggan/>}/>
-      
+      {/* Route ke halaman Home */}
+      <Route path="/" element={<Home />} />
 
-      <Route path="/produk" element={<ProductManagement/>}/>
-      <Route path="/penjualan" element={<SalesManagement/>}/>
-      <Route path="/ProductForm" element={<ProductForm/>}/>
-      <Route path="/ChatPelanggan" element={<ChatPelanggan/>}/>
-      <Route path="/FAQ" element={<FAQ/>}></Route>
+      {/* Nested Routes di dalam MainLayout */}
+      <Route element={<MainLayout />}>
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/pelanggan" element={<Pelanggan />} />
+        <Route path="/produk" element={<ProductManagement />} />
+        <Route path="/penjualan" element={<SalesManagement />} />
+        <Route path="/ProductForm" element={<ProductForm />} />
+        <Route path="/ChatPelanggan" element={<ChatPelanggan />} />
+        <Route path="/FAQ" element={<FAQ />} />
       </Route>
     </Routes>
   )
