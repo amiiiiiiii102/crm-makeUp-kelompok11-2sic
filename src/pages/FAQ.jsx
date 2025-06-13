@@ -18,7 +18,7 @@ export default function FAQ() {
   const [showForm, setShowForm] = useState(false);
   const [newQuestion, setNewQuestion] = useState("");
   const [newAnswer, setNewAnswer] = useState("");
-  const [editIndex, setEditIndex] = useState(null); // null = tambah
+  const [editIndex, setEditIndex] = useState(null); // null = tambah baru
 
   const toggle = (index) => {
     setOpenIndex(openIndex === index ? null : index);
@@ -26,12 +26,10 @@ export default function FAQ() {
 
   const handleShowForm = (index = null) => {
     if (index !== null) {
-      // Edit mode
       setEditIndex(index);
       setNewQuestion(faqData[index].question);
       setNewAnswer(faqData[index].answer);
     } else {
-      // Tambah baru
       setEditIndex(null);
       setNewQuestion("");
       setNewAnswer("");
@@ -57,10 +55,7 @@ export default function FAQ() {
     }
 
     setFaqData(updatedFaq);
-    setShowForm(false);
-    setNewQuestion("");
-    setNewAnswer("");
-    setEditIndex(null);
+    handleCancelForm();
   };
 
   const handleDelete = (index) => {
@@ -71,30 +66,25 @@ export default function FAQ() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6 mt-8 bg-white shadow-md rounded-xl border">
+    <div className="max-w-4xl mx-auto p-6 mt-8 bg-white shadow-md rounded-xl">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-semibold text-orange-700 flex items-center gap-2">
           <PlusCircle className="text-orange-600" /> Pusat Bantuan & FAQ
         </h1>
-        {showForm ? (
-          <button
-            onClick={handleCancelForm}
-            className="flex items-center gap-2 px-4 py-2 bg-gray-400 text-white text-sm rounded-md hover:bg-gray-500 transition"
-          >
-            Batal
-          </button>
-        ) : (
-          <button
-            onClick={() => handleShowForm()}
-            className="flex items-center gap-2 px-4 py-2 bg-orange-600 text-white text-sm rounded-md hover:bg-orange-700 transition"
-          >
-            Tambah Pertanyaan
-          </button>
-        )}
+        <button
+          onClick={() => (showForm ? handleCancelForm() : handleShowForm())}
+          className={`flex items-center gap-2 px-4 py-2 text-sm rounded-md transition ${
+            showForm
+              ? "bg-gray-400 text-white hover:bg-gray-500"
+              : "bg-orange-600 text-white hover:bg-orange-700"
+          }`}
+        >
+          {showForm ? "Batal" : "Tambah Pertanyaan"}
+        </button>
       </div>
 
       {showForm && (
-        <div className="mb-6 p-4 border border-orange-300 rounded-lg bg-orange-50">
+        <div className="mb-6 p-4 border border-orange-200 rounded-lg bg-orange-50">
           <div className="mb-3">
             <label className="block text-sm font-medium text-orange-700 mb-1">Pertanyaan</label>
             <input
@@ -114,51 +104,57 @@ export default function FAQ() {
               placeholder="Masukkan jawaban"
             />
           </div>
-          <button
-            onClick={handleSave}
-            className="bg-orange-600 text-white px-4 py-2 rounded-md hover:bg-orange-700 transition"
-          >
-            Simpan
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={handleSave}
+              className="bg-orange-600 text-white px-4 py-2 rounded-md hover:bg-orange-700 transition"
+            >
+              Simpan
+            </button>
+            <button
+              onClick={handleCancelForm}
+              className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400 transition"
+            >
+              Batal
+            </button>
+          </div>
         </div>
       )}
 
-      {!showForm && (
-        <div className="space-y-4">
-          {faqData.map((faq, index) => (
-            <div key={index} className="border rounded-md p-4 shadow-sm">
-              <div
-                onClick={() => toggle(index)}
-                className="flex justify-between items-center cursor-pointer"
-              >
-                <h2 className="font-medium text-orange-800">{faq.question}</h2>
-                {openIndex === index ? (
-                  <ChevronUp className="text-orange-700" />
-                ) : (
-                  <ChevronDown className="text-orange-700" />
-                )}
-              </div>
-              {openIndex === index && (
-                <p className="text-sm text-gray-700 mt-2">{faq.answer}</p>
+      <div className="space-y-4">
+        {faqData.map((faq, index) => (
+          <div key={index} className="border rounded-md p-4 shadow-sm">
+            <div
+              onClick={() => toggle(index)}
+              className="flex justify-between items-center cursor-pointer"
+            >
+              <h2 className="font-medium text-orange-800">{faq.question}</h2>
+              {openIndex === index ? (
+                <ChevronUp className="text-orange-700" />
+              ) : (
+                <ChevronDown className="text-orange-700" />
               )}
-              <div className="mt-3 flex gap-3">
-                <button
-                  onClick={() => handleShowForm(index)}
-                  className="text-sm text-blue-600 hover:underline flex items-center gap-1"
-                >
-                  <Edit3 size={16} /> Edit
-                </button>
-                <button
-                  onClick={() => handleDelete(index)}
-                  className="text-sm text-red-600 hover:underline flex items-center gap-1"
-                >
-                  <Trash2 size={16} /> Hapus
-                </button>
-              </div>
             </div>
-          ))}
-        </div>
-      )}
+            {openIndex === index && (
+              <p className="text-sm text-gray-700 mt-2">{faq.answer}</p>
+            )}
+            <div className="mt-3 flex gap-3">
+              <button
+                onClick={() => handleShowForm(index)}
+                className="text-sm text-blue-600 hover:underline flex items-center gap-1"
+              >
+                <Edit3 size={16} /> Edit
+              </button>
+              <button
+                onClick={() => handleDelete(index)}
+                className="text-sm text-red-600 hover:underline flex items-center gap-1"
+              >
+                <Trash2 size={16} /> Hapus
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
