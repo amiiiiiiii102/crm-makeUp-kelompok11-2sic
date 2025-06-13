@@ -1,11 +1,10 @@
-
 import {
   LayoutDashboard,
-  Users,         // untuk pelanggan
-  ShoppingCart,  // untuk penjualan
-  Box,           // untuk produk
-  BarChart2,     // untuk laporan
-  Settings,      // untuk pengaturan akun
+  Users,
+  ShoppingCart,
+  Box,
+  BarChart2,
+  Settings,
   User,
   HelpCircle,
   ClipboardList,
@@ -14,71 +13,88 @@ import {
   User2Icon,
   MessageCircle,
 } from 'lucide-react'
-import { Chart } from 'react-chartjs-2'
 import { Link, useLocation } from 'react-router-dom'
 
 const menuItems = [
-  { name: 'Dashboard', icon: <LayoutDashboard />, path: '/dashboard' },
-  { name: 'Produk', icon: <Box />, path: '/produk' },
-  { name: 'Pelanggan', icon: <User2Icon />, path: '/pelanggan' },
-  { name: 'Laporan', icon: <BarChart2 />, path: '/laporan' },
-  { name: 'Penjualan', icon: <ShoppingCart />, path: '/penjualan' },
-  { name: 'FAQ', icon: <HelpCircle />, path: '/FAQ' },
-  { name: 'Form Produk', icon: <ClipboardList />, path: '/ProductForm' },
-  { name: 'Chat Pelanggan', icon: <MessageCircle />, path: '/ChatPelanggan' }
+  { name: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/dashboard' },
+  { name: 'Produk', icon: <Box size={20} />, path: '/produk' },
+  { name: 'Pelanggan', icon: <User2Icon size={20} />, path: '/pelanggan' },
+  { name: 'Laporan', icon: <BarChart2 size={20} />, path: '/laporan' },
+  { name: 'Pemesanan', icon: <ShoppingCart size={20} />, path: '/pemesanan' },
+  { name: 'FAQ', icon: <HelpCircle size={20} />, path: '/FAQ' },
+  { name: 'Form Produk', icon: <ClipboardList size={20} />, path: '/ProductForm' },
+  { name: 'Chat Pelanggan', icon: <MessageCircle size={20} />, path: '/ChatPelanggan' }
 ]
 
 const accountItems = [
-  { name: 'Pengaturan Akun', icon: <Settings />, path: '/akun' },
-  { name: 'Sign In', icon: <LogIn />, path: '/signin' },
-  { name: 'Sign Up', icon: <UserPlus />, path: '/signup' },
+  { name: 'Pengaturan Akun', icon: <Settings size={20} />, path: '/akun' },
+  { name: 'Sign In', icon: <LogIn size={20} />, path: '/signin' },
+  { name: 'Sign Up', icon: <UserPlus size={20} />, path: '/signup' },
 ]
 
 const Sidebar = () => {
   const location = useLocation()
-
   const isActive = (path) => location.pathname === path
 
   return (
-<aside className="fixed top-0 left-0 h-screen w-64 bg-white shadow-lg px-4 py-6 hidden md:block z-20">
-      <div className="text-xl font-bold mb-8 text-orange-700">ISTANA COSMETIC</div>
-      <nav className="space-y-1">
-        {menuItems.map((item) => (
-          <Link
-            key={item.name}
-            to={item.path}
-            className={`flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-orange-100 transition ${
-              isActive(item.path)
-                ? 'bg-orange-200 text-orange-800 font-semibold'
-                : 'text-gray-700'
-            }`}
-          >
-            <span className="w-5 h-5">{item.icon}</span>
-            {item.name}
-          </Link>
-        ))}
-      </nav>
+    <aside className="fixed top-0 left-0 h-screen w-64 bg-white shadow-xl px-6 py-4 hidden md:flex flex-col z-30">
+      
+      {/* Logo + Judul, klik ke '/' */}
+      <Link to="/" className="flex flex-col items-center mb-4 cursor-pointer">
+        <img
+          src="/image/logo.png" // Pastikan path sesuai dengan struktur public folder kamu
+          alt="Logo"
+          className="w-16 h-16 object-contain mb-2"
+        />
+        <h1 className="text-xl font-extrabold text-[var(--istana-primary)] tracking-wide text-center leading-tight">
+          ISTANA COSMETIC
+        </h1>
+      </Link>
 
-      <div className="mt-8 text-xs font-semibold text-gray-500">AKUN</div>
-      <nav className="mt-2 space-y-1">
-        {accountItems.map((item) => (
-          <Link
-            key={item.name}
-            to={item.path}
-            className={`flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-orange-100 transition ${
-              isActive(item.path)
-                ? 'bg-orange-200 text-orange-800 font-semibold'
-                : 'text-gray-700'
-            }`}
-          >
-            <span className="w-5 h-5">{item.icon}</span>
-            {item.name}
-          </Link>
-        ))}
-      </nav>
+      {/* Kontainer utama navigasi + akun */}
+      <div className="flex-1 overflow-y-auto mt-2 flex flex-col justify-between">
+
+        {/* Menu Navigasi */}
+        <nav className="space-y-1 mb-6">
+          {menuItems.map((item) => (
+            <Link
+              key={item.name}
+              to={item.path}
+              className={`flex items-center gap-4 px-4 py-2 rounded-lg transition-all duration-200 group
+                ${isActive(item.path)
+                  ? 'bg-[var(--istana-light)] text-[var(--istana-primary)] font-semibold'
+                  : 'text-gray-700 hover:bg-[var(--istana-light)] hover:text-[var(--istana-primary)]'}
+              `}
+            >
+              <span className="text-[var(--istana-primary)] group-hover:scale-110 transition-transform">{item.icon}</span>
+              <span className="text-sm">{item.name}</span>
+            </Link>
+          ))}
+        </nav>
+
+        {/* Akun */}
+        <div className="mb-2">
+          <div className="text-xs font-semibold text-gray-500 mb-2">AKUN</div>
+          <nav className="space-y-1">
+            {accountItems.map((item) => (
+              <Link
+                key={item.name}
+                to={item.path}
+                className={`flex items-center gap-4 px-4 py-2 rounded-lg transition-all duration-200 group
+                  ${isActive(item.path)
+                    ? 'bg-[var(--istana-light)] text-[var(--istana-primary)] font-semibold'
+                    : 'text-gray-700 hover:bg-[var(--istana-light)] hover:text-[var(--istana-primary)]'}
+                `}
+              >
+                <span className="text-[var(--istana-primary)] group-hover:scale-110 transition-transform">{item.icon}</span>
+                <span className="text-sm">{item.name}</span>
+              </Link>
+            ))}
+          </nav>
+        </div>
+      </div>
     </aside>
   )
 }
 
 export default Sidebar
-
