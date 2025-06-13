@@ -23,13 +23,13 @@ const menuItems = [
   { name: 'Pemesanan', icon: <ShoppingCart size={20} />, path: '/pemesanan' },
   { name: 'FAQ', icon: <HelpCircle size={20} />, path: '/FAQ' },
   { name: 'Form Produk', icon: <ClipboardList size={20} />, path: '/ProductForm' },
-  { name: 'Chat Pelanggan', icon: <MessageCircle size={20} />, path: '/ChatPelanggan' }
+  { name: 'Chat Pelanggan', icon: <MessageCircle size={20} />, path: '/ChatPelanggan' },
 ]
 
 const accountItems = [
   { name: 'Pengaturan Akun', icon: <Settings size={20} />, path: '/akun' },
-  { name: 'Sign In', icon: <LogIn size={20} />, path: '/signin' },
-  { name: 'Sign Up', icon: <UserPlus size={20} />, path: '/signup' },
+  { name: 'Sign In', icon: <LogIn size={20} />, path: '/login' },
+  { name: 'Sign Up', icon: <UserPlus size={20} />, path: '/register' },
 ]
 
 const Sidebar = () => {
@@ -39,10 +39,10 @@ const Sidebar = () => {
   return (
     <aside className="fixed top-0 left-0 h-screen w-64 bg-white shadow-xl px-6 py-4 hidden md:flex flex-col z-30">
       
-      {/* Logo + Judul, klik ke '/' */}
+      {/* Logo dan Judul */}
       <Link to="/" className="flex flex-col items-center mb-4 cursor-pointer">
         <img
-          src="/image/logo.png" // Pastikan path sesuai dengan struktur public folder kamu
+          src="/image/logo.png"
           alt="Logo"
           className="w-16 h-16 object-contain mb-2"
         />
@@ -51,9 +51,9 @@ const Sidebar = () => {
         </h1>
       </Link>
 
-      {/* Kontainer utama navigasi + akun */}
+      {/* Navigasi Utama dan Akun */}
       <div className="flex-1 overflow-y-auto mt-2 flex flex-col justify-between">
-
+        
         {/* Menu Navigasi */}
         <nav className="space-y-1 mb-6">
           {menuItems.map((item) => (

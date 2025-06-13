@@ -1,6 +1,13 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Home.css";
+import React from "react";
+import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+import "./Home.css";
+import logo from "../assets/images/logo.png";
+import Login from "../pages/Login"
 
 const Home = () => {
   const navigate = useNavigate();
@@ -42,6 +49,30 @@ const Home = () => {
         <div className="navbar-right">
           <button className="btn-login" onClick={() => navigate("/dashboard")}>
             Login
+          <a href="#about">About Us</a>
+          <a href="#produk">Produk</a>
+          <a href="#artikel">Artikel</a>
+        </nav>
+        <Link to="/login" className="button-primary">
+  Login
+</Link>
+
+      </header>
+
+      {/* Hero Section */}
+      <section className="hero" id="home">
+        <motion.div
+          initial={{ opacity: 0, x: -50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8 }}
+        >
+          <h2>Tampil Cantik, Percaya Diri Setiap Hari</h2>
+          <p>
+            Temukan koleksi kosmetik terbaik dari brand ternama hanya di aplikasi
+            Istana Cosmetic. Belanja mudah, cepat, dan aman.
+          </p>
+          <button onClick={handleLogin} className="button-primary">
+            Jelajahi Sekarang
           </button>
         </div>
       </nav>
