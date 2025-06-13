@@ -8,7 +8,8 @@ import SalesManagement from "./pages/SalesManagement";
 import ProductForm from "./pages/ProductForm";
 import ChatPelanggan from "./pages/ChatPelanggan";
 import FAQ from "./pages/FAQ";
-import Home from "./components/Home";
+import Login from "./pages/Login"
+import Register from "./pages/Register"
 
 function App() {
   return (
@@ -19,6 +20,8 @@ function App() {
       {/* Semua route lain menggunakan MainLayout */}
       {/* Route ke halaman Home */}
       <Route path="/" element={<Home />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
 
       {/* Nested Routes di dalam MainLayout */}
       <Route element={<MainLayout />}>

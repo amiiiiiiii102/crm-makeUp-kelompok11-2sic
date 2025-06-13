@@ -21,7 +21,8 @@ const Header = () => {
         </div>
         <div className="flex items-center gap-2 text-sm cursor-pointer text-gray-700 hover:text-purple-700">
           <User className="w-4 h-4" />
-          Sign In
+          <a href="Register">Sign In</a>
+          
         </div>
       </div>
     </header>

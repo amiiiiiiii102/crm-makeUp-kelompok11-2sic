@@ -1,8 +1,10 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import "./Home.css";
 import logo from "../assets/images/logo.png";
+import Login from "../pages/Login"
 
 export default function Home() {
   const navigate = useNavigate();
@@ -25,9 +27,10 @@ export default function Home() {
           <a href="#produk">Produk</a>
           <a href="#artikel">Artikel</a>
         </nav>
-        <button className="button-primary" onClick={handleLogin}>
-          Login
-        </button>
+        <Link to="/login" className="button-primary">
+  Login
+</Link>
+
       </header>
 
       {/* Hero Section */}
