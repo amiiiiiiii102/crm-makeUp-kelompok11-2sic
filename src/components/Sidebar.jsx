@@ -48,7 +48,7 @@ const Sidebar = () => {
           alt="Logo"
           className="w-16 h-16 object-contain mb-2"
         />
-        <h1 className="text-xl font-extrabold text-[var(--istana-primary)] tracking-wide text-center leading-tight">
+        <h1 className="text-xl font-extrabold text-[#c1440e] tracking-wide text-center leading-tight">
           ISTANA COSMETIC
         </h1>
       </Link>
@@ -64,11 +64,13 @@ const Sidebar = () => {
               to={item.path}
               className={`flex items-center gap-4 px-4 py-2 rounded-lg transition-all duration-200 group
                 ${isActive(item.path)
-                  ? 'bg-[var(--istana-light)] text-[var(--istana-primary)] font-semibold'
-                  : 'text-gray-700 hover:bg-[var(--istana-light)] hover:text-[var(--istana-primary)]'}
+                  ? 'bg-[#fff3ec] text-[#c1440e] font-semibold'
+                  : 'text-gray-700 hover:bg-[#fff3ec] hover:text-[#c1440e]'}
               `}
             >
-              <span className="text-[var(--istana-primary)] group-hover:scale-110 transition-transform">{item.icon}</span>
+              <span className={`group-hover:scale-110 transition-transform ${isActive(item.path) ? 'text-[#c1440e]' : 'text-[#c1440e]'}`}>
+                {item.icon}
+              </span>
               <span className="text-sm">{item.name}</span>
             </Link>
           ))}
@@ -84,11 +86,13 @@ const Sidebar = () => {
                 to={item.path}
                 className={`flex items-center gap-4 px-4 py-2 rounded-lg transition-all duration-200 group
                   ${isActive(item.path)
-                    ? 'bg-[var(--istana-light)] text-[var(--istana-primary)] font-semibold'
-                    : 'text-gray-700 hover:bg-[var(--istana-light)] hover:text-[var(--istana-primary)]'}
+                    ? 'bg-[#fff3ec] text-[#c1440e] font-semibold'
+                    : 'text-gray-700 hover:bg-[#fff3ec] hover:text-[#c1440e]'}
                 `}
               >
-                <span className="text-[var(--istana-primary)] group-hover:scale-110 transition-transform">{item.icon}</span>
+                <span className={`group-hover:scale-110 transition-transform ${isActive(item.path) ? 'text-[#c1440e]' : 'text-[#c1440e]'}`}>
+                  {item.icon}
+                </span>
                 <span className="text-sm">{item.name}</span>
               </Link>
             ))}
