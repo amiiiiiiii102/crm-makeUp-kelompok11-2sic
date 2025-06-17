@@ -44,7 +44,7 @@ const Sidebar = () => {
       {/* Logo dan Judul */}
       <Link to="/" className="flex flex-col items-center mb-4 cursor-pointer">
         <img
-          src="/image/logo.png"
+          src="/images/logo.png"
           alt="Logo"
           className="w-16 h-16 object-contain mb-2"
         />
