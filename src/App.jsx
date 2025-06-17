@@ -1,5 +1,5 @@
 import { Routes, Route } from "react-router-dom";
-import Home from "./components/Home"; // Halaman utama (tanpa layout dashboard)
+import Home from "./components/Home"; // Halaman utama tanpa layout
 import MainLayout from "./components/MainLayout";
 import Dashboard from "./pages/Dashboard";
 import Pelanggan from "./pages/Pelanggan";
@@ -16,12 +16,12 @@ import Artikel from "./pages/Artikel";
 function App() {
   return (
     <Routes>
-      {/* Halaman Home dan Auth tanpa layout */}
+      {/* Halaman publik */}
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
 
-      {/* Semua halaman yang membutuhkan layout dashboard */}
+      {/* Halaman dengan layout dashboard */}
       <Route element={<MainLayout />}>
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/pelanggan" element={<Pelanggan />} />
