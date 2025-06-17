@@ -1,25 +1,30 @@
-import React, { useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./Home.css";
 
-const Home = () => {
+export default function Home() {
   const navigate = useNavigate();
+  const [activeNav, setActiveNav] = useState("home");
 
-  // Scroll animation logic
   useEffect(() => {
     const handleScroll = () => {
-      const sections = document.querySelectorAll(".animated-section");
-      sections.forEach((section) => {
-        const rect = section.getBoundingClientRect();
-        if (rect.top < window.innerHeight - 100) {
-          section.classList.add("show");
+      const sections = ["home", "produk", "testimoni", "artikel", "kontak"];
+      const scrollPosition = window.scrollY + window.innerHeight / 3;
+
+      for (let id of sections) {
+        const el = document.getElementById(id);
+        if (el) {
+          const top = el.offsetTop;
+          const bottom = top + el.offsetHeight;
+          if (scrollPosition >= top && scrollPosition < bottom) {
+            setActiveNav(id);
+            break;
+          }
         }
-      });
+      }
     };
 
     window.addEventListener("scroll", handleScroll);
-    handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -28,52 +33,41 @@ const Home = () => {
       {/* Navbar */}
       <nav className="navbar">
         <div className="navbar-left">
-          <img src="/image/logo.png" alt="Logo" className="logo" />
-          <div className="shop-name">Istana Cosmetic</div>
+          <a href="#home" className={activeNav === "home" ? "active-nav" : ""}>Home</a>
+          <a href="#produk" className={activeNav === "produk" ? "active-nav" : ""}>Produk</a>
+          <a href="#testimoni" className={activeNav === "testimoni" ? "active-nav" : ""}>Testimonial</a>
         </div>
         <div className="navbar-center">
-          <a href="#home">Home</a>
-          <a href="#about">About Us</a>
-          <a href="#produk">Produk</a>
-          <a href="#artikel">Artikel</a>
-          <a href="#kontak">Kontak</a>
+          <img src="/images/logo.png" alt="Logo" className="logo" />
+          <span className="shop-name">Istana Cosmetic</span>
         </div>
         <div className="navbar-right">
-          <Link to="/login" className="button-primary">
-            Login
-          </Link>
+          <a href="#artikel" className={activeNav === "artikel" ? "active-nav" : ""}>Artikel</a>
+          <a href="#kontak" className={activeNav === "kontak" ? "active-nav" : ""}>Kontak</a>
+          <button className="btn-login" onClick={() => navigate("/login")}>Login</button>
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <section className="hero-section" id="home">
-        <motion.div
-          initial={{ opacity: 0, x: -50 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8 }}
-        >
-          <h2>Tampil Cantik, Percaya Diri Setiap Hari</h2>
-          <p>
-            Temukan koleksi kosmetik terbaik dari brand ternama hanya di aplikasi
-            Istana Cosmetic. Belanja mudah, cepat, dan aman.
-          </p>
-          <a href="#produk" className="button-primary">
-            Jelajahi Sekarang
+      {/* Home Section */}
+      <section id="home" className="hero-section">
+        <div className="hero-content">
+          <h1>Selamat Datang di Istana Cosmetic</h1>
+          <p>Kecantikan yang membuatmu percaya diri setiap hari.</p>
+          <a href="#produk">
+            <button className="btn-jelajahi">Jelajahi Sekarang</button>
           </a>
-        </motion.div>
+        </div>
       </section>
 
-      {/* Produk Section */}
-      <section id="produk" className="produk-section animated-section">
+      {/* Produk */}
+      <section id="produk" className="produk-section">
         <h2>Produk Unggulan</h2>
-        <p className="produk-desc">
-          Temukan produk kecantikan favorit Anda di sini!
-        </p>
+        <p className="produk-desc">Temukan produk kecantikan favorit Anda di sini!</p>
         <div className="produk-cards">
           {[
             { nama: "SKN", harga: "Rp45.000" },
             { nama: "MKP", harga: "Rp65.000" },
-            { nama: "HRC", harga: "Rp55.000" },
+            { nama: "HRC", harga: "Rp55.000" }
           ].map((produk, index) => (
             <div className="produk-card" key={index}>
               <img
@@ -81,23 +75,58 @@ const Home = () => {
                 alt={produk.nama}
               />
               <h3>{produk.nama}</h3>
-              <p className="produk-harga">{produk.harga}</p>
+              <p>{produk.harga}</p>
               <div className="produk-buttons">
-                <button className="btn-keranjang">Tambah ke Keranjang</button>
-                <button className="btn-beli">Beli Sekarang</button>
+                <button className="btn-keranjang">+ Keranjang</button>
+                <button className="btn-beli">Beli</button>
               </div>
             </div>
           ))}
         </div>
       </section>
 
-      {/* Artikel Section */}
-      <section id="artikel" className="artikel-section animated-section">
+      {/* Testimoni */}
+      <section id="testimoni" className="testimoni-section">
+        <h2>Testimoni Pelanggan</h2>
+        <div className="testimoni-cards">
+          {[
+            {
+              nama: "Ayu",
+              ulasan: "Produk bagus banget! Kulitku jadi lebih sehat.",
+              rating: 5,
+              foto: "https://randomuser.me/api/portraits/women/1.jpg"
+            },
+            {
+              nama: "Sari",
+              ulasan: "Pelayanan cepat dan ramah, suka banget!",
+              rating: 4,
+              foto: "https://randomuser.me/api/portraits/women/2.jpg"
+            }
+          ].map((item, index) => (
+            <div className="testimoni-card" key={index}>
+              <img src={item.foto} alt={item.nama} className="testimoni-foto" />
+              <div className="testimoni-info">
+                <div className="testimoni-header">{item.nama}</div>
+                <div className="testimoni-pesan">"{item.ulasan}"</div>
+                <div className="testimoni-rating">
+                  {"★".repeat(item.rating)}{"☆".repeat(5 - item.rating)}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <button className="btn-jelajahi" onClick={() => navigate("/form-testimoni")}>
+          Tambah Testimoni
+        </button>
+      </section>
+
+      {/* Artikel */}
+      <section id="artikel" className="artikel-section">
         <h2>Artikel Kecantikan</h2>
         <div className="artikel-cards">
           <div className="artikel-card">
             <h3>Tips Makeup Natural</h3>
-            <p>Pelajari cara tampil natural namun tetap memukau setiap hari.</p>
+            <p>Cara tampil natural tapi tetap memukau setiap hari.</p>
           </div>
           <div className="artikel-card">
             <h3>Rutinitas Skincare Pagi</h3>
@@ -106,26 +135,49 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Kontak Section */}
-      <section id="kontak" className="contact-section animated-section">
-        <h2>Hubungi Kami</h2>
-        <p>Untuk pertanyaan dan informasi lebih lanjut, hubungi kami via WhatsApp.</p>
-        <a
-          href="https://wa.me/62895393079282?text=Halo%20admin%20Istana%20Cosmetic%2C%20saya%20ingin%20bertanya..."
-          target="_blank"
-          rel="noopener noreferrer"
-          className="btn-whatsapp"
-        >
-          Chat via WhatsApp
-        </a>
+      {/* Kontak */}
+      <section className="contact-section" id="kontak">
+        <h3>Hubungi Kami</h3>
+        <div className="contact-container">
+          <form className="contact-form">
+            <input type="text" placeholder="Nama" />
+            <input type="email" placeholder="Email" />
+            <textarea rows="4" placeholder="Pesan" />
+            <button type="submit">Kirim</button>
+          </form>
+
+          <div className="contact-info">
+            <p>Atau langsung hubungi kami via:</p>
+
+            {/* WhatsApp */}
+            <a
+              href="https://wa.me/6281234567890"
+              className="btn-whatsapp-icon"
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Hubungi kami via WhatsApp"
+            >
+              <img src="/images/wa.png" alt="WhatsApp" style={{ width: "40px", marginRight: "10px" }} />
+            </a>
+
+            {/* Instagram */}
+            <a
+              href="https://instagram.com/istanacosmetic"
+              className="btn-instagram-icon"
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Kunjungi Instagram kami"
+            >
+              <img src="/images/ig.png" alt="Instagram" style={{ width: "40px" }} />
+            </a>
+          </div>
+        </div>
       </section>
 
       {/* Footer */}
       <footer className="footer">
-        <p>&copy; 2025 Istana Cosmetic. Cantik itu pilihan, percaya diri itu kekuatan.</p>
+        <p>© 2025 Istana Cosmetic. Cantik itu pilihan, percaya diri itu kekuatan.</p>
       </footer>
     </div>
   );
-};
-
-export default Home;
+}
