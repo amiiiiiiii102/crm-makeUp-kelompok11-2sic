@@ -3,7 +3,6 @@ import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import "./Home.css";
 
-
 const Home = () => {
   const navigate = useNavigate();
 
@@ -29,14 +28,15 @@ const Home = () => {
       {/* Navbar */}
       <nav className="navbar">
         <div className="navbar-left">
-<img src="/image/logo.png" alt="Logo" className="logo" />
+          <img src="/image/logo.png" alt="Logo" className="logo" />
           <div className="shop-name">Istana Cosmetic</div>
         </div>
         <div className="navbar-center">
           <a href="#home">Home</a>
-          <a href="#produk">Product</a>
-          <a href="#artikel">Article</a>
-          <a href="#kontak">Contact</a>
+          <a href="#about">About Us</a>
+          <a href="#produk">Produk</a>
+          <a href="#artikel">Artikel</a>
+          <a href="#kontak">Kontak</a>
         </div>
         <div className="navbar-right">
           <Link to="/login" className="button-primary">
