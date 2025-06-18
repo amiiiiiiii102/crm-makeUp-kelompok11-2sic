@@ -9,18 +9,12 @@ const Login = () => {
   const [errorMessage, setErrorMessage] = useState('');
 
   const [showPassword, setShowPassword] = useState(false);
-  const [formData, setFormData] = useState({
-    email: '',
-    password: ''
-  });
+  const [formData, setFormData] = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleLogin = (e) => {
@@ -72,7 +66,6 @@ const Login = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-100 flex items-center justify-center p-4">
-      {/* Background decorative elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-10 left-10 w-20 h-20 bg-pink-200 rounded-full opacity-20 animate-pulse"></div>
         <div className="absolute top-32 right-20 w-16 h-16 bg-purple-300 rounded-full opacity-20 animate-pulse delay-1000"></div>
@@ -81,9 +74,7 @@ const Login = () => {
       </div>
 
       <div className="w-full max-w-md relative">
-        {/* Login Card */}
         <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-2xl border border-white/20 p-8 relative overflow-hidden">
-          {/* Decorative gradient overlay */}
           <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400"></div>
 
           {/* Header */}
@@ -99,9 +90,7 @@ const Login = () => {
             <p className="text-gray-600">Masuk ke akun Anda</p>
           </div>
 
-          {/* Login Form */}
           <div className="space-y-6">
-            {/* Email Input */}
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                 <Mail className="h-5 w-5 text-gray-900" />
@@ -117,7 +106,6 @@ const Login = () => {
               />
             </div>
 
-            {/* Password Input */}
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                 <Lock className="h-5 w-5 text-gray-900" />
@@ -144,7 +132,6 @@ const Login = () => {
               </button>
             </div>
 
-            {/* Forgot Password */}
             <div className="text-right">
               <a href="#" className="text-sm text-purple-600 hover:text-purple-800 transition-colors">
                 Lupa password?
@@ -172,7 +159,6 @@ const Login = () => {
             </button>
           </div>
 
-          {/* Divider */}
           <div className="flex items-center my-6">
             <div className="flex-1 border-t border-gray-200"></div>
             <span className="px-4 text-sm text-gray-500 bg-white">atau</span>
@@ -181,18 +167,16 @@ const Login = () => {
 
           {/* Google Login Button */}
 
-          {/* Sign Up Link */}
           <div className="text-center mt-6">
             <p className="text-gray-600">
               Belum punya akun?{' '}
-              <a href='Register' className="text-purple-600 hover:text-purple-800 font-semibold transition-colors">
+              <a href="/register" className="text-purple-600 hover:text-purple-800 font-semibold transition-colors">
                 Daftar sekarang
               </a>
             </p>
           </div>
         </div>
 
-        {/* Footer */}
         <div className="text-center mt-6 text-sm text-gray-500">
           <p>© 2025 Istana Cosmetic. Semua hak dilindungi.</p>
         </div>

@@ -1,11 +1,12 @@
-import { Routes, Route } from "react-router-dom";
-import Home from "./components/Home"; // <-- ini Home yang di luar MainLayout
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Home from "./components/Home"; // Halaman utama tanpa layout
 import MainLayout from "./components/MainLayout";
 import Dashboard from "./pages/Dashboard";
 import Pelanggan from "./pages/pelanggan/Pelanggan";
 import ProductManagement from "./pages/ProductManagement";
 import SalesManagement from "./pages/SalesManagement";
 import ProductForm from "./pages/ProductForm";
+import Pemesanan from "./pages/Pemesanan";
 import ChatPelanggan from "./pages/ChatPelanggan";
 import FAQ from "./pages/FAQ";
 import Login from "./pages/auth/Login";
@@ -15,6 +16,8 @@ import EditPelanggan from "./pages/pelanggan/EditPelanggan";
 import ProtectedRoute from "./route/ProtectedRoute";
 import PublicRoute from "./route/PublicRoute";
 import NotFound from "./pages/NotFound"; 
+import Artikel from "./pages/Artikel";
+
 
 function App() {
   return (
@@ -51,8 +54,10 @@ function App() {
     <Route path="/ProductForm" element={<ProductForm />} />
     <Route path="/ChatPelanggan" element={<ChatPelanggan />} />
     <Route path="/FAQ" element={<FAQ />} />
+    <Route path="/artikel" element={<Artikel />} />
   </Route>
 </Routes>
+
   );
 }
 
