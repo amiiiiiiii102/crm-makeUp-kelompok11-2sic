@@ -8,51 +8,36 @@ import SalesManagement from "./pages/SalesManagement";
 import ProductForm from "./pages/ProductForm";
 import ChatPelanggan from "./pages/ChatPelanggan";
 import FAQ from "./pages/FAQ";
-import Login from "./pages/auth/Login";
-import Register from "./pages/auth/Register";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 import TambahPelanggan from "./pages/pelanggan/TambahPelanggan";
 import EditPelanggan from "./pages/pelanggan/EditPelanggan";
-import ProtectedRoute from "./route/ProtectedRoute";
-import PublicRoute from "./route/PublicRoute";
-import NotFound from "./pages/NotFound"; 
 
 function App() {
   return (
-  <Routes>
-  {/* Route yang bisa diakses tanpa login */}
-  <Route path="/" element={<Home />} />
-  <Route path="*" element={<NotFound />} />
-  
-  {/* Route login/register - tidak bisa diakses jika sudah login */}
-  <Route path="/login" element={
-    <PublicRoute>
-      <Login />
-    </PublicRoute>
-  } />
-  
-  <Route path="/register" element={
-    <PublicRoute>
-      <Register />
-    </PublicRoute>
-  } />
+    <Routes>
+      {/* Home route di luar MainLayout */}
+      <Route path="/" element={<Home />} />
 
-  {/* Route yang butuh login */}
-  <Route element={
-    <ProtectedRoute>
-      <MainLayout />
-    </ProtectedRoute>
-  }>
-    <Route path="/dashboard" element={<Dashboard />} />
-    <Route path="/pelanggan" element={<Pelanggan />} />
-    <Route path="/editpelanggan/:pelanggan_id" element={<EditPelanggan />} />
-    <Route path="/tambahpelanggan" element={<TambahPelanggan />} />
-    <Route path="/produk" element={<ProductManagement />} />
-    <Route path="/penjualan" element={<SalesManagement />} />
-    <Route path="/ProductForm" element={<ProductForm />} />
-    <Route path="/ChatPelanggan" element={<ChatPelanggan />} />
-    <Route path="/FAQ" element={<FAQ />} />
-  </Route>
-</Routes>
+      {/* Semua route lain menggunakan MainLayout */}
+      {/* Route ke halaman Home */}
+      <Route path="/" element={<Home />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+
+      {/* Nested Routes di dalam MainLayout */}
+      <Route element={<MainLayout />}>
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/pelanggan" element={<Pelanggan />} />
+        <Route path="/editpelanggan/:pelanggan_id" element={<EditPelanggan />} />
+        <Route path="/tambahpelanggan" element={<TambahPelanggan />} />
+        <Route path="/produk" element={<ProductManagement />} />
+        <Route path="/penjualan" element={<SalesManagement />} />
+        <Route path="/ProductForm" element={<ProductForm />} />
+        <Route path="/ChatPelanggan" element={<ChatPelanggan />} />
+        <Route path="/FAQ" element={<FAQ />} />
+      </Route>
+    </Routes>
   );
 }
 

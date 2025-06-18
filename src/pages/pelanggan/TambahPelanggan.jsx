@@ -21,7 +21,7 @@ const TambahPelanggan = () => {
   const [errorNama, setErrorNama] = useState("");
   const [errorEmail, setErrorEmail] = useState("");
   const [errorAlamat, setErrorAlamat] = useState("");
-
+  
   // Generate default profile image with initials
   const generateDefaultImage = (name) => {
     const initials = name
@@ -30,7 +30,7 @@ const TambahPelanggan = () => {
       .join('')
       .toUpperCase()
       .slice(0, 2);
-
+    
     const colors = [
       { bg: '#4F46E5', text: 'white' }, // Indigo
       { bg: '#7C3AED', text: 'white' }, // Violet  
@@ -39,10 +39,10 @@ const TambahPelanggan = () => {
       { bg: '#D97706', text: 'white' }, // Amber
       { bg: '#DB2777', text: 'white' }, // Pink
     ];
-
+    
     const colorIndex = name.length % colors.length;
     const color = colors[colorIndex];
-
+    
     return `data:image/svg+xml,%3csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100' height='100' fill='${encodeURIComponent(color.bg)}'/%3e%3ctext x='50' y='50' font-family='Arial, sans-serif' font-size='36' font-weight='bold' text-anchor='middle' dy='0.35em' fill='${color.text}'%3e${initials}%3c/text%3e%3c/svg%3e`;
   };
   const [kategori, setKategori] = useState('bronze');
@@ -72,54 +72,54 @@ const TambahPelanggan = () => {
     setNoHp(validValue);
   };
 
-  const handleSubmit = () => {
-    const errors = {
-      nama: nama.trim() === "" ? "Kolom ini tidak boleh kosong!" : "",
-      email: email.trim() === "" ? "Kolom ini tidak boleh kosong!" : "",
-      alamat: alamat.trim() === "" ? "Kolom ini tidak boleh kosong!" : "",
-      noHp: noHp.trim() === "" ? "Kolom ini tidak boleh kosong!" :
-        !/\d/.test(noHp) ? "Nomor HP harus mengandung angka!" : ""
-    };
-
-    // Set error state sekaligus
-    setErrorNama(errors.nama);
-    setErrorEmail(errors.email);
-    setErrorAlamat(errors.alamat);
-    setErrorNoHp(errors.noHp);
-
-    // Jika ada error, hentikan
-    if (Object.values(errors).some(err => err)) {
-      return;
-    }
-
-    const pelangganBaru = {
-      pelanggan_id: Date.now().toString() + Math.random().toString(36).substring(2, 6),
-      nama,
-      email,
-      alamat,
-      noHp,
-      kategori,
-      tanggalBergabung,
-      fotoProfil: fotoProfil || generateDefaultImage(nama),
-      totalPesanan,
-      totalBelanja,
-    };
-
-    setPelanggan([...pelanggan, pelangganBaru]);
-
-    // Reset form
-    setNama('');
-    setEmail('');
-    setAlamat('');
-    setNoHp('');
-    setFotoProfil(null);
-    setKategori('bronze');
-    setTanggalBergabung(new Date().toISOString().substring(0, 10));
-    setTotalPesanan(0);
-    setTotalBelanja(0);
-    setShowSuccessModal(true);
-    setTimeout(() => setShowSuccessModal(false), 4000);
+const handleSubmit = () => {
+  const errors = {
+    nama: nama.trim() === "" ? "Kolom ini tidak boleh kosong!" : "",
+    email: email.trim() === "" ? "Kolom ini tidak boleh kosong!" : "",
+    alamat: alamat.trim() === "" ? "Kolom ini tidak boleh kosong!" : "",
+    noHp: noHp.trim() === "" ? "Kolom ini tidak boleh kosong!" :
+          !/\d/.test(noHp) ? "Nomor HP harus mengandung angka!" : ""
   };
+
+  // Set error state sekaligus
+  setErrorNama(errors.nama);
+  setErrorEmail(errors.email);
+  setErrorAlamat(errors.alamat);
+  setErrorNoHp(errors.noHp);
+
+  // Jika ada error, hentikan
+  if (Object.values(errors).some(err => err)) {
+    return;
+  }
+
+  const pelangganBaru = {
+    pelanggan_id: Date.now().toString() + Math.random().toString(36).substring(2, 6),
+    nama,
+    email,
+    alamat,
+    noHp,
+    kategori,
+    tanggalBergabung,
+    fotoProfil: fotoProfil || generateDefaultImage(nama),
+    totalPesanan,
+    totalBelanja,
+  };
+
+  setPelanggan([...pelanggan, pelangganBaru]);
+
+  // Reset form
+  setNama('');
+  setEmail('');
+  setAlamat('');
+  setNoHp('');
+  setFotoProfil(null);
+  setKategori('bronze');
+  setTanggalBergabung(new Date().toISOString().substring(0, 10));
+  setTotalPesanan(0);
+  setTotalBelanja(0);
+  setShowSuccessModal(true);
+  setTimeout(() => setShowSuccessModal(false), 4000);
+};
 
 
   return (
@@ -229,14 +229,15 @@ const TambahPelanggan = () => {
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   <User className="w-4 h-4 inline mr-2" />
-                  Nama Lengkap
+                  Nama Lengkap 
                 </label>
                 <input
                   type="text"
                   value={nama}
                   onChange={(e) => setNama(e.target.value)}
-                  className={`w-full border rounded px-3 py-2 focus:outline-none ${errorNama ? "border-red-500" : "border-gray-300"
-                    }`}
+                   className={`w-full border rounded px-3 py-2 focus:outline-none ${
+      errorNama ? "border-red-500" : "border-gray-300"
+    }`}
                   placeholder="Nama pelanggan"
                 />
                 {errorNama && <p className="text-red-500 text-sm mt-1">{errorNama}</p>}
@@ -245,49 +246,52 @@ const TambahPelanggan = () => {
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   <Mail className="w-4 h-4 inline mr-2" />
-                  Email
+                  Email 
                 </label>
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className={`w-full border rounded px-3 py-2 focus:outline-none ${errorEmail ? "border-red-500" : "border-gray-300"
-                    }`}
+                  className={`w-full border rounded px-3 py-2 focus:outline-none ${
+      errorEmail ? "border-red-500" : "border-gray-300"
+    }`}
                   placeholder="Email pelanggan"
                 />
-                {errorEmail && <p className="text-red-500 text-sm mt-1">{errorEmail}</p>}
+                 {errorEmail && <p className="text-red-500 text-sm mt-1">{errorEmail}</p>}
               </div>
 
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   <MapPin className="w-4 h-4 inline mr-2" />
-                  Alamat
+                  Alamat 
                 </label>
                 <textarea
                   value={alamat}
                   onChange={(e) => setAlamat(e.target.value)}
                   rows={3}
-                  className={`w-full border rounded px-3 py-2 focus:outline-none ${errorAlamat ? "border-red-500" : "border-gray-300"
-                    }`}
+                  className={`w-full border rounded px-3 py-2 focus:outline-none ${
+      errorAlamat ? "border-red-500" : "border-gray-300"
+    }`}
                   placeholder="Alamat lengkap"
                 />
-                {errorAlamat && <p className="text-red-500 text-sm mt-1">{errorAlamat}</p>}
+                 {errorAlamat && <p className="text-red-500 text-sm mt-1">{errorAlamat}</p>}
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   <Phone className="w-4 h-4 inline mr-2" />
-                  Nomor HP
+                  Nomor HP 
                 </label>
                 <input
                   type="tel"
                   value={noHp}
                   onChange={handleNoHpChange}
-                  className={`w-full border rounded px-3 py-2 focus:outline-none ${errorNoHp ? "border-red-500" : "border-gray-300"
-                    }`}
+                 className={`w-full border rounded px-3 py-2 focus:outline-none ${
+      errorNoHp ? "border-red-500" : "border-gray-300"
+    }`}
 
                   placeholder="Contoh: 08123456789"
-
+                    
                 />
                 {errorNoHp && <p className="text-red-500 text-sm mt-1">{errorNoHp}</p>}
                 <p className="text-xs text-gray-500 mt-1">
@@ -298,7 +302,7 @@ const TambahPelanggan = () => {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   <Calendar className="w-4 h-4 inline mr-2" />
-                  Tanggal Bergabung
+                  Tanggal Bergabung 
                 </label>
                 <input
                   type="date"
@@ -311,7 +315,7 @@ const TambahPelanggan = () => {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   <Star className="w-4 h-4 inline mr-2" />
-                  Kategori
+                  Kategori 
                 </label>
                 <select
                   value={kategori}
@@ -359,23 +363,23 @@ const TambahPelanggan = () => {
             </div>
 
             <div className="flex justify-end space-x-3 mt-8">
-              <button
-                type="button"
-                onClick={() => navigate('/pelanggan')}
-                className="cursor-pointer flex items-center gap-2 px-4 py-2 bg-white text-black border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors duration-200"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                <span>Kembali</span>
-              </button>
+             <button
+  type="button"
+  onClick={() => navigate('/pelanggan')}
+  className="cursor-pointer flex items-center gap-2 px-4 py-2 bg-white text-black border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors duration-200"
+>
+  <ArrowLeft className="w-4 h-4" />
+  <span>Kembali</span>
+</button>
 
-              <button
-                type="button"
-                onClick={handleSubmit}
-                className="cursor-pointer px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 flex items-center space-x-2"
-              >
-                <User className="w-4 h-4" />
-                <span>Tambah Pelanggan</span>
-              </button>
+             <button
+              type="button"
+              onClick={handleSubmit}
+              className="cursor-pointer px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 flex items-center space-x-2"
+            >
+              <User className="w-4 h-4" />
+              <span>Tambah Pelanggan</span>
+            </button>
 
             </div>
           </div>

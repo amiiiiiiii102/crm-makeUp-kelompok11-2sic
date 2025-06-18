@@ -34,7 +34,7 @@ const EditPelanggan = () => {
       setTanggalBergabung(data.tanggalBergabung);
       setTotalPesanan(data.totalPesanan);
       setTotalBelanja(data.totalBelanja);
-
+      
     }
   }, [pelanggan_id, pelanggan]);
 
@@ -66,9 +66,9 @@ const EditPelanggan = () => {
 
       editPelanggan(pelanggan_id, updatedData);
       setShowSuccessModal(true);
-      setTimeout(() => {
-        setShowSuccessModal(false);
-      }, 4000); // tampil 2 detik, lalu pindah halaman
+setTimeout(() => {
+  setShowSuccessModal(false);
+}, 4000); // tampil 2 detik, lalu pindah halaman
 
     } else {
       alert("Harap lengkapi semua field terlebih dahulu!");
@@ -77,7 +77,7 @@ const EditPelanggan = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <style jsx>{`
+  <style jsx>{`
         @keyframes scale-in {
           from {
             transform: scale(0.8);

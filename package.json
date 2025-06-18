@@ -10,7 +10,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "bcryptjs": "^3.0.2",
     "chart.js": "^4.4.9",
     "firebase": "^11.9.1",
     "framer-motion": "^12.17.3",
