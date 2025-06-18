@@ -1,9 +1,15 @@
 :root {
-  --istana-primary: #b32a00;
-  --istana-secondary: #ffebe6;
-  --istana-dark: #801f00;
-  --istana-text: #333;
-  --istana-white: #fff;
+  --istana-primary: #f37021;
+  --istana-secondary: #fff3ec;
+  --istana-dark: #2c2c2c;
+  --istana-accent: #ff8c42;
+  --istana-hover: #d65700;
+  --istana-text: #333333;
+  --istana-white: #ffffff;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
@@ -11,7 +17,6 @@ body {
   font-family: 'Segoe UI', sans-serif;
   background-color: var(--istana-secondary);
   color: var(--istana-text);
-  scroll-behavior: smooth;
 }
 
 a {
@@ -26,21 +31,35 @@ a {
   align-items: center;
   background-color: var(--istana-white);
   padding: 15px 40px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   position: sticky;
   top: 0;
   z-index: 100;
 }
 
-.navbar-left {
+.navbar-left, .navbar-right {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.navbar-left a, .navbar-right a {
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.navbar-left a:hover, .navbar-right a:hover {
+  color: var(--istana-hover);
+}
+
+.navbar-center {
   display: flex;
   align-items: center;
+  gap: 10px;
 }
 
 .logo {
   width: 40px;
   height: 40px;
-  margin-right: 12px;
 }
 
 .shop-name {
@@ -49,33 +68,29 @@ a {
   color: var(--istana-primary);
 }
 
-.navbar-center a {
-  margin: 0 14px;
-  font-weight: 500;
-  transition: color 0.3s;
-}
-
-.navbar-center a:hover {
-  color: var(--istana-primary);
+.active-nav {
+  border-bottom: 2px solid var(--istana-primary);
+  color: var(--istana-primary) !important;
 }
 
 .btn-login {
-  background-color: var(--istana-primary);
+  background-color: var(--istana-accent);
   color: var(--istana-white);
   border: none;
   padding: 8px 16px;
   border-radius: 20px;
-  cursor: pointer;
   font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 .btn-login:hover {
-  background-color: #000000;
+  background-color: var(--istana-hover);
 }
 
 /* Hero Section */
 .hero-section {
-  background-image: url("/image/bg.jpg");
+  background-image: url("/images/bg.jpg");
   background-size: cover;
   background-position: center;
   height: 90vh;
@@ -84,7 +99,6 @@ a {
   justify-content: center;
   text-align: center;
   color: var(--istana-white);
-  padding: 0 20px;
 }
 
 .hero-content h1 {
@@ -99,28 +113,26 @@ a {
 
 .btn-jelajahi {
   background-color: var(--istana-primary);
-  padding: 10px 20px;
   color: var(--istana-white);
+  padding: 10px 24px;
   border-radius: 30px;
   font-weight: bold;
   transition: 0.3s;
+  border: none;
+  cursor: pointer;
 }
 
 .btn-jelajahi:hover {
-  background-color: #000000;
+  background-color: var(--istana-hover);
 }
 
-/* Section spacing & animation */
-.animated-section {
-  opacity: 0;
-  transform: translateY(40px);
-  transition: all 0.6s ease-out;
+/* Section umum */
+section {
+  min-height: 100vh;
   padding: 60px 20px;
-}
-
-.animated-section.show {
-  opacity: 1;
-  transform: translateY(0);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 section h2 {
@@ -130,17 +142,14 @@ section h2 {
   margin-bottom: 20px;
 }
 
-
-
-/* Produk Section */
-.produk-section {
-  background-color: var(--istana-secondary);
+/* PRODUK */
+#produk {
+  background-color: var(--istana-white);
 }
 
 .produk-desc {
   text-align: center;
   margin-bottom: 30px;
-  font-size: 16px;
 }
 
 .produk-cards {
@@ -159,52 +168,55 @@ section h2 {
   box-shadow: 0 4px 8px rgba(0,0,0,0.08);
   text-align: center;
   width: 250px;
+  transition: transform 0.3s ease;
+}
+
+.produk-card:hover {
+  transform: translateY(-4px);
 }
 
 .produk-card img {
   width: 60px;
-  margin-bottom: 15px;
+  margin: 0 auto 15px auto; /* atas kanan bawah kiri */
+  display: block; /* pastikan gambar dianggap sebagai blok agar margin auto bekerja */
 }
 
 .produk-buttons {
   display: flex;
   gap: 10px;
   justify-content: center;
-  flex-wrap: wrap;
   margin-top: 10px;
 }
 
-.btn-keranjang,
-.btn-beli {
-  padding: 8px 12px;
-  font-size: 14px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
 .btn-keranjang {
-  background-color: var(--istana-primary, #d95d39);
+  background-color: var(--istana-primary);
   color: white;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
 }
 
 .btn-keranjang:hover {
-  background-color: #c2492d;
+  background-color: var(--istana-hover);
 }
 
 .btn-beli {
   background-color: #f1c40f;
   color: black;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
 }
 
 .btn-beli:hover {
   background-color: #d4ac0d;
 }
 
-/* Artikel Section */
-.artikel-section {
-  background-color: var(--istana-white);
+/* ARTIKEL */
+#artikel {
+  background-color: var(--istana-secondary);
 }
 
 .artikel-cards {
@@ -217,11 +229,16 @@ section h2 {
 }
 
 .artikel-card {
-  background-color: var(--istana-secondary);
+  background-color: var(--istana-white);
   border-radius: 10px;
   padding: 20px;
   width: 350px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  transition: transform 0.3s ease;
+}
+
+.artikel-card:hover {
+  transform: translateY(-3px);
 }
 
 .artikel-card h3 {
@@ -229,40 +246,170 @@ section h2 {
   color: var(--istana-primary);
 }
 
-
-
-/* Contact Section */
 .contact-section {
-  background-color: var(--istana-secondary);
+  padding: 60px 20px;
+  background-color: var(--istana-white);
   text-align: center;
-  padding: 40px 20px;
 }
 
-/* Tombol WhatsApp dibikin bulat lonjong & warna merah bata */
-.btn-whatsapp {
-  display: inline-block;
-  margin-top: 20px;
-  background-color: #a52a00; /* merah bata */
+.contact-section h3 {
+  font-size: 28px;
+  color: var(--istana-primary);
+  margin-bottom: 30px;
+}
+
+.contact-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 60px;
+  max-width: 1000px;
+  margin: 0 auto;
+  align-items: flex-start;
+}
+
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  width: 300px;
+  gap: 15px;
+}
+
+.contact-form input,
+.contact-form textarea {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 16px;
+  background-color: #fff;
+  color: #333;
+}
+
+.contact-form button {
+  background-color: var(--istana-primary);
   color: white;
-  padding: 10px 28px;
-  border-radius: 999px; /* lonjong */
-  font-size: 14px;
-  font-weight: 500;
-  text-decoration: none;
   border: none;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  padding: 10px;
+  border-radius: 8px;
   cursor: pointer;
+  font-size: 15px;
+  transition: background-color 0.3s ease;
+  font-weight: 500;
 }
 
-/* Efek saat hover */
-.btn-whatsapp:hover {
-  background-color: #831f00; /* lebih gelap saat hover */
-  transform: scale(1.03);
+.contact-form button:hover {
+  background-color: var(--istana-hover);
+}
+
+.contact-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  max-width: 150px;
+}
+
+.contact-info p {
+  font-size: 16px;
+  color: #444;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.contact-icons {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+}
+
+.contact-icons a img {
+  width: 36px;
+  height: 36px;
+  transition: transform 0.3s ease;
+}
+
+.contact-icons a:hover img {
+  transform: scale(1.1);
 }
 
 
+/* TESTIMONI */
+#testimoni {
+  background-color: var(--istana-white);
+  padding: 60px 20px;
+  text-align: center;
+}
 
-/* Footer */
+.testimoni-cards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 25px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.testimoni-card {
+  background-color: var(--istana-white); /* diubah dari secondary ke white */
+  border-left: 6px solid var(--istana-primary);
+  padding: 20px;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 300px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.06);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  text-align: left;
+}
+
+.testimoni-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+}
+
+.testimoni-card img.testimoni-foto {
+  width: 60px;
+  margin: 0 auto 15px auto; /* atas kanan bawah kiri */
+  display: block; /* pastikan gambar dianggap sebagai blok agar margin auto bekerja */
+}
+
+.testimoni-header {
+  font-weight: bold;
+  color: var(--istana-primary);
+  margin-bottom: 10px;
+}
+
+.testimoni-pesan {
+  font-style: italic;
+  color: var(--istana-text);
+  line-height: 1.5;
+}
+
+.testimoni-rating {
+  color: gold;
+  margin-top: 5px;
+}
+
+.btn-jelajahi {
+  background-color: var(--istana-primary);
+  color: white;
+  padding: 6px 14px;           /* DIPERKECIL */
+  font-size: 14px;             /* DIPERKECIL */
+  border: none;
+  border-radius: 8px;          /* Diperhalus */
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-weight: 500;
+  max-width: fit-content;
+  margin: 20px auto 0;
+  display: block;
+}
+
+.btn-jelajahi:hover {
+  background-color: var(--istana-hover);
+}
+
+
 .footer {
   background-color: var(--istana-dark);
   color: var(--istana-white);
