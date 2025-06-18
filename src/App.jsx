@@ -12,19 +12,45 @@ import Pemesanan from "./pages/Pemesanan";
 import ChatPelanggan from "./pages/ChatPelanggan";
 import FAQ from "./pages/FAQ";
 import Artikel from "./pages/Artikel";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
+import Login from "./pages/auth/Login";
+import Register from "./pages/auth/Register";
+import ProtectedRoute from "./route/ProtectedRoute";
+import PublicRoute from "./route/PublicRoute";
+import NotFound from "./pages/NotFound";
 
 function App() {
   return (
     <Routes>
-      {/* Halaman publik (tanpa layout) */}
+      {/* Halaman publik */}
       <Route path="/" element={<Home />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
+      <Route path="*" element={<NotFound />} />
 
-      {/* Halaman dengan layout dashboard */}
-      <Route element={<MainLayout />}>
+      {/* Halaman login dan register (dibungkus PublicRoute) */}
+      <Route
+        path="/login"
+        element={
+          <PublicRoute>
+            <Login />
+          </PublicRoute>
+        }
+      />
+      <Route
+        path="/register"
+        element={
+          <PublicRoute>
+            <Register />
+          </PublicRoute>
+        }
+      />
+
+      {/* Halaman dashboard dan fitur lainnya (dibungkus ProtectedRoute + MainLayout) */}
+      <Route
+        element={
+          <ProtectedRoute>
+            <MainLayout />
+          </ProtectedRoute>
+        }
+      >
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/pelanggan" element={<Pelanggan />} />
         <Route path="/tambahpelanggan" element={<TambahPelanggan />} />
