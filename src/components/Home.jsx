@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import "./Home.css";
 import logo from "../assets/images/logo.png";
-import Login from "../pages/Login"
+import Login from "../pages/auth/Login"
 
 export default function Home() {
   const navigate = useNavigate();
