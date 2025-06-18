@@ -4,15 +4,15 @@ import { PelangganContext } from '../pelanggan/PelangganContext';
 import { Link } from "react-router-dom";
 
 
-import { 
-  Search, 
-  Filter, 
-  Download, 
-  Plus, 
-  Edit, 
-  Trash2, 
-  Eye, 
-  Mail, 
+import {
+  Search,
+  Filter,
+  Download,
+  Plus,
+  Edit,
+  Trash2,
+  Eye,
+  Mail,
   Phone,
   MapPin,
   Calendar,
@@ -30,13 +30,12 @@ import {
 
 const Pelanggan = () => {
   const { pelanggan, hapusPelanggan, editPelanggan } = useContext(PelangganContext);
-  
-const navigate = useNavigate();
+
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortConfig, setSortConfig] = useState({ key: 'nama' , direction: 'asc' });
+  const [sortConfig, setSortConfig] = useState({ key: 'nama', direction: 'asc' });
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [selectedpelanggan, setSelectedpelanggan] = useState([]);
   const [statusFilter, setStatusFilter] = useState('all');
   const [tierFilter, setTierFilter] = useState('all');
 
@@ -45,11 +44,11 @@ const navigate = useNavigate();
   const filteredAndSortedpelanggan = useMemo(() => {
     let filtered = pelanggan.filter(pelanggan => {
       const matchesSearch = pelanggan.nama.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           pelanggan.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           pelanggan.noHp.includes(searchTerm);
-      
+        pelanggan.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        pelanggan.noHp.includes(searchTerm);
+
       const matchesTier = tierFilter === 'all' || pelanggan.kategori === tierFilter;
-      
+
       return matchesSearch && matchesTier;
     });
 
@@ -57,12 +56,12 @@ const navigate = useNavigate();
       filtered.sort((a, b) => {
         let aValue = a[sortConfig.key];
         let bValue = b[sortConfig.key];
-        
+
         if (typeof aValue === 'string') {
           aValue = aValue.toLowerCase();
           bValue = bValue.toLowerCase();
         }
-        
+
         if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
         if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
         return 0;
@@ -85,21 +84,7 @@ const navigate = useNavigate();
     });
   };
 
-  const handleSelectpelanggan = (pelanggan_id) => {
-    setSelectedpelanggan(prev => 
-      prev.includes(pelanggan_id) 
-        ? prev.filter(id => id !== pelanggan_id)
-        : [...prev, pelanggan_id]
-    );
-  };
 
-  const handleSelectAll = () => {
-    setSelectedpelanggan(
-      selectedpelanggan.length === currentpelanggan.length 
-        ? [] 
-        : currentpelanggan.map(pelanggan => pelanggan.pelanggan_id)
-    );
-  };
 
   const getTierColor = (tier) => {
     switch (tier) {
@@ -110,11 +95,6 @@ const navigate = useNavigate();
     }
   };
 
-  const getStatusColor = (status) => {
-    return status === 'active' 
-      ? 'bg-green-100 text-green-800' 
-      : 'bg-red-100 text-red-800';
-  };
 
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('id-ID', {
@@ -147,9 +127,9 @@ const navigate = useNavigate();
 
               <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
                 <Plus className="w-4 h-4" />
-               <Link to="/tambahpelanggan" className="text-white">
-                Tambah Pelanggan
-              </Link>
+                <Link to="/tambahpelanggan" className="text-white">
+                  Tambah Pelanggan
+                </Link>
               </button>
             </div>
           </div>
@@ -167,7 +147,7 @@ const navigate = useNavigate();
                 </div>
               </div>
             </div>
-           
+
             <div className="bg-white p-4 rounded-lg shadow-sm">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-purple-100 rounded-lg">
@@ -193,9 +173,9 @@ const navigate = useNavigate();
                   </p>
                 </div>
               </div>
-             </div>
-       </div>
-         
+            </div>
+          </div>
+
 
           {/* Filters and Search */}
           <div className="bg-white p-4 rounded-lg shadow-sm mb-6">
@@ -210,9 +190,9 @@ const navigate = useNavigate();
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
-              
+
               <div className="flex gap-3">
-              
+
                 <select
                   value={tierFilter}
                   onChange={(e) => setTierFilter(e.target.value)}
@@ -229,7 +209,7 @@ const navigate = useNavigate();
           </div>
 
         </div>
-        
+
 
         {/* Table */}
         <div className="bg-white rounded-lg shadow-sm overflow-hidden">
@@ -237,8 +217,8 @@ const navigate = useNavigate();
             <table className="w-full">
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
-  
-                  <th 
+
+                  <th
                     className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                     onClick={() => handleSort('nama')}
                   >
@@ -249,7 +229,7 @@ const navigate = useNavigate();
                       )}
                     </div>
                   </th>
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                     onClick={() => handleSort('tanggalBergabung')}
                   >
@@ -260,7 +240,7 @@ const navigate = useNavigate();
                       )}
                     </div>
                   </th>
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                     onClick={() => handleSort('totalPesanan')}
                   >
@@ -271,7 +251,7 @@ const navigate = useNavigate();
                       )}
                     </div>
                   </th>
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                     onClick={() => handleSort('totalBelanja')}
                   >
@@ -293,7 +273,7 @@ const navigate = useNavigate();
               <tbody className="bg-white divide-y divide-gray-200">
                 {currentpelanggan.map((pelanggan) => (
                   <tr key={pelanggan.pelanggan_id} className="hover:bg-gray-50">
-  
+
                     <td className="px-4 py-4">
                       <div className="flex items-center gap-3">
                         <img
@@ -330,7 +310,7 @@ const navigate = useNavigate();
                         <Calendar className="w-4 h-4 text-gray-400" />
                         {formatDate(pelanggan.tanggalBergabung)}
                       </div>
-                     
+
                     </td>
                     <td className="px-4 py-4">
                       <p className="text-sm font-medium text-gray-900">{pelanggan.totalPesanan}</p>
@@ -342,33 +322,33 @@ const navigate = useNavigate();
                     </td>
                     <td className="px-4 py-4">
                       <div className="flex flex-col gap-1">
-                      
-                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getTierColor(pelanggan.tier)}`}>
+
+                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getTierColor(pelanggan.kategori)}`}>
                           {pelanggan.kategori.charAt(0).toUpperCase() + pelanggan.kategori.slice(1)}
                         </span>
                       </div>
                     </td>
                     <td className="px-4 py-4">
                       <div className="flex items-center gap-2">
-                    
-                       <button
-                                className="cursor-pointer p-1 text-gray-400 hover:text-green-600"
-                        onClick={() => navigate(`/editpelanggan/${pelanggan.pelanggan_id}`)}
-                      >
-                        <Edit className="w-4 h-4" />
-                      </button>
+
+                        <button
+                          className="cursor-pointer p-1 text-gray-400 hover:text-green-600"
+                          onClick={() => navigate(`/editpelanggan/${pelanggan.pelanggan_id}`)}
+                        >
+                          <Edit className="w-4 h-4" />
+                        </button>
                         <button className="cursor-pointer p-1 text-gray-400 hover:text-red-600"
-                        onClick={() => hapusPelanggan(pelanggan.pelanggan_id)}>
+                          onClick={() => hapusPelanggan(pelanggan.pelanggan_id)}>
                           <Trash2 className="w-4 h-4" />
                         </button>
-                       
+
                       </div>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
-            
+
           </div>
 
           {/* Pagination */}
@@ -390,7 +370,7 @@ const navigate = useNavigate();
                 <option value={50}>50 per halaman</option>
               </select>
             </div>
-            
+
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
@@ -399,11 +379,11 @@ const navigate = useNavigate();
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
-              
+
               <span className="px-3 py-1 text-sm">
                 Halaman {currentPage} dari {totalPages}
               </span>
-              
+
               <button
                 onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                 disabled={currentPage === totalPages}
@@ -416,7 +396,7 @@ const navigate = useNavigate();
         </div>
       </div>
     </div>
-    
+
   );
 };
 
