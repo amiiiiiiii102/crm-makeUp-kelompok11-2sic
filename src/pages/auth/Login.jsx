@@ -20,20 +20,15 @@ const Login = () => {
   const handleLogin = (e) => {
     e.preventDefault();
 
-    // Clear previous error messages
     setErrorMessage('');
-
-    // Set loading state
     setLoading(true);
 
-    // Validasi form
     if (!formData.email || !formData.password) {
       setErrorMessage('Mohon isi semua field');
       setLoading(false);
       return;
     }
 
-    // Validasi email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
       setErrorMessage('Format email tidak valid');
@@ -41,23 +36,17 @@ const Login = () => {
       return;
     }
 
-    // Simulasi delay untuk UX yang baik
     setTimeout(() => {
-      // ✅ GUNAKAN FUNCTION LOGIN DARI AUTHCONTEXT
-      const result = login(formData.email, formData.password);
+      // ✅ Gunakan login dari AuthContext, termasuk untuk admin
+      const result = login(formData.email.trim().toLowerCase(), formData.password);
 
       if (result.success) {
-        // Reset form
-        setFormData({
-          email: '',
-          password: ''
-        });
-
-        // Redirect ke dashboard
-        navigate('/dashboard');
-      } else {
-        // Tampilkan error dari AuthContext
-        setErrorMessage(result.message);
+        setFormData({ email: '', password: '' });
+        if (result.user?.role === 'pelanggan') {
+          navigate('/produk');
+        } else {
+          navigate('/dashboard');
+        }
       }
 
       setLoading(false);

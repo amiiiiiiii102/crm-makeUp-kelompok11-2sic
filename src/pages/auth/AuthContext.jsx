@@ -1,5 +1,7 @@
 import React, { createContext, useEffect, useState } from 'react';
 import bcrypt from 'bcryptjs';
+import { AkunAdmin } from '../../AkunAdmin';
+
 
 export const AuthContext = createContext();
 
@@ -32,26 +34,27 @@ export const AuthProvider = ({ children }) => {
     try {
       setLoading(true);
 
-      // Validasi email format
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email)) {
         return { success: false, message: 'Format email tidak valid' };
       }
 
-      // Cek email sudah ada
+      // ❌ Cegah register pakai email admin
+      if (email === AkunAdmin.email) {
+        return { success: false, message: 'Email ini tidak diperbolehkan' };
+      }
+
       const existing = users.find(user => user.email === email);
       if (existing) {
         return { success: false, message: 'Email sudah terdaftar' };
       }
 
-      // Hash password
       const hashedPassword = bcrypt.hashSync(password, 10);
-
-      // Buat user baru dengan ID dan timestamp
       const newUser = {
         id: Date.now().toString(),
         email,
         password: hashedPassword,
+        role: 'pelanggan',
         createdAt: new Date().toISOString()
       };
 
@@ -70,30 +73,40 @@ export const AuthProvider = ({ children }) => {
     try {
       setLoading(true);
 
-      // Validasi email format
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email)) {
         return { success: false, message: 'Format email tidak valid' };
       }
 
-      // Cari user berdasarkan email
+      // ✅ Login khusus admin
+      if (
+        email === AkunAdmin.email &&
+        password === AkunAdmin.password
+      ) {
+        const userSession = {
+          email: AkunAdmin.email,
+          role: 'admin',
+          loginAt: new Date().toISOString()
+        };
+        setCurrentUser(userSession);
+        return { success: true, message: 'Login admin berhasil' };
+      }
+
+      // 🔍 Login user biasa
       const user = users.find(user => user.email === email);
       if (!user) {
         return { success: false, message: 'Email tidak ditemukan' };
       }
 
-      // Cek password
       const isPasswordMatch = bcrypt.compareSync(password, user.password);
       if (!isPasswordMatch) {
         return { success: false, message: 'Password salah' };
       }
 
-      // Set user login dengan timestamp
       const userSession = {
         ...user,
         loginAt: new Date().toISOString()
       };
-
       setCurrentUser(userSession);
       return { success: true, message: 'Login berhasil' };
 
@@ -111,7 +124,6 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('authToken');
   };
 
-  // Helper function untuk cek apakah user sudah login
   const isAuthenticated = () => {
     return currentUser !== null;
   };
@@ -130,3 +142,4 @@ export const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   );
 };
+export default AuthProvider;

@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { AuthContext } from './AuthContext';
-import { Eye, EyeOff, Mail, Lock, Star, User, Phone, Check, X } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, Star, User, Phone, Check, X, Shield } from 'lucide-react';
 
 const Register = () => {
   const { register } = useContext(AuthContext);
@@ -16,6 +16,7 @@ const Register = () => {
     //phone: '',
     password: '',
     confirmPassword: '',
+    role: 'pelanggan', // Default role
     agreeTerms: false
   });
 
@@ -57,7 +58,7 @@ const Register = () => {
     setLoading(true);
 
     // Validasi form
-    if (!formData.email || !formData.password || !formData.confirmPassword) {
+    if (!formData.email || !formData.password || !formData.confirmPassword || !formData.role) {
       setErrorMessage('Mohon isi semua field');
       setLoading(false);
       return;
@@ -95,8 +96,8 @@ const Register = () => {
 
     // Simulasi delay untuk UX yang baik
     setTimeout(() => {
-      // ✅ GUNAKAN FUNCTION REGISTER DARI AUTHCONTEXT
-      const result = register(formData.email, formData.password);
+      // ✅ GUNAKAN FUNCTION REGISTER DARI AUTHCONTEXT - Include role in registration
+      const result = register(formData.email, formData.password, formData.role);
 
       if (result.success) {
         setSuccessMessage('Registrasi berhasil!');
@@ -106,6 +107,7 @@ const Register = () => {
           email: '',
           password: '',
           confirmPassword: '',
+          role: 'pelanggan',
           agreeTerms: false
         });
 
@@ -185,6 +187,8 @@ const Register = () => {
 
             {/* Phone Input */}
 
+            {/* Role Selection */}
+       
 
             {/* Password Input */}
             <div className="relative">

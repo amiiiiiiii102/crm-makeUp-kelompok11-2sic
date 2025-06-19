@@ -3,16 +3,16 @@ import { Navigate } from 'react-router-dom';
 import { AuthContext } from '../pages/auth/AuthContext' 
 import { useContext } from 'react';
 
-const ProtectedRoute = ({ children }) => {
+const ProtectedRoute = ({ children, allowedRoles }) => {
   const { currentUser } = useContext(AuthContext);
-  
-  // Jika tidak ada user yang login, redirect ke login
-  if (!currentUser) {
-    return <Navigate to="/login" replace />;
+  if (!currentUser) return <Navigate to="/login" />;
+
+  if (allowedRoles && !allowedRoles.includes(currentUser.role)) {
+    return <Navigate to="/unauthorized" />; // Halaman akses ditolak
   }
-  
-  // Jika sudah login, tampilkan children (MainLayout + halaman)
+
   return children;
 };
+
 
 export default ProtectedRoute;

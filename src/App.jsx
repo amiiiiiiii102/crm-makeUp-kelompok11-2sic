@@ -17,6 +17,7 @@ import Register from "./pages/auth/Register";
 import ProtectedRoute from "./route/ProtectedRoute";
 import PublicRoute from "./route/PublicRoute";
 import NotFound from "./pages/NotFound";
+import UploadData from "./pages/pelanggan/UploadData";
 
 function App() {
   return (
@@ -51,8 +52,16 @@ function App() {
           </ProtectedRoute>
         }
       >
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route
+  path="/dashboard"
+  element={
+    <ProtectedRoute allowedRoles={['admin']}>
+      <Dashboard />
+    </ProtectedRoute>
+  }
+/>
         <Route path="/pelanggan" element={<Pelanggan />} />
+        <Route path="/uploadData" element={<UploadData />} />
         <Route path="/tambahpelanggan" element={<TambahPelanggan />} />
         <Route path="/editpelanggan/:pelanggan_id" element={<EditPelanggan />} />
         <Route path="/produk" element={<ProductManagement />} />
