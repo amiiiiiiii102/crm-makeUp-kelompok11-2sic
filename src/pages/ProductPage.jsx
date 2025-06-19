@@ -1,3 +1,4 @@
+// src/pages/ProductPage.jsx
 import React, { useEffect, useState } from "react";
 import ProductForm from "./ProductForm";
 import ProductManagement from "./ProductManagement";
@@ -13,9 +14,9 @@ function ProductPage() {
   }, []);
 
   const handleAddProduct = (newProduct) => {
-    const updatedProducts = [newProduct, ...products];
-    setProducts(updatedProducts);
-    localStorage.setItem("products", JSON.stringify(updatedProducts));
+    const updated = [newProduct, ...products];
+    setProducts(updated);
+    localStorage.setItem("products", JSON.stringify(updated));
   };
 
   return (

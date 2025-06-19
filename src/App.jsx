@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Home from "./components/Home";
 import MainLayout from "./components/MainLayout";
 import Dashboard from "./pages/Dashboard";
@@ -17,6 +17,9 @@ import Register from "./pages/auth/Register";
 import ProtectedRoute from "./route/ProtectedRoute";
 import PublicRoute from "./route/PublicRoute";
 import NotFound from "./pages/NotFound";
+
+// Import halaman gabungan ProductForm dan ProductManagement
+import ProductPage from "./pages/ProductPage";
 
 function App() {
   return (
@@ -57,7 +60,12 @@ function App() {
         <Route path="/editpelanggan/:pelanggan_id" element={<EditPelanggan />} />
         <Route path="/produk" element={<ProductManagement />} />
         <Route path="/penjualan" element={<SalesManagement />} />
+
+        {/* Gunakan ProductPage (gabungan Form + Management) */}
         <Route path="/productform" element={<ProductForm />} />
+        <Route path="/produk" element={<ProductManagement />} />
+
+
         <Route path="/pemesanan" element={<Pemesanan />} />
         <Route path="/chatpelanggan" element={<ChatPelanggan />} />
         <Route path="/faq" element={<FAQ />} />

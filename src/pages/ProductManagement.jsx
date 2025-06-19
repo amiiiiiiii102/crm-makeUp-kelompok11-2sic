@@ -1,70 +1,24 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { ChevronLeft, ChevronRight, Star } from "lucide-react";
 
-const ProductManagement = () => {
+const ProductManagement = ({ products }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [localProducts, setLocalProducts] = useState([]);
 
-  const products = [
-    {
-      id: 1,
-      name: "Tartan Shirt Icy",
-      price: "Rp 189,000",
-      rating: 4.83,
-      image: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/White_domesticated_duck%2C_stretching.jpg/1200px-White_domesticated_duck%2C_stretching.jpg",
-      status: "In Stock",
-      isNew: true,
-      endsSoon: "Ends in 5 days"
-    },
-    {
-      id: 2,
-      name: "Loose Shirt Denim",
-      price: "Rp 189,000",
-      rating: 5,
-      image: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/White_domesticated_duck%2C_stretching.jpg/1200px-White_domesticated_duck%2C_stretching.jpg",
-      status: "In Stock",
-      isNew: true,
-      endsSoon: "Ends in 5 days"
-    },
-    {
-      id: 3,
-      name: "Tweed Blazer Gla...",
-      price: "Rp 339,000",
-      rating: 4.8,
-      image: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/White_domesticated_duck%2C_stretching.jpg/1200px-White_domesticated_duck%2C_stretching.jpg",
-      status: "In Stock",
-      isNew: true,
-      endsSoon: "Ends in 5 days"
-    },
-    {
-      id: 4,
-      name: "Andante Cardigan...",
-      price: "Rp 259,000",
-      rating: 5,
-      image: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/White_domesticated_duck%2C_stretching.jpg/1200px-White_domesticated_duck%2C_stretching.jpg",
-      status: "In Stock",
-    },
-    {
-      id: 5,
-      name: "Tweed Blazer Ha...",
-      price: "Rp 339,000",
-      rating: 5,
-      image: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/White_domesticated_duck%2C_stretching.jpg/1200px-White_domesticated_duck%2C_stretching.jpg",
-      status: "In Stock",
-      isNew: true,
-    },
-    {
-      id: 6,
-      name: "Basic Shirt Black",
-      price: "Rp 179,000",
-      rating: 4.93,
-      image: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/White_domesticated_duck%2C_stretching.jpg/1200px-White_domesticated_duck%2C_stretching.jpg",
-      status: "Available",
-      isRestocked: true,
+  // Ambil data dari localStorage jika props products tidak tersedia
+  useEffect(() => {
+    if (!products) {
+      const stored = localStorage.getItem("products");
+      if (stored) {
+        setLocalProducts(JSON.parse(stored));
+      }
     }
-  ];
+  }, [products]);
+
+  const displayedProducts = products || localProducts;
 
   const maxVisible = 5;
-  const maxSlide = Math.max(0, products.length - maxVisible);
+  const maxSlide = Math.max(0, displayedProducts.length - maxVisible);
 
   const nextSlide = () => {
     setCurrentSlide((prev) => Math.min(prev + 1, maxSlide));
@@ -75,14 +29,14 @@ const ProductManagement = () => {
   };
 
   const visibleProducts = useMemo(() => {
-    return products.slice(currentSlide, currentSlide + maxVisible);
-  }, [products, currentSlide]);
+    return displayedProducts.slice(currentSlide, currentSlide + maxVisible);
+  }, [displayedProducts, currentSlide]);
 
   const avgRating = useMemo(() => {
-    if (!products.length) return 0;
-    const total = products.reduce((sum, p) => sum + (p.rating || 0), 0);
-    return (total / products.length).toFixed(2);
-  }, [products]);
+    if (!displayedProducts.length) return 0;
+    const total = displayedProducts.reduce((sum, p) => sum + (p.rating || 0), 0);
+    return (total / displayedProducts.length).toFixed(2);
+  }, [displayedProducts]);
 
   return (
     <div className="max-w-7xl mx-auto p-6 bg-gray-50 min-h-screen">
@@ -90,7 +44,7 @@ const ProductManagement = () => {
         <h2 className="text-2xl font-semibold text-gray-800 mb-6">Produk Terlaris</h2>
 
         <div className="relative">
-          {products.length > maxVisible && (
+          {displayedProducts.length > maxVisible && (
             <>
               <button
                 onClick={prevSlide}
@@ -117,7 +71,7 @@ const ProductManagement = () => {
               >
                 <div className="relative aspect-square bg-gray-100 overflow-hidden">
                   <img
-                    src={product.image}
+                    src={product.imageBase64 || product.image}
                     alt={product.name}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     onError={(e) => (e.target.src = "/fallback.png")}
@@ -179,15 +133,15 @@ const ProductManagement = () => {
 
       <div className="mt-12">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <StatCard color="blue" value={products.length} label="Total Products" />
+          <StatCard color="blue" value={displayedProducts.length} label="Total Products" />
           <StatCard
             color="green"
-            value={products.filter((p) => p.status === "In Stock").length}
+            value={displayedProducts.filter((p) => p.status === "In Stock").length}
             label="In Stock"
           />
           <StatCard
             color="orange"
-            value={products.filter((p) => p.isNew).length}
+            value={displayedProducts.filter((p) => p.isNew).length}
             label="New Items"
           />
           <StatCard color="purple" value={avgRating} label="Avg Rating" />
