@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { supabase } from '../../supabase';
+import { supabase } from '../supabase';
 import FormFaq from './FormFaq';
 import { ChevronDown, ChevronUp, PlusCircle, Trash2, Edit3 } from 'lucide-react';
 
