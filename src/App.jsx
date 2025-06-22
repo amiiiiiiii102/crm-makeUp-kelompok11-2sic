@@ -11,6 +11,8 @@ import ProductForm from "./pages/ProductForm";
 import Pemesanan from "./pages/Pemesanan";
 import ChatPelanggan from "./pages/ChatPelanggan";
 import FAQ from "./pages/FAQ";
+import FormFaq from "./pages/FormFaq";
+import ListFaq from "./pages/ListFaq";
 import Artikel from "./pages/Artikel";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
@@ -22,6 +24,7 @@ import ArtikelForm from "./pages/ArtikelForm";
 
 // Import halaman gabungan ProductForm dan ProductManagement
 import ProductPage from "./pages/ProductPage";
+import ProductEditForm from "./pages/ProductEditForm";
 
 function App() {
   return (
@@ -68,6 +71,8 @@ function App() {
         <Route path="/produk" element={<ProductManagement />} />
         <Route path="/Formfaq" element={<FormFaq />} />
         <Route path="/list" element={<ListFaq />} />
+         <Route path="/edit/produk" element={<ProductEditForm />} />
+
 
 
         <Route path="/pemesanan" element={<Pemesanan />} />

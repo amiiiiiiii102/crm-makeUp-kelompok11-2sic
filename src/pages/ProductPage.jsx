@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ProductForm from "./ProductForm";
 import ProductManagement from "./ProductManagement";
-import { supabase } from "../../supabase";
+import { supabase } from "../supabase";
 
 function ProductPage() {
   const [products, setProducts] = useState([]);
