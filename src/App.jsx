@@ -17,6 +17,8 @@ import Register from "./pages/auth/Register";
 import ProtectedRoute from "./route/ProtectedRoute";
 import PublicRoute from "./route/PublicRoute";
 import NotFound from "./pages/NotFound";
+import ListArtikel from "./pages/ListArtikel";
+import ArtikelForm from "./pages/ArtikelForm";
 
 function App() {
   return (
@@ -62,6 +64,8 @@ function App() {
         <Route path="/chatpelanggan" element={<ChatPelanggan />} />
         <Route path="/faq" element={<FAQ />} />
         <Route path="/artikel" element={<Artikel />} />
+        <Route path="/listartikel" element={<ListArtikel />} />
+        <Route path="/formartikel" element={<ArtikelForm />} />
       </Route>
     </Routes>
   );
