@@ -17,6 +17,8 @@ import Register from "./pages/auth/Register";
 import ProtectedRoute from "./route/ProtectedRoute";
 import PublicRoute from "./route/PublicRoute";
 import NotFound from "./pages/NotFound";
+import ListArtikel from "./pages/ListArtikel";
+import ArtikelForm from "./pages/ArtikelForm";
 
 // Import halaman gabungan ProductForm dan ProductManagement
 import ProductPage from "./pages/ProductPage";
@@ -64,12 +66,16 @@ function App() {
         {/* Gunakan ProductPage (gabungan Form + Management) */}
         <Route path="/productform" element={<ProductForm />} />
         <Route path="/produk" element={<ProductManagement />} />
+        <Route path="/Formfaq" element={<FormFaq />} />
+        <Route path="/list" element={<ListFaq />} />
 
 
         <Route path="/pemesanan" element={<Pemesanan />} />
         <Route path="/chatpelanggan" element={<ChatPelanggan />} />
         <Route path="/faq" element={<FAQ />} />
         <Route path="/artikel" element={<Artikel />} />
+        <Route path="/listartikel" element={<ListArtikel />} />
+        <Route path="/formartikel" element={<ArtikelForm />} />
       </Route>
     </Routes>
   );

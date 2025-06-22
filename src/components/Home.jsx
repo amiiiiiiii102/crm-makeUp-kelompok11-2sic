@@ -59,92 +59,131 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Produk */}
-      <section id="produk" className="produk-section">
-        <h2>Produk Unggulan</h2>
-        <p className="produk-desc">Temukan produk kecantikan favorit Anda di sini!</p>
-        <div className="produk-cards">
-          {[
-            { nama: "SKN", harga: "Rp45.000" },
-            { nama: "MKP", harga: "Rp65.000" },
-            { nama: "HRC", harga: "Rp55.000" }
-          ].map((produk, index) => (
-            <div className="produk-card" key={index}>
-              <img
-                src="https://i.pinimg.com/736x/13/14/6c/13146c62bf5a9b75a9c2fe21cc90635c.jpg"
-                alt={produk.nama}
-              />
-              <h3>{produk.nama}</h3>
-              <p>{produk.harga}</p>
-              <div className="produk-buttons">
-                <button className="btn-keranjang">+ Keranjang</button>
-                <button className="btn-beli">Beli</button>
-              </div>
-            </div>
-          ))}
+{/* Produk */}
+<section id="produk" className="produk-section">
+  <h2>Produk Unggulan</h2>
+  <p className="produk-desc">Temukan produk kecantikan favorit Anda di sini!</p>
+  <div className="produk-cards">
+    {[
+      {
+        nama: "MEDIHEAL",
+        deskripsi: "THE I.P.I Brightening Ampoule Mask",
+        hargaMin: "Rp26.910",
+        hargaMax: "Rp29.900",
+        rating: 4.7,
+        ulasan: "6,3k",
+        diskon: "10%",
+        gambar: "https://i.pinimg.com/736x/fc/23/f4/fc23f406db7394def1b894bad4e0e8b4.jpg"
+      },
+      {
+        nama: "SOME BY MI",
+        deskripsi: "AHA BHA PHA 30 Days Miracle Toner",
+        hargaMin: "Rp89.000",
+        hargaMax: "Rp99.000",
+        rating: 4.8,
+        ulasan: "12k",
+        diskon: "15%",
+        gambar: "https://images.tokopedia.net/img/cache/700/product-1/2019/12/27/5631210/5631210_f7652fdf-5cf7-4f24-b7ab-35c93f4d4f2e.jpg"
+      }
+      
+    ].map((produk, index) => (
+      <div className="produk-card-desain" key={index}>
+        <div className="diskon-label">{produk.diskon}</div>
+        <img src={produk.gambar} alt={produk.nama} className="produk-gambar" />
+        <button className="btn-beli-desain">🛍 Beli Sekarang</button>
+        <div className="produk-info">
+          <h3>{produk.nama}</h3>
+          <p className="produk-deskripsi">{produk.deskripsi}</p>
+          <p className="produk-harga">
+            {produk.hargaMin} - {produk.hargaMax}
+          </p>
+          <div className="produk-rating">
+            <span className="bintang">★</span>
+            {produk.rating} ({produk.ulasan})
+          </div>
         </div>
-      </section>
+      </div>
+    ))}
+  </div>
+</section>
+
 
       {/* Testimoni */}
-      <section id="testimoni" className="testimoni-section">
-        <h2>Testimoni Pelanggan</h2>
-        <div className="testimoni-cards">
-          {[
-            {
-              nama: "Ayu",
-              ulasan: "Produk bagus banget! Kulitku jadi lebih sehat.",
-              rating: 5,
-              foto: "https://randomuser.me/api/portraits/women/1.jpg"
-            },
-            {
-              nama: "Sari",
-              ulasan: "Pelayanan cepat dan ramah, suka banget!",
-              rating: 4,
-              foto: "https://randomuser.me/api/portraits/women/2.jpg"
-            }
-          ].map((item, index) => (
-            <div className="testimoni-card" key={index}>
-              <img src={item.foto} alt={item.nama} className="testimoni-foto" />
-              <div className="testimoni-info">
-                <div className="testimoni-header">{item.nama}</div>
-                <div className="testimoni-pesan">"{item.ulasan}"</div>
-                <div className="testimoni-rating">
-                  {"★".repeat(item.rating)}{"☆".repeat(5 - item.rating)}
-                </div>
-              </div>
-            </div>
-          ))}
+     <section id="testimoni" className="testimoni-section">
+  <h2>Testimoni Pelanggan</h2>
+  <p className="produk-desc">Pendapat pelanggan tentang produk kami</p>
+
+  <div className="testimoni-cards-custom">
+    {[
+      {
+        nama: "Ayu Lestari",
+        ulasan: "Setelah pakai 2 minggu, kulitku jauh lebih cerah dan lembab!",
+        rating: 5,
+        foto: "https://i.pinimg.com/736x/e5/e1/26/e5e126dde6ef832a68dd6a04e740309d.jpg",
+      },
+      {
+        nama: "Rina Aprilia",
+        ulasan: "Teksturnya ringan, cepat menyerap dan bikin glowing. Love it!",
+        rating: 4,
+        foto: "https://i.pinimg.com/736x/e5/e1/26/e5e126dde6ef832a68dd6a04e740309d.jpg",
+      },
+      {
+        nama: "Dewi Anggraini",
+        ulasan: "Warna dan hasilnya sesuai dengan ekspektasi, recommended!",
+        rating: 5,
+        foto: "https://i.pinimg.com/736x/e5/e1/26/e5e126dde6ef832a68dd6a04e740309d.jpg",
+      }
+    ].map((item, index) => (
+      <div className="testimoni-card-custom" key={index}>
+        <img src={item.foto} alt="Produk" className="testimoni-foto-produk" />
+        <div className="testimoni-isi">
+          <h4 className="testimoni-nama">{item.nama}</h4>
+          <p className="testimoni-ulasan">"{item.ulasan}"</p>
+          <div className="testimoni-rating">
+            {"★".repeat(item.rating)}
+            {"☆".repeat(5 - item.rating)}
+          </div>
         </div>
-        <button className="btn-jelajahi" onClick={() => navigate("/form-testimoni")}>
-          Tambah Testimoni
-        </button>
-      </section>
+      </div>
+    ))}
+  </div>
+</section>
+
 
       {/* Artikel */}
-      <section id="artikel" className="artikel-section">
-        <h2>Artikel Kecantikan</h2>
-        <div className="artikel-cards">
-          <div className="artikel-card">
-            <h3>Tips Makeup Natural</h3>
-            <p>Cara tampil natural tapi tetap memukau setiap hari.</p>
-          </div>
-          <div className="artikel-card">
-            <h3>Rutinitas Skincare Pagi</h3>
-            <p>Langkah-langkah merawat kulit wajah di pagi hari.</p>
-          </div>
+<section id="artikel" className="artikel-section">
+  <h2>Artikel Kecantikan</h2>
+  <p className="produk-desc">Tips & info seputar perawatan kulit dan kecantikan</p>
+  <div className="artikel-cards-custom">
+    {[
+      {
+        judul: "Tips Makeup Natural Sehari-hari",
+        isi: "Pelajari cara tampil cantik natural tanpa terlihat berlebihan.",
+        gambar: "https://i.pinimg.com/736x/fc/23/f4/fc23f406db7394def1b894bad4e0e8b4.jpg"
+      },
+      {
+        judul: "Skincare Rutin untuk Remaja",
+        isi: "Panduan skincare sederhana tapi efektif buat kulit remaja.",
+        gambar: "https://i.pinimg.com/736x/aa/d2/ed/aad2eda7ab5cc54a0a988a4cef0f917d.jpg"
+      }
+    ].map((artikel, index) => (
+      <div className="artikel-card-custom" key={index}>
+        <img src={artikel.gambar} alt={artikel.judul} className="artikel-thumbnail" />
+        <div className="artikel-isi">
+          <h3 className="artikel-judul">{artikel.judul}</h3>
+          <p className="artikel-teks">{artikel.isi}</p>
         </div>
-      </section>
+      </div>
+    ))}
+  </div>
+</section>
+
 
       {/* Kontak */}
       <section className="contact-section" id="kontak">
         <h3>Hubungi Kami</h3>
         <div className="contact-container">
-          <form className="contact-form">
-            <input type="text" placeholder="Nama" />
-            <input type="email" placeholder="Email" />
-            <textarea rows="4" placeholder="Pesan" />
-            <button type="submit">Kirim</button>
-          </form>
+
 
           <div className="contact-info">
             <p>Atau langsung hubungi kami via:</p>

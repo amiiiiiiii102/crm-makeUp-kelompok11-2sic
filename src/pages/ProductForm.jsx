@@ -1,5 +1,6 @@
 import React, { useState, useRef } from "react";
 import { ImagePlus } from "lucide-react";
+import { supabase } from "../../supabase";
 
 function ProductForm() {
   const [name, setName] = useState("");
@@ -18,9 +19,7 @@ function ProductForm() {
     setTimeout(() => setMessage({ type: "", text: "" }), 3000);
   };
 
-  const formatRupiah = (num) => `Rp ${Number(num).toLocaleString("id-ID")}`;
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!name || !price || !description || !rating || (promotion && !discount)) {
@@ -57,48 +56,60 @@ function ProductForm() {
       }
     }
 
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const base64Image = reader.result;
+    // Upload gambar ke Supabase Storage
+    const fileExt = imageFile.name.split(".").pop();
+    const fileName = `${Date.now()}.${fileExt}`;
+    const filePath = `${fileName}`;
 
-      const newProduct = {
-        id: Date.now(),
-        name,
-        price: formatRupiah(price),
-        description,
-        imageBase64: base64Image,
-        promotion,
-        discountPercent: promotion ? Number(discount) : null,
-        stock: true,
-        status: "In Stock",
-        isNew: true,
-        isRestocked: false,
-        rating: parsedRating,
-      };
+    const { error: uploadError } = await supabase.storage
+      .from("gambar-produk")
+      .upload(filePath, imageFile);
 
-      try {
-        const existing = JSON.parse(localStorage.getItem("products") || "[]");
-        const updated = [newProduct, ...existing];
-        localStorage.setItem("products", JSON.stringify(updated));
+    if (uploadError) {
+      console.error("Upload error:", uploadError);
+      showMessage("error", "Gagal mengunggah gambar.");
+      return;
+    }
 
-        // Reset form
-        setName("");
-        setPrice("");
-        setDescription("");
-        setImageFile(null);
-        setPreviewUrl(null);
-        setPromotion(false);
-        setDiscount("");
-        setRating("");
-        fileInputRef.current.value = null;
+    const { data: imageUrlData } = supabase
+      .storage
+      .from("gambar-produk")
+      .getPublicUrl(filePath);
 
-        showMessage("success", "Produk berhasil ditambahkan!");
-      } catch (err) {
-        console.error("Gagal menyimpan ke localStorage:", err);
-        showMessage("error", "Terjadi kesalahan saat menyimpan produk.");
-      }
+    const newProduct = {
+      name,
+      price: Number(price),
+      description,
+      image: imageUrlData.publicUrl,
+      promotion,
+      discount: promotion ? parseInt(discount) : null,
+      stock: true,
+      status: "In Stock",
+      is_new: true,
+      is_restocked: false,
+      rating: parsedRating,
     };
-    reader.readAsDataURL(imageFile);
+
+    const { error: insertError } = await supabase.from("produk").insert(newProduct);
+
+    if (insertError) {
+      console.error("Insert error:", insertError);
+      showMessage("error", "Gagal menyimpan produk.");
+      return;
+    }
+
+    // Reset form
+    setName("");
+    setPrice("");
+    setDescription("");
+    setImageFile(null);
+    setPreviewUrl(null);
+    setPromotion(false);
+    setDiscount("");
+    setRating("");
+    fileInputRef.current.value = null;
+
+    showMessage("success", "Produk berhasil ditambahkan!");
   };
 
   const handleImageChange = (e) => {
@@ -110,7 +121,9 @@ function ProductForm() {
 
   return (
     <div className="max-w-xl mx-auto mt-10 p-6 bg-white rounded-2xl shadow-md">
-      <h2 className="text-2xl font-bold text-orange-600 mb-6 text-center">🛍️ Tambah Produk Baru</h2>
+      <h2 className="text-2xl font-bold text-orange-600 mb-6 text-center">
+        🛍️ Tambah Produk Baru
+      </h2>
 
       {message.text && (
         <div
@@ -168,7 +181,13 @@ function ProductForm() {
                 className="hidden"
               />
             </label>
-            {previewUrl && <img src={previewUrl} alt="preview" className="w-16 h-16 rounded border" />}
+            {previewUrl && (
+              <img
+                src={previewUrl}
+                alt="preview"
+                className="w-16 h-16 rounded border"
+              />
+            )}
           </div>
         </div>
         <label className="flex items-center gap-2 text-sm">
