@@ -3,16 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import { PelangganContext } from '../pelanggan/PelangganContext';
 import { Link } from "react-router-dom";
 
-
-import { 
-  Search, 
-  Filter, 
-  Download, 
-  Plus, 
-  Edit, 
-  Trash2, 
-  Eye, 
-  Mail, 
+import {
+  Search,
+  Filter,
+  Download,
+  Plus,
+  Edit,
+  Trash2,
+  Eye,
+  Mail,
   Phone,
   MapPin,
   Calendar,
@@ -29,27 +28,26 @@ import {
 } from 'lucide-react';
 
 const Pelanggan = () => {
-  const { pelanggan, hapusPelanggan, editPelanggan } = useContext(PelangganContext);
-  
-const navigate = useNavigate();
+  const { pelanggan, hapusPelanggan, editPelanggan, isLoading } = useContext(PelangganContext);
+
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortConfig, setSortConfig] = useState({ key: 'nama' , direction: 'asc' });
+  const [sortConfig, setSortConfig] = useState({ key: 'nama', direction: 'asc' });
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [selectedpelanggan, setSelectedpelanggan] = useState([]);
   const [statusFilter, setStatusFilter] = useState('all');
   const [tierFilter, setTierFilter] = useState('all');
 
-
   // Filtering and sorting logic
   const filteredAndSortedpelanggan = useMemo(() => {
     let filtered = pelanggan.filter(pelanggan => {
       const matchesSearch = pelanggan.nama.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           pelanggan.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           pelanggan.noHp.includes(searchTerm);
-      
+        pelanggan.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        String(pelanggan.nohp).toLowerCase().includes(searchTerm.toLowerCase());
+
       const matchesTier = tierFilter === 'all' || pelanggan.kategori === tierFilter;
-      
+
       return matchesSearch && matchesTier;
     });
 
@@ -57,12 +55,12 @@ const navigate = useNavigate();
       filtered.sort((a, b) => {
         let aValue = a[sortConfig.key];
         let bValue = b[sortConfig.key];
-        
+
         if (typeof aValue === 'string') {
           aValue = aValue.toLowerCase();
           bValue = bValue.toLowerCase();
         }
-        
+
         if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
         if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
         return 0;
@@ -86,8 +84,8 @@ const navigate = useNavigate();
   };
 
   const handleSelectpelanggan = (pelanggan_id) => {
-    setSelectedpelanggan(prev => 
-      prev.includes(pelanggan_id) 
+    setSelectedpelanggan(prev =>
+      prev.includes(pelanggan_id)
         ? prev.filter(id => id !== pelanggan_id)
         : [...prev, pelanggan_id]
     );
@@ -95,14 +93,14 @@ const navigate = useNavigate();
 
   const handleSelectAll = () => {
     setSelectedpelanggan(
-      selectedpelanggan.length === currentpelanggan.length 
-        ? [] 
-        : currentpelanggan.map(pelanggan => pelanggan.pelanggan_id)
+      selectedpelanggan.length === currentpelanggan.length
+        ? []
+        : currentpelanggan.map(pelanggan => pelanggan.id)
     );
   };
 
   const getTierColor = (tier) => {
-    switch (tier) {
+    switch ((tier || '').toLowerCase()) {
       case 'platinum': return 'bg-purple-100 text-purple-800';
       case 'gold': return 'bg-yellow-100 text-yellow-800';
       case 'silver': return 'bg-gray-100 text-gray-800';
@@ -111,8 +109,8 @@ const navigate = useNavigate();
   };
 
   const getStatusColor = (status) => {
-    return status === 'active' 
-      ? 'bg-green-100 text-green-800' 
+    return status === 'active'
+      ? 'bg-green-100 text-green-800'
       : 'bg-red-100 text-red-800';
   };
 
@@ -125,13 +123,34 @@ const navigate = useNavigate();
   };
 
   const formatDate = (dateString) => {
-    if (dateString === 'Never') return dateString;
+    if (!dateString || dateString === 'Never') return 'Never';
     return new Date(dateString).toLocaleDateString('id-ID', {
       year: 'numeric',
       month: 'short',
       day: 'numeric'
     });
   };
+
+  const handleDelete = async (pelangganId) => {
+    if (window.confirm('Apakah Anda yakin ingin menghapus pelanggan ini?')) {
+      await hapusPelanggan(pelangganId);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="p-6 bg-gray-50 min-h-screen">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-center justify-center h-64">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+              <p className="mt-4 text-gray-600">Memuat data pelanggan...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
@@ -144,12 +163,17 @@ const navigate = useNavigate();
               <p className="text-gray-600">Kelola informasi dan aktivitas pelanggan</p>
             </div>
             <div className="flex items-center gap-3">
-
+              <button className="cursor-pointer flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+                <Download className="w-4 h-4" />
+                <Link to="/uploadData" className="text-gray-700">
+                  Upload Data File
+                </Link>
+              </button>
               <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
                 <Plus className="w-4 h-4" />
-               <Link to="/tambahpelanggan" className="text-white">
-                Tambah Pelanggan
-              </Link>
+                <Link to="/tambahpelanggan" className="text-white">
+                  Tambah Pelanggan
+                </Link>
               </button>
             </div>
           </div>
@@ -167,7 +191,7 @@ const navigate = useNavigate();
                 </div>
               </div>
             </div>
-           
+
             <div className="bg-white p-4 rounded-lg shadow-sm">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-purple-100 rounded-lg">
@@ -176,7 +200,7 @@ const navigate = useNavigate();
                 <div>
                   <p className="text-sm text-gray-600">Premium Members</p>
                   <p className="text-xl font-semibold text-gray-900">
-                    {pelanggan.filter(c => ['gold', 'platinum'].includes(c.kategori)).length}
+                    {pelanggan.filter(c => ['gold', 'platinum'].includes((c.kategori || '').toLowerCase())).length}
                   </p>
                 </div>
               </div>
@@ -189,13 +213,12 @@ const navigate = useNavigate();
                 <div>
                   <p className="text-sm text-gray-600">Baru Bulan Ini</p>
                   <p className="text-xl font-semibold text-gray-900">
-                    {pelanggan.filter(c => new Date(c.tanggalBergabung).getMonth() === new Date().getMonth()).length}
+                    {pelanggan.filter(c => new Date(c.tanggalbergabung).getMonth() === new Date().getMonth()).length}
                   </p>
                 </div>
               </div>
-             </div>
-       </div>
-         
+            </div>
+          </div>
 
           {/* Filters and Search */}
           <div className="bg-white p-4 rounded-lg shadow-sm mb-6">
@@ -210,9 +233,8 @@ const navigate = useNavigate();
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
-              
+
               <div className="flex gap-3">
-              
                 <select
                   value={tierFilter}
                   onChange={(e) => setTierFilter(e.target.value)}
@@ -227,9 +249,7 @@ const navigate = useNavigate();
               </div>
             </div>
           </div>
-
         </div>
-        
 
         {/* Table */}
         <div className="bg-white rounded-lg shadow-sm overflow-hidden">
@@ -237,8 +257,7 @@ const navigate = useNavigate();
             <table className="w-full">
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
-  
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                     onClick={() => handleSort('nama')}
                   >
@@ -249,35 +268,35 @@ const navigate = useNavigate();
                       )}
                     </div>
                   </th>
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                    onClick={() => handleSort('tanggalBergabung')}
+                    onClick={() => handleSort('tanggalbergabung')}
                   >
                     <div className="flex items-center gap-1">
                       Tanggal Bergabung
-                      {sortConfig.key === 'tanggalBergabung' && (
+                      {sortConfig.key === 'tanggalbergabung' && (
                         sortConfig.direction === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />
                       )}
                     </div>
                   </th>
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                    onClick={() => handleSort('totalPesanan')}
+                    onClick={() => handleSort('totalpesanan')}
                   >
                     <div className="flex items-center gap-1">
                       Total Pesanan
-                      {sortConfig.key === 'totalPesanan' && (
+                      {sortConfig.key === 'totalpesanan' && (
                         sortConfig.direction === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />
                       )}
                     </div>
                   </th>
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                    onClick={() => handleSort('totalBelanja')}
+                    onClick={() => handleSort('totalbelanja')}
                   >
                     <div className="flex items-center gap-1">
                       Total Belanja
-                      {sortConfig.key === 'totalBelanja' && (
+                      {sortConfig.key === 'totalbelanja' && (
                         sortConfig.direction === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />
                       )}
                     </div>
@@ -293,11 +312,10 @@ const navigate = useNavigate();
               <tbody className="bg-white divide-y divide-gray-200">
                 {currentpelanggan.map((pelanggan) => (
                   <tr key={pelanggan.pelanggan_id} className="hover:bg-gray-50">
-  
                     <td className="px-4 py-4">
                       <div className="flex items-center gap-3">
                         <img
-                          src={pelanggan.fotoProfil}
+                          src={pelanggan.fotoprofil}
                           alt={pelanggan.nama}
                           className="w-10 h-10 rounded-full object-cover"
                         />
@@ -315,7 +333,7 @@ const navigate = useNavigate();
                             </span>
                             <span className="flex items-center gap-1">
                               <Phone className="w-3 h-3" />
-                              {pelanggan.noHp}
+                              {pelanggan.nohp}
                             </span>
                           </div>
                           <div className="flex items-center gap-1 text-xs text-gray-500 mt-1">
@@ -328,47 +346,44 @@ const navigate = useNavigate();
                     <td className="px-4 py-4">
                       <div className="flex items-center gap-1 text-sm text-gray-900">
                         <Calendar className="w-4 h-4 text-gray-400" />
-                        {formatDate(pelanggan.tanggalBergabung)}
+                        {formatDate(pelanggan.tanggalbergabung)}
                       </div>
-                     
                     </td>
                     <td className="px-4 py-4">
-                      <p className="text-sm font-medium text-gray-900">{pelanggan.totalPesanan}</p>
+                      <p className="text-sm font-medium text-gray-900">{pelanggan.totalpesanan}</p>
                       <p className="text-xs text-gray-500">pesanan</p>
                     </td>
                     <td className="px-4 py-4">
-                      <p className="text-sm font-medium text-gray-900">{formatCurrency(pelanggan.totalBelanja)}</p>
+                      <p className="text-sm font-medium text-gray-900">{formatCurrency(pelanggan.totalbelanja)}</p>
                       <p className="text-xs text-gray-500">total belanja</p>
                     </td>
                     <td className="px-4 py-4">
                       <div className="flex flex-col gap-1">
-                      
-                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getTierColor(pelanggan.tier)}`}>
+                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getTierColor(pelanggan.kategori)}`}>
                           {pelanggan.kategori.charAt(0).toUpperCase() + pelanggan.kategori.slice(1)}
                         </span>
                       </div>
                     </td>
                     <td className="px-4 py-4">
                       <div className="flex items-center gap-2">
-                    
-                       <button
-                                className="cursor-pointer p-1 text-gray-400 hover:text-green-600"
-                        onClick={() => navigate(`/editpelanggan/${pelanggan.pelanggan_id}`)}
-                      >
-                        <Edit className="w-4 h-4" />
-                      </button>
-                        <button className="cursor-pointer p-1 text-gray-400 hover:text-red-600"
-                        onClick={() => hapusPelanggan(pelanggan.pelanggan_id)}>
+                        <button
+                          className="cursor-pointer p-1 text-gray-400 hover:text-green-600"
+                          onClick={() => navigate(`/editpelanggan/${pelanggan.pelanggan_id}`)}
+                        >
+                          <Edit className="w-4 h-4" />
+                        </button>
+                        <button 
+                          className="cursor-pointer p-1 text-gray-400 hover:text-red-600"
+                          onClick={() => handleDelete(pelanggan.pelanggan_id)}
+                        >
                           <Trash2 className="w-4 h-4" />
                         </button>
-                       
                       </div>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
-            
           </div>
 
           {/* Pagination */}
@@ -390,7 +405,7 @@ const navigate = useNavigate();
                 <option value={50}>50 per halaman</option>
               </select>
             </div>
-            
+
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
@@ -399,11 +414,11 @@ const navigate = useNavigate();
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
-              
+
               <span className="px-3 py-1 text-sm">
                 Halaman {currentPage} dari {totalPages}
               </span>
-              
+
               <button
                 onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                 disabled={currentPage === totalPages}
@@ -416,7 +431,6 @@ const navigate = useNavigate();
         </div>
       </div>
     </div>
-    
   );
 };
 
