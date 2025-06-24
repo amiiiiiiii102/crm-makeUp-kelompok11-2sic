@@ -1,3 +1,4 @@
+// App.jsx
 import { Routes, Route } from "react-router-dom";
 import Home from "./components/Home";
 import MainLayout from "./components/MainLayout";
@@ -11,7 +12,7 @@ import ProductForm from "./pages/ProductForm";
 import Pemesanan from "./pages/Pemesanan";
 import ChatPelanggan from "./pages/ChatPelanggan";
 import FAQ from "./pages/FAQ";
-import Artikel from "./pages/Artikel";
+import Artikel from "./components/Artikel";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import ProtectedRoute from "./route/ProtectedRoute";
@@ -19,12 +20,23 @@ import PublicRoute from "./route/PublicRoute";
 import NotFound from "./pages/NotFound";
 import ListArtikel from "./pages/ListArtikel";
 import ArtikelForm from "./pages/ArtikelForm";
+import ListPemesanan from "./pages/ListPemesanan";
+import PemesananForm from "./pages/PemesananForm";
+
+// Tambahan halaman publik
+import Produk from "./components/Produk";
+import Testimoni from "./components/Testimoni";
+import Kontak from "./components/Kontak";
 
 function App() {
   return (
     <Routes>
       {/* Halaman publik */}
       <Route path="/" element={<Home />} />
+      <Route path="/produk" element={<Produk />} />
+      <Route path="/testimoni" element={<Testimoni />} />
+      <Route path="/artikel" element={<Artikel />} />
+      <Route path="/kontak" element={<Kontak />} />
       <Route path="*" element={<NotFound />} />
 
       {/* Halaman login dan register (dibungkus PublicRoute) */}
@@ -57,13 +69,14 @@ function App() {
         <Route path="/pelanggan" element={<Pelanggan />} />
         <Route path="/tambahpelanggan" element={<TambahPelanggan />} />
         <Route path="/editpelanggan/:pelanggan_id" element={<EditPelanggan />} />
-        <Route path="/produk" element={<ProductManagement />} />
+        <Route path="/produkmanagement" element={<ProductManagement />} />
         <Route path="/penjualan" element={<SalesManagement />} />
         <Route path="/productform" element={<ProductForm />} />
         <Route path="/pemesanan" element={<Pemesanan />} />
+        <Route path="/listpemesanan" element={<ListPemesanan />} />
+        <Route path="/formpemesanan" element={<PemesananForm />} />
         <Route path="/chatpelanggan" element={<ChatPelanggan />} />
         <Route path="/faq" element={<FAQ />} />
-        <Route path="/artikel" element={<Artikel />} />
         <Route path="/listartikel" element={<ListArtikel />} />
         <Route path="/formartikel" element={<ArtikelForm />} />
       </Route>
