@@ -8,7 +8,7 @@ const PublicRoute = ({ children }) => {
   
   // Jika sudah login, redirect ke dashboard
   if (currentUser) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to="/produk" replace />;
   }
   
   // Jika belum login, tampilkan halaman login/register

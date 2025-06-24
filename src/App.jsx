@@ -17,6 +17,8 @@ import Register from "./pages/auth/Register";
 import ProtectedRoute from "./route/ProtectedRoute";
 import PublicRoute from "./route/PublicRoute";
 import NotFound from "./pages/NotFound";
+import UploadData from "./pages/pelanggan/UploadData";
+import SettingAkun from "./pages/auth/SettingAkun";
 import ListArtikel from "./pages/ListArtikel";
 import ArtikelForm from "./pages/ArtikelForm";
 
@@ -27,7 +29,7 @@ function App() {
       <Route path="/" element={<Home />} />
       <Route path="*" element={<NotFound />} />
 
-      {/* Halaman login dan register (dibungkus PublicRoute) */}
+      {/* Halaman login dan register */}
       <Route
         path="/login"
         element={
@@ -45,7 +47,7 @@ function App() {
         }
       />
 
-      {/* Halaman dashboard dan fitur lainnya (dibungkus ProtectedRoute + MainLayout) */}
+      {/* Halaman dashboard dan fitur lainnya */}
       <Route
         element={
           <ProtectedRoute>
@@ -53,12 +55,55 @@ function App() {
           </ProtectedRoute>
         }
       >
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/pelanggan" element={<Pelanggan />} />
-        <Route path="/tambahpelanggan" element={<TambahPelanggan />} />
-        <Route path="/editpelanggan/:pelanggan_id" element={<EditPelanggan />} />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/pelanggan"
+          element={
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <Pelanggan />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/uploadData"
+          element={
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <UploadData />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/tambahpelanggan"
+          element={
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <TambahPelanggan />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/editpelanggan/:pelanggan_id"
+          element={
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <EditPelanggan />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/penjualan"
+          element={
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <SalesManagement />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/produk" element={<ProductManagement />} />
-        <Route path="/penjualan" element={<SalesManagement />} />
         <Route path="/productform" element={<ProductForm />} />
         <Route path="/pemesanan" element={<Pemesanan />} />
         <Route path="/chatpelanggan" element={<ChatPelanggan />} />
@@ -66,6 +111,7 @@ function App() {
         <Route path="/artikel" element={<Artikel />} />
         <Route path="/listartikel" element={<ListArtikel />} />
         <Route path="/formartikel" element={<ArtikelForm />} />
+        <Route path="/setting" element={<SettingAkun />} />
       </Route>
     </Routes>
   );

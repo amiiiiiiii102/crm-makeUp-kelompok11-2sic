@@ -1,66 +1,69 @@
 import React, { useState, useContext } from 'react';
 import { PelangganContext } from '../pelanggan/PelangganContext';
 import { useNavigate } from 'react-router-dom';
+import { generateDefaultImage } from '../../generateDefaultImage';
+import { supabase } from '../../Supabase'; // Import supabase client
 import {
   ArrowLeft, User, Mail, Phone, MapPin, Calendar,
   CreditCard, Star, Camera, Upload, CheckCircle, X,
-  Link
+  Link, Loader2
 } from 'lucide-react';
 
 const TambahPelanggan = () => {
   const navigate = useNavigate();
-
-  const { pelanggan, setPelanggan } = useContext(PelangganContext);
+  const { tambahPelanggan, isLoading: contextLoading } = useContext(PelangganContext);
 
   const [nama, setNama] = useState('');
   const [email, setEmail] = useState('');
   const [alamat, setAlamat] = useState('');
-  const [noHp, setNoHp] = useState('');
-  const [fotoProfil, setFotoProfil] = useState(null);
+  const [nohp, setNoHp] = useState('');
+  const [fotoprofil, setFotoProfil] = useState(null);
   const [errorNoHp, setErrorNoHp] = useState("");
   const [errorNama, setErrorNama] = useState("");
   const [errorEmail, setErrorEmail] = useState("");
   const [errorAlamat, setErrorAlamat] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Generate default profile image with initials
-  const generateDefaultImage = (name) => {
-    const initials = name
-      .split(' ')
-      .map(word => word.charAt(0))
-      .join('')
-      .toUpperCase()
-      .slice(0, 2);
-
-    const colors = [
-      { bg: '#4F46E5', text: 'white' }, // Indigo
-      { bg: '#7C3AED', text: 'white' }, // Violet  
-      { bg: '#DC2626', text: 'white' }, // Red
-      { bg: '#059669', text: 'white' }, // Emerald
-      { bg: '#D97706', text: 'white' }, // Amber
-      { bg: '#DB2777', text: 'white' }, // Pink
-    ];
-
-    const colorIndex = name.length % colors.length;
-    const color = colors[colorIndex];
-
-    return `data:image/svg+xml,%3csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100' height='100' fill='${encodeURIComponent(color.bg)}'/%3e%3ctext x='50' y='50' font-family='Arial, sans-serif' font-size='36' font-weight='bold' text-anchor='middle' dy='0.35em' fill='${color.text}'%3e${initials}%3c/text%3e%3c/svg%3e`;
-  };
   const [kategori, setKategori] = useState('bronze');
-  const [tanggalBergabung, setTanggalBergabung] = useState(() =>
+  const [tanggalbergabung, setTanggalBergabung] = useState(() =>
     new Date().toISOString().substring(0, 10)
   );
-  const [totalPesanan, setTotalPesanan] = useState(0);
-  const [totalBelanja, setTotalBelanja] = useState(0);
+  const [totalpesanan, setTotalPesanan] = useState(0);
+  const [totalbelanja, setTotalBelanja] = useState(0);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
-  const handleFileUpload = (e) => {
+  const handleFileUpload = async (e) => {
     const file = e.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setFotoProfil(e.target.result);
-      };
-      reader.readAsDataURL(file);
+      setIsLoading(true);
+      try {
+        // Upload file ke Supabase Storage
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${Date.now()}.${fileExt}`;
+        const filePath = `profile-images/${fileName}`;
+
+        const { data, error } = await supabase.storage
+          .from('pelanggan-photos') // Pastikan bucket ini sudah dibuat di Supabase
+          .upload(filePath, file);
+
+        if (error) {
+          console.error('Error uploading file:', error);
+          alert('Gagal mengupload foto');
+          return;
+        }
+
+        // Dapatkan URL publik dari file yang diupload
+        const { data: { publicUrl } } = supabase.storage
+          .from('pelanggan-photos')
+          .getPublicUrl(filePath);
+
+        setFotoProfil(publicUrl);
+      } catch (error) {
+        console.error('Error uploading file:', error);
+        alert('Terjadi kesalahan saat mengupload foto');
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -72,55 +75,68 @@ const TambahPelanggan = () => {
     setNoHp(validValue);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    // Validasi form
     const errors = {
       nama: nama.trim() === "" ? "Kolom ini tidak boleh kosong!" : "",
       email: email.trim() === "" ? "Kolom ini tidak boleh kosong!" : "",
       alamat: alamat.trim() === "" ? "Kolom ini tidak boleh kosong!" : "",
-      noHp: noHp.trim() === "" ? "Kolom ini tidak boleh kosong!" :
-        !/\d/.test(noHp) ? "Nomor HP harus mengandung angka!" : ""
+      nohp: nohp.trim() === "" ? "Kolom ini tidak boleh kosong!" :
+        !/\d/.test(nohp) ? "Nomor HP harus mengandung angka!" : ""
     };
 
     // Set error state sekaligus
     setErrorNama(errors.nama);
     setErrorEmail(errors.email);
     setErrorAlamat(errors.alamat);
-    setErrorNoHp(errors.noHp);
+    setErrorNoHp(errors.nohp);
 
     // Jika ada error, hentikan
     if (Object.values(errors).some(err => err)) {
       return;
     }
 
-    const pelangganBaru = {
-      pelanggan_id: Date.now().toString() + Math.random().toString(36).substring(2, 6),
-      nama,
-      email,
-      alamat,
-      noHp,
-      kategori,
-      tanggalBergabung,
-      fotoProfil: fotoProfil || generateDefaultImage(nama),
-      totalPesanan,
-      totalBelanja,
-    };
+    setIsLoading(true);
 
-    setPelanggan([...pelanggan, pelangganBaru]);
+    try {
+      // Siapkan data pelanggan baru
+      const pelangganBaru = {
+  nama,
+  email,
+  alamat,
+  nohp: nohp,
+  kategori,
+  tanggalbergabung: tanggalbergabung,
+  fotoprofil: fotoprofil || generateDefaultImage(nama),
+  totalpesanan: totalpesanan,
+  totalbelanja: totalbelanja,
+};
 
-    // Reset form
-    setNama('');
-    setEmail('');
-    setAlamat('');
-    setNoHp('');
-    setFotoProfil(null);
-    setKategori('bronze');
-    setTanggalBergabung(new Date().toISOString().substring(0, 10));
-    setTotalPesanan(0);
-    setTotalBelanja(0);
-    setShowSuccessModal(true);
-    setTimeout(() => setShowSuccessModal(false), 4000);
+      // Gunakan fungsi dari context
+      await tambahPelanggan(pelangganBaru);
+
+      // Reset form
+      setNama('');
+      setEmail('');
+      setAlamat('');
+      setNoHp('');
+      setFotoProfil(null);
+      setKategori('bronze');
+      setTanggalBergabung(new Date().toISOString().substring(0, 10));
+      setTotalPesanan(0);
+      setTotalBelanja(0);
+      
+      // Tampilkan modal sukses
+      setShowSuccessModal(true);
+      setTimeout(() => setShowSuccessModal(false), 4000);
+
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Terjadi kesalahan saat menambahkan pelanggan');
+    } finally {
+      setIsLoading(false);
+    }
   };
-
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -140,6 +156,17 @@ const TambahPelanggan = () => {
           animation: scale-in 0.3s ease-out;
         }
       `}</style>
+
+      {/* Loading Overlay */}
+      {isLoading && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 flex items-center space-x-3">
+            <Loader2 className="h-6 w-6 animate-spin text-blue-600" />
+            <span className="text-gray-700">Menyimpan data...</span>
+          </div>
+        </div>
+      )}
+
       {/* Card Pesan Sukses */}
       {showSuccessModal && (
         <div className="fixed inset-0 flex items-center justify-center z-50 animate-scale-in">
@@ -152,12 +179,11 @@ const TambahPelanggan = () => {
                 Berhasil Ditambahkan!
               </h3>
               <p className="text-sm text-gray-600 mb-4">
-                Pelanggan baru telah berhasil disimpan
+                Pelanggan baru telah berhasil disimpan ke database
               </p>
               <button
                 onClick={() => setShowSuccessModal(false)}
                 className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
-
               >
                 <CheckCircle className="w-4 h-4 mr-2" />
                 OK
@@ -196,8 +222,8 @@ const TambahPelanggan = () => {
                 </label>
                 <div className="flex items-center space-x-4">
                   <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center overflow-hidden border-2 border-gray-200">
-                    {fotoProfil ? (
-                      <img src={fotoProfil} alt="Preview" className="w-full h-full object-cover" />
+                    {fotoprofil ? (
+                      <img src={fotoprofil} alt="Preview" className="w-full h-full object-cover" />
                     ) : nama ? (
                       <img src={generateDefaultImage(nama)} alt="Default" className="w-full h-full object-cover" />
                     ) : (
@@ -212,12 +238,14 @@ const TambahPelanggan = () => {
                       accept="image/*"
                       onChange={handleFileUpload}
                       className="hidden"
+                      disabled={isLoading}
                     />
                   </label>
-                  {fotoProfil && (
+                  {fotoprofil && (
                     <button
                       onClick={() => setFotoProfil(null)}
                       className="text-red-600 hover:text-red-800 text-sm"
+                      disabled={isLoading}
                     >
                       Hapus
                     </button>
@@ -238,6 +266,7 @@ const TambahPelanggan = () => {
                   className={`w-full border rounded px-3 py-2 focus:outline-none ${errorNama ? "border-red-500" : "border-gray-300"
                     }`}
                   placeholder="Nama pelanggan"
+                  disabled={isLoading}
                 />
                 {errorNama && <p className="text-red-500 text-sm mt-1">{errorNama}</p>}
               </div>
@@ -254,6 +283,7 @@ const TambahPelanggan = () => {
                   className={`w-full border rounded px-3 py-2 focus:outline-none ${errorEmail ? "border-red-500" : "border-gray-300"
                     }`}
                   placeholder="Email pelanggan"
+                  disabled={isLoading}
                 />
                 {errorEmail && <p className="text-red-500 text-sm mt-1">{errorEmail}</p>}
               </div>
@@ -270,6 +300,7 @@ const TambahPelanggan = () => {
                   className={`w-full border rounded px-3 py-2 focus:outline-none ${errorAlamat ? "border-red-500" : "border-gray-300"
                     }`}
                   placeholder="Alamat lengkap"
+                  disabled={isLoading}
                 />
                 {errorAlamat && <p className="text-red-500 text-sm mt-1">{errorAlamat}</p>}
               </div>
@@ -281,13 +312,12 @@ const TambahPelanggan = () => {
                 </label>
                 <input
                   type="tel"
-                  value={noHp}
+                  value={nohp}
                   onChange={handleNoHpChange}
                   className={`w-full border rounded px-3 py-2 focus:outline-none ${errorNoHp ? "border-red-500" : "border-gray-300"
                     }`}
-
                   placeholder="Contoh: 08123456789"
-
+                  disabled={isLoading}
                 />
                 {errorNoHp && <p className="text-red-500 text-sm mt-1">{errorNoHp}</p>}
                 <p className="text-xs text-gray-500 mt-1">
@@ -302,9 +332,10 @@ const TambahPelanggan = () => {
                 </label>
                 <input
                   type="date"
-                  value={tanggalBergabung}
+                  value={tanggalbergabung}
                   onChange={(e) => setTanggalBergabung(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  disabled={isLoading}
                 />
               </div>
 
@@ -317,6 +348,7 @@ const TambahPelanggan = () => {
                   value={kategori}
                   onChange={(e) => setKategori(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  disabled={isLoading}
                 >
                   <option value="bronze">Bronze</option>
                   <option value="silver">Silver</option>
@@ -332,10 +364,11 @@ const TambahPelanggan = () => {
                 </label>
                 <input
                   type="number"
-                  value={totalPesanan}
+                  value={totalpesanan}
                   onChange={(e) => setTotalPesanan(parseInt(e.target.value) || 0)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   min="0"
+                  disabled={isLoading}
                 />
               </div>
 
@@ -345,11 +378,12 @@ const TambahPelanggan = () => {
                 </label>
                 <input
                   type="number"
-                  value={totalBelanja}
+                  value={totalbelanja}
                   onChange={(e) => setTotalBelanja(parseInt(e.target.value) || 0)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   placeholder="0"
                   min="0"
+                  disabled={isLoading}
                 />
               </div>
             </div>
@@ -363,6 +397,7 @@ const TambahPelanggan = () => {
                 type="button"
                 onClick={() => navigate('/pelanggan')}
                 className="cursor-pointer flex items-center gap-2 px-4 py-2 bg-white text-black border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors duration-200"
+                disabled={isLoading}
               >
                 <ArrowLeft className="w-4 h-4" />
                 <span>Kembali</span>
@@ -371,12 +406,16 @@ const TambahPelanggan = () => {
               <button
                 type="button"
                 onClick={handleSubmit}
-                className="cursor-pointer px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 flex items-center space-x-2"
+                className="cursor-pointer px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={isLoading}
               >
-                <User className="w-4 h-4" />
-                <span>Tambah Pelanggan</span>
+                {isLoading ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <User className="w-4 h-4" />
+                )}
+                <span>{isLoading ? 'Menyimpan...' : 'Tambah Pelanggan'}</span>
               </button>
-
             </div>
           </div>
         </div>

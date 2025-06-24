@@ -2,6 +2,8 @@ import { Search, User, ChevronDown, Settings, LogOut } from 'lucide-react'
 import { useLocation, Link, useNavigate } from 'react-router-dom'
 import { useContext, useState, useRef, useEffect } from 'react'
 import { AuthContext } from '../pages/auth/AuthContext'
+import { capitalize } from 'lodash'
+import SettingAkun from '../pages/auth/SettingAkun';
 
 const Header = () => {
   const location = useLocation();
@@ -24,49 +26,47 @@ const Header = () => {
     };
   }, []);
 
-  const getBreadcrumb = (pathname) => {
-    const segments = pathname.split('/').filter(Boolean);
+ const getBreadcrumb = (pathname) => {
+  const segments = pathname.split('/').filter(Boolean);
 
-    const pageMap = {
-      'dashboard': 'Dashboard',
-      'pelanggan': 'Pelanggan',
-      'produk': 'Produk',
-      'penjualan': 'Penjualan',
-      'ProductForm': 'Form Produk',
-      'ChatPelanggan': 'Chat Pelanggan',
-      'FAQ': 'FAQ'
-    };
-
-    // For dashboard page
-    if (segments.length === 0 || pathname === '/dashboard') {
-      return {
-        current: 'Dashboard'
-      };
-    }
-
-    // For pelanggan related routes
-    if (segments[0] === 'pelanggan' || segments[0] === 'tambahpelanggan' || segments[0] === 'editpelanggan') {
-      if (segments[0] === 'tambahpelanggan') {
-        return {
-          parent: 'Pelanggan',
-          parentPath: '/pelanggan',
-          current: 'Tambah Pelanggan'
-        };
-      }
-      if (segments[0] === 'editpelanggan') {
-        return {
-          parent: 'Pelanggan',
-          parentPath: '/pelanggan',
-          current: 'Edit Pelanggan'
-        };
-      }
-    }
-
-    // For other pages
-    return {
-      current: pageMap[segments[0]] || segments[0].charAt(0).toUpperCase() + segments[0].slice(1)
-    };
+  const pageMap = {
+    dashboard: 'Dashboard',
+    pelanggan: 'Pelanggan',
+    produk: 'Produk',
+    penjualan: 'Penjualan',
+    productform: 'Form Produk',
+    chatpelanggan: 'Chat Pelanggan',
+    faq: 'FAQ',
+    artikel: 'Artikel',
+    pemesanan: 'Pemesanan',
+    uploaddata: 'Upload Data Pelanggan',
+    tambahpelanggan: 'Tambah Pelanggan',
+    editpelanggan: 'Edit Pelanggan',
+    SettingAkun: 'Pengaturan Akun',
   };
+
+  const firstSegment = segments[0]?.toLowerCase();
+
+  // Halaman utama /dashboard
+  // if (!firstSegment || firstSegment === 'dashboard') {
+  //   return { current: 'Dashboard' };
+  // }
+
+  // Jika halaman merupakan turunan dari pelanggan
+  const pelangganChildPages = ['tambahpelanggan', 'editpelanggan', 'uploaddata'];
+  if (pelangganChildPages.includes(firstSegment)) {
+    return {
+      parent: 'Pelanggan',
+      parentPath: '/pelanggan',
+      current: pageMap[firstSegment] || capitalize(firstSegment),
+    };
+  }
+
+  // Default - hanya 1 level breadcrumb
+  return {
+    current: pageMap[firstSegment] || capitalize(firstSegment),
+  };
+};
 
   const handleLogout = () => {
     logout();
@@ -127,7 +127,7 @@ const Header = () => {
                 {/* Menu Items */}
                 <div className="py-1">
                   <Link
-                    to="/profile"
+                    to="/setting"
                     className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                     onClick={() => setIsDropdownOpen(false)}
                   >

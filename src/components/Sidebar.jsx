@@ -13,30 +13,39 @@ import {
   User2Icon,
   MessageCircle,
   Newspaper,
-} from 'lucide-react'
-import { Link, useLocation } from 'react-router-dom'
+} from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
+import { useContext } from 'react';
+import { AuthContext } from '../pages/auth/AuthContext'; // pastikan path-nya sesuai
 
-const menuItems = [
-  { name: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/dashboard' },
-  { name: 'Produk', icon: <Box size={20} />, path: '/produk' },
-  { name: 'Pelanggan', icon: <User2Icon size={20} />, path: '/pelanggan' },
-  { name: 'Laporan', icon: <BarChart2 size={20} />, path: '/laporan' },
-  { name: 'Pemesanan', icon: <ShoppingCart size={20} />, path: '/pemesanan' },
-  { name: 'FAQ', icon: <HelpCircle size={20} />, path: '/FAQ' },
-  { name: 'Form Produk', icon: <ClipboardList size={20} />, path: '/ProductForm' },
-  { name: 'Chat Pelanggan', icon: <MessageCircle size={20} />, path: '/ChatPelanggan' },
-  { name: 'Artikel', icon: <Newspaper size={20} />, path: '/artikel' },
-]
+const allMenuItems = [
+  { name: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/dashboard', roles: ['admin'] },
+  { name: 'Produk', icon: <Box size={20} />, path: '/produk', roles: ['admin', 'pelanggan'] },
+  { name: 'Pelanggan', icon: <User2Icon size={20} />, path: '/pelanggan', roles: ['admin'] },
+  { name: 'Laporan', icon: <BarChart2 size={20} />, path: '/laporan', roles: ['admin'] },
+  { name: 'Pemesanan', icon: <ShoppingCart size={20} />, path: '/pemesanan', roles: ['admin', 'pelanggan'] },
+  { name: 'FAQ', icon: <HelpCircle size={20} />, path: '/FAQ', roles: ['admin','pelanggan'] },
+  { name: 'Form Produk', icon: <ClipboardList size={20} />, path: '/ProductForm', roles: ['admin'] },
+  { name: 'Chat Pelanggan', icon: <MessageCircle size={20} />, path: '/ChatPelanggan', roles: ['admin'] },
+  { name: 'Artikel', icon: <Newspaper size={20} />, path: '/artikel', roles: ['admin','pelanggan'] },
+];
 
 const accountItems = [
-  { name: 'Pengaturan Akun', icon: <Settings size={20} />, path: '/akun' },
+  //{ name: 'Pengaturan Akun', icon: <Settings size={20} />, path: '/akun' },
   { name: 'Sign In', icon: <LogIn size={20} />, path: '/login' },
-  { name: 'Sign Up', icon: <UserPlus size={20} />, path: '/register' },
-]
+  //{ name: 'Sign Up', icon: <UserPlus size={20} />, path: '/register' },
+];
 
 const Sidebar = () => {
-  const location = useLocation()
-  const isActive = (path) => location.pathname === path
+  const location = useLocation();
+  const { currentUser } = useContext(AuthContext);
+  const isActive = (path) => location.pathname === path;
+
+  // Tentukan role user
+  const role = currentUser?.role || 'guest'; // default guest jika belum login
+
+  // Filter menu sesuai role
+  const menuItems = allMenuItems.filter((item) => item.roles.includes(role));
 
   return (
     <aside className="fixed top-0 left-0 h-screen w-64 bg-white shadow-xl px-6 py-4 hidden md:flex flex-col z-30">
@@ -100,7 +109,7 @@ const Sidebar = () => {
         </div>
       </div>
     </aside>
-  )
-}
+  );
+};
 
-export default Sidebar
+export default Sidebar;
