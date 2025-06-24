@@ -1,9 +1,11 @@
 import React, { useContext, useState } from 'react';
 import { AuthContext } from './AuthContext';
+import { supabase } from '../../Supabase';
+import bcrypt from 'bcryptjs';
 import { Eye, EyeOff, Mail, Lock, Star, User, Phone, Check, X, Shield } from 'lucide-react';
 
 const Register = () => {
-  const { register } = useContext(AuthContext);
+  const { register, loading: authLoading } = useContext(AuthContext);
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
 
@@ -11,12 +13,9 @@ const Register = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    //fullName: '',
     email: '',
-    //phone: '',
     password: '',
     confirmPassword: '',
-    role: 'pelanggan', // Default role
     agreeTerms: false
   });
 
@@ -47,18 +46,19 @@ const Register = () => {
     }
   };
 
-  const handleRegister = (e) => {
-    e.preventDefault();
+  const handleRegister = async (e) => {
+  e.preventDefault();
 
-    // Clear previous messages
-    setErrorMessage('');
-    setSuccessMessage('');
+  // Clear previous messages
+  setErrorMessage('');
+  setSuccessMessage('');
 
-    // Set loading state
-    setLoading(true);
+  // Set loading state
+  setLoading(true);
 
+  try {
     // Validasi form
-    if (!formData.email || !formData.password || !formData.confirmPassword || !formData.role) {
+    if (!formData.email || !formData.password || !formData.confirmPassword) {
       setErrorMessage('Mohon isi semua field');
       setLoading(false);
       return;
@@ -94,37 +94,100 @@ const Register = () => {
       return;
     }
 
-    // Simulasi delay untuk UX yang baik
-    setTimeout(() => {
-      // ✅ GUNAKAN FUNCTION REGISTER DARI AUTHCONTEXT - Include role in registration
-      const result = register(formData.email, formData.password, formData.role);
-
-      if (result.success) {
-        setSuccessMessage('Registrasi berhasil!');
-
-        // Reset form
-        setFormData({
-          email: '',
-          password: '',
-          confirmPassword: '',
-          role: 'pelanggan',
-          agreeTerms: false
-        });
-
-        // Reset password validation
-        setPasswordValidation({
-          length: false,
-          uppercase: false,
-          lowercase: false,
-          number: false
-        });
-      } else {
-        setErrorMessage(result.message);
+    // ✅ SUPABASE SIGNUP WITH EMAIL CONFIRMATION
+    const { data, error } = await supabase.auth.signUp({
+      email: formData.email,
+      password: formData.password,
+      options: {
+        // URL redirect setelah konfirmasi email
+        emailRedirectTo: `${window.location.origin}/login?verified=true`,
+        // Data tambahan yang akan disimpan ke auth.users metadata
+        data: {
+          email: formData.email,
+          created_at: new Date().toISOString()
+        }
       }
+    });
 
+    if (error) {
+      // Handle specific Supabase errors
+      if (error.message.includes('User already registered')) {
+        setErrorMessage('Email sudah terdaftar. Silakan gunakan email lain atau login.');
+      } else if (error.message.includes('Password should be at least')) {
+        setErrorMessage('Password terlalu lemah. Gunakan minimal 6 karakter.');
+      } else {
+        setErrorMessage(error.message || 'Terjadi kesalahan saat registrasi.');
+      }
       setLoading(false);
-    }, 1000);
-  };
+      return;
+    }
+    if (data.user) {
+  // Hash password
+  const hashedPassword = await bcrypt.hash(formData.password, 10);
+
+  // Simpan ke tabel "users"
+  const { error: insertError } = await supabase.from('users').insert([{
+    id: data.user.id, // pakai ID dari Supabase Auth
+    email: formData.email,
+    password: hashedPassword,
+    role: 'pelanggan', //defult role
+    created_at: new Date().toISOString()
+  }]);
+
+  if (insertError) {
+    console.error('Gagal menyimpan ke tabel users:', insertError);
+    setErrorMessage('Registrasi berhasil, tapi gagal menyimpan data pengguna.');
+    return;
+  }
+}
+
+
+    // Success response
+    if (data.user && !data.user.email_confirmed_at) {
+      setSuccessMessage(
+        `Email konfirmasi telah dikirim ke ${formData.email}. ` +
+        'Silakan cek email Anda dan klik link konfirmasi untuk menyelesaikan registrasi.'
+      );
+
+      // Reset form
+      setFormData({
+        email: '',
+        password: '',
+        confirmPassword: '',
+        agreeTerms: false
+      });
+
+      // Reset password validation
+      setPasswordValidation({
+        length: false,
+        uppercase: false,
+        lowercase: false,
+        number: false
+      });
+
+      // Optional: Show additional instruction
+      setTimeout(() => {
+        setSuccessMessage(prev => 
+          prev + ' Setelah konfirmasi, Anda akan diarahkan ke halaman login.'
+        );
+      }, 3000);
+
+    } else if (data.user && data.user.email_confirmed_at) {
+      // Jika email sudah terconfirm (tidak memerlukan konfirmasi)
+      setSuccessMessage('Registrasi berhasil! Anda akan diarahkan ke halaman login.');
+      
+      // setTimeout(() => {
+      //   window.location.href = '/login';
+      // }, 2000);
+    }
+
+  } catch (error) {
+    console.error('Registration error:', error);
+    setErrorMessage('Terjadi kesalahan saat registrasi. Silakan coba lagi.');
+  } finally {
+    setLoading(false);
+  }
+};
 
   const isPasswordMatch = formData.password && formData.confirmPassword && formData.password === formData.confirmPassword;
   const isPasswordMismatch = formData.password && formData.confirmPassword && formData.password !== formData.confirmPassword;
@@ -149,26 +212,31 @@ const Register = () => {
           <div className="text-center mb-8">
             <div className="flex items-center justify-center mb-4">
               <div className="bg-gradient-to-r from-pink-500 to-purple-600 p-3 rounded-2xl shadow-lg">
-                <Star className="w-8 h-8 text-white" />
+                <img src="./public/images/logo.png" alt="logo" className="w-18 h-18 object-contain" />
               </div>
             </div>
             <h1 className="text-3xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent mb-2">
               Istana Cosmetic
             </h1>
             <p className="text-gray-600">Buat akun baru Anda</p>
+            
+            {/* Success Message */}
             {successMessage && (
-              <div className="text-green-600 text-sm mb-4 text-center">
-                {successMessage}
+              <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+                <p className="text-green-600 text-sm font-medium">{successMessage}</p>
               </div>
             )}
 
+            {/* Error Message */}
+            {errorMessage && (
+              <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                <p className="text-red-600 text-sm font-medium">{errorMessage}</p>
+              </div>
+            )}
           </div>
 
           {/* Registration Form */}
-          <div className="space-y-5">
-            {/* Full Name Input */}
-
-
+          <form onSubmit={handleRegister} className="space-y-5">
             {/* Email Input */}
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -182,13 +250,9 @@ const Register = () => {
                 placeholder="Email"
                 className="w-full pl-12 pr-4 py-4 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 bg-gray-50/50 backdrop-blur-sm"
                 required
+                disabled={loading || authLoading}
               />
             </div>
-
-            {/* Phone Input */}
-
-            {/* Role Selection */}
-       
 
             {/* Password Input */}
             <div className="relative">
@@ -203,11 +267,13 @@ const Register = () => {
                 placeholder="Password"
                 className="w-full pl-12 pr-12 py-4 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 bg-gray-50/50 backdrop-blur-sm"
                 required
+                disabled={loading || authLoading}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute inset-y-0 right-0 pr-4 flex items-center"
+                disabled={loading || authLoading}
               >
                 {showPassword ? (
                   <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600 transition-colors" />
@@ -256,11 +322,13 @@ const Register = () => {
                 className={`w-full pl-12 pr-12 py-4 border rounded-2xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 bg-gray-50/50 backdrop-blur-sm ${isPasswordMismatch ? 'border-red-300' : isPasswordMatch ? 'border-green-300' : 'border-gray-200'
                   }`}
                 required
+                disabled={loading || authLoading}
               />
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 className="absolute inset-y-0 right-0 pr-4 flex items-center"
+                disabled={loading || authLoading}
               >
                 {showConfirmPassword ? (
                   <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600 transition-colors" />
@@ -296,6 +364,7 @@ const Register = () => {
                 onChange={handleInputChange}
                 className="cursor-pointer mt-1 w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
                 required
+                disabled={loading || authLoading}
               />
               <label className="text-sm text-gray-600">
                 Saya setuju dengan{' '}
@@ -308,18 +377,14 @@ const Register = () => {
                 </a>
               </label>
             </div>
-            {errorMessage && (
-              <div className="text-red-600 text-sm mb-4 text-center">
-                {errorMessage}
-              </div>
-            )}
+
             {/* Register Button */}
             <button
-              onClick={handleRegister}
-              disabled={loading || !formData.agreeTerms}
-              className="cursor-pointer w-full bg-gradient-to-r from-pink-500 to-purple-600 text-white font-semibold py-4 rounded-2xl hover:from-pink-600 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none shadow-lg"
+              type="submit"
+              disabled={loading || authLoading || !formData.agreeTerms}
+              className="w-full bg-gradient-to-r from-pink-500 to-purple-600 text-white font-semibold py-4 rounded-2xl hover:from-pink-600 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none shadow-lg"
             >
-              {loading ? (
+              {loading || authLoading ? (
                 <div className="flex items-center justify-center">
                   <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
                   Mendaftar...
@@ -328,7 +393,7 @@ const Register = () => {
                 'Daftar Sekarang'
               )}
             </button>
-          </div>
+          </form>
 
           {/* Divider */}
           <div className="flex items-center my-6">
@@ -336,8 +401,6 @@ const Register = () => {
             <span className="px-4 text-sm text-gray-500 bg-white">atau</span>
             <div className="flex-1 border-t border-gray-200"></div>
           </div>
-
-          {/* Google Register Button */}
 
           {/* Login Link */}
           <div className="text-center mt-6">

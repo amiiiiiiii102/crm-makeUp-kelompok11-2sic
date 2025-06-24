@@ -4,12 +4,16 @@ import { AuthContext } from '../pages/auth/AuthContext'
 import { useContext } from 'react';
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
-  const { currentUser } = useContext(AuthContext);
+  const { currentUser, initializing } = useContext(AuthContext);
+  if (initializing) {
+    return <div className="text-center py-10">Memuat...</div>; // atau spinner loading
+  }
   if (!currentUser) return <Navigate to="/login" />;
 
   if (allowedRoles && !allowedRoles.includes(currentUser.role)) {
-    return <Navigate to="/unauthorized" />; // Halaman akses ditolak
+    return <Navigate to="/produk" />; // Halaman akses ditolak
   }
+
 
   return children;
 };

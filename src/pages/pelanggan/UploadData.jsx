@@ -1,32 +1,44 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useMemo } from 'react';
 import { Upload, CheckCircle, AlertCircle, X, Users, FileText } from 'lucide-react';
 import Papa from 'papaparse';
 import * as XLSX from 'xlsx';
 import { PelangganContext } from './PelangganContext';
+import { supabase } from '../../Supabase';
 import { generateDefaultImage } from '../../generateDefaultImage';
 
 const UploadData = () => {
-    const { pelanggan, setPelanggan } = useContext(PelangganContext);
+  const { pelanggan, setPelanggan } = useContext(PelangganContext);
   const [file, setFile] = useState(null);
-  const [uploadStatus, setUploadStatus] = useState('idle'); // idle, processing, success, error
+  const [uploadStatus, setUploadStatus] = useState('idle');
   const [uploadedData, setUploadedData] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
   const [validationErrors, setValidationErrors] = useState([]);
 
   // Definisi kolom yang diharapkan untuk data pelanggan
   const expectedColumns = [
-    'nama', 'email', 'noHp', 'alamat', 'kategori', 'tanggalBergabung'
+    'nama', 'email', 'nohp', 'alamat', 'kategori', 'tanggalbergabung'
   ];
 
   const optionalColumns = [
-    'fotoProfil', 'totalBelanja', 'totalPesanan'
+    'fotoprofil', 'totalbelanja', 'totalpesanan'
   ];
 
-  const allColumns = [...expectedColumns, ...optionalColumns];
+  // 🔧 FIX: Pindahkan useMemo ke level komponen
+  const existingEmails = useMemo(() => 
+    new Set(pelanggan.map(item => item.email?.trim().toLowerCase())), 
+    [pelanggan]
+  );
 
   // Fungsi untuk membersihkan nama header
   const cleanHeader = (header) => {
-    return header.toString().trim().replace(/\s+/g, '_');
+    return header.toString().trim().toLowerCase().replace(/\s+/g, '_');
+  };
+
+  // 🔧 FIX: Fungsi validasi tanggal yang lengkap
+  const isValidDate = (dateString) => {
+    if (!dateString || dateString.toString().trim() === '') return false;
+    const date = new Date(dateString);
+    return date instanceof Date && !isNaN(date) && date.getFullYear() > 1900;
   };
 
   // Fungsi validasi kolom
@@ -44,12 +56,12 @@ const UploadData = () => {
     return { isValid: true };
   };
 
-  // Fungsi validasi data
+  // 🔧 FIX: Fungsi validasi data yang diperbaiki
   const validateData = (data) => {
     const errors = [];
     
     data.forEach((row, index) => {
-      const rowNumber = index + 2; // +2 karena index 0 + header row
+      const rowNumber = index + 2;
       
       // Validasi nama (wajib)
       if (!row.nama || row.nama.toString().trim() === '') {
@@ -67,7 +79,7 @@ const UploadData = () => {
       }
       
       // Validasi telepon (wajib)
-      if (!row.noHp || row.noHp.toString().trim() === '') {
+      if (!row.nohp || row.nohp.toString().trim() === '') {
         errors.push(`Baris ${rowNumber}: Telepon tidak boleh kosong`);
       }
       
@@ -75,13 +87,17 @@ const UploadData = () => {
       if (!row.alamat || row.alamat.toString().trim() === '') {
         errors.push(`Baris ${rowNumber}: Alamat tidak boleh kosong`);
       }
-        // Validasi kategori (wajib)
+      
+      // 🔧 FIX: Perbaiki typo "Kategori"
       if (!row.kategori || row.kategori.toString().trim() === '') {
-        errors.push(`Baris ${rowNumber}: Kaategori tidak boleh kosong`);
+        errors.push(`Baris ${rowNumber}: Kategori tidak boleh kosong`);
       }
-        // Validasi tanggal bergabung (wajib dan format)
-      if (!row.tanggalBergabung || row.tanggalBergabung.toString().trim() === '') {
-        errors.push(`Baris ${rowNumber}: TanggalBergabung tidak boleh kosong`);
+      
+      // 🔧 FIX: Validasi tanggal bergabung yang lengkap
+      if (!row.tanggalbergabung || row.tanggalbergabung.toString().trim() === '') {
+        errors.push(`Baris ${rowNumber}: Tanggal bergabung tidak boleh kosong`);
+      } else if (!isValidDate(row.tanggalbergabung)) {
+        errors.push(`Baris ${rowNumber}: Format tanggal bergabung tidak valid`);
       }
     });
     
@@ -101,9 +117,20 @@ const UploadData = () => {
             reject(new Error('Error parsing CSV: ' + results.errors[0].message));
             return;
           }
+
+          const cleanedHeaders = results.meta.fields.map(cleanHeader);
+          const cleanedData = results.data.map((row) => {
+            const newRow = {};
+            results.meta.fields.forEach((originalKey, i) => {
+              const cleanedKey = cleanedHeaders[i];
+              newRow[cleanedKey] = row[originalKey];
+            });
+            return newRow;
+          });
+
           resolve({
-            data: results.data,
-            headers: results.meta.fields
+            data: cleanedData,
+            headers: cleanedHeaders
           });
         },
         error: (error) => {
@@ -133,7 +160,6 @@ const UploadData = () => {
           const headers = jsonData[0];
           const rows = jsonData.slice(1);
           
-          // Convert to object format
           const processedData = rows.map(row => {
             const obj = {};
             headers.forEach((header, index) => {
@@ -155,10 +181,22 @@ const UploadData = () => {
     });
   };
 
+  // 🔧 FIX: Tambahkan validasi ukuran file
+  const validateFileSize = (file) => {
+    const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+    return file.size <= MAX_FILE_SIZE;
+  };
+
   // Handler untuk upload file
   const handleFileUpload = async (event) => {
     const selectedFile = event.target.files[0];
     if (!selectedFile) return;
+
+    // 🔧 FIX: Validasi ukuran file
+    if (!validateFileSize(selectedFile)) {
+      setErrorMessage('File terlalu besar. Maksimal 10MB');
+      return;
+    }
 
     // Validasi tipe file
     const allowedTypes = [
@@ -200,7 +238,6 @@ const UploadData = () => {
         throw new Error(`Ditemukan ${dataErrors.length} error validasi data`);
       }
 
-      // Jika semua validasi berhasil
       setUploadedData(result.data);
       setUploadStatus('success');
       
@@ -219,43 +256,56 @@ const UploadData = () => {
     setValidationErrors([]);
   };
 
-  // Handler untuk menyimpan data (implementasi sesuai kebutuhan)
-const handleSaveData = () => {
-  try {
-    // Ambil email dari pelanggan yang sudah ada (di localStorage/context)
-    const existingEmails = new Set(
-      pelanggan.map((item) => item.email?.trim().toLowerCase())
-    );
+  // 🔧 FIX: Handler untuk menyimpan data yang diperbaiki
+  const handleSaveData = async () => {
+    try {
+      setUploadStatus('processing'); // Loading state saat menyimpan
 
-    // Saring hanya data baru yang belum pernah ada
-  const newData = uploadedData
-      .filter((item) => {
-        const email = item.email?.trim().toLowerCase();
-        return !existingEmails.has(email);
-      })
-      .map((item) => ({
-        ...item,
-        fotoProfil: item.fotoProfil || generateDefaultImage(item.nama),
-      }));
+      // Filter data baru menggunakan useMemo yang sudah dipindahkan
+      const newData = uploadedData
+        .filter((item) => {
+          const email = item.email?.trim().toLowerCase();
+          return !existingEmails.has(email);
+        })
+        .map((item) => ({
+          ...item,
+          fotoprofil: item.fotoprofil || generateDefaultImage(item.nama),
+        }));
 
-    
+      if (newData.length === 0) {
+        setErrorMessage('File ini sudah pernah diupload. Tidak ada data baru yang ditambahkan.');
+        setUploadStatus('error');
+        return;
+      }
 
-    
+      // Simpan ke Supabase
+      const { data, error } = await supabase
+        .from('pelanggan')
+        .insert(newData)
+        .select();
 
-    if (newData.length === 0) {
-      alert('File ini sudah pernah diupload. Tidak ada data baru yang ditambahkan.');
-      return;
+      if (error) {
+        console.error('Gagal menyimpan ke Supabase:', error);
+        setErrorMessage('Gagal menyimpan data ke Supabase: ' + error.message);
+        setUploadStatus('error');
+        return;
+      }
+
+      // Update context
+      setPelanggan((prev) => [...data, ...prev]);
+
+      // Reset form dan tampilkan pesan sukses
+      setUploadStatus('idle');
+      setErrorMessage('');
+      alert(`Berhasil menyimpan ${data.length} data pelanggan baru ke Supabase!`);
+      handleReset();
+      
+    } catch (error) {
+      console.error('Gagal menyimpan:', error);
+      setErrorMessage('Terjadi kesalahan saat menyimpan data: ' + error.message);
+      setUploadStatus('error');
     }
-
-    setPelanggan([...pelanggan, ...newData]);
-    alert(`Berhasil menyimpan ${newData.length} data pelanggan baru ke context dan localStorage!`);
-  } catch (error) {
-    console.error('Gagal menyimpan:', error);
-    alert('Terjadi kesalahan saat menyimpan data.');
-  }
-};
-
-
+  };
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-lg">

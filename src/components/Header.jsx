@@ -2,6 +2,8 @@ import { Search, User, ChevronDown, Settings, LogOut } from 'lucide-react'
 import { useLocation, Link, useNavigate } from 'react-router-dom'
 import { useContext, useState, useRef, useEffect } from 'react'
 import { AuthContext } from '../pages/auth/AuthContext'
+import { capitalize } from 'lodash'
+import SettingAkun from '../pages/auth/SettingAkun';
 
 const Header = () => {
   const location = useLocation();
@@ -40,14 +42,15 @@ const Header = () => {
     uploaddata: 'Upload Data Pelanggan',
     tambahpelanggan: 'Tambah Pelanggan',
     editpelanggan: 'Edit Pelanggan',
+    SettingAkun: 'Pengaturan Akun',
   };
 
   const firstSegment = segments[0]?.toLowerCase();
 
   // Halaman utama /dashboard
-  if (!firstSegment || firstSegment === 'dashboard') {
-    return { current: 'Dashboard' };
-  }
+  // if (!firstSegment || firstSegment === 'dashboard') {
+  //   return { current: 'Dashboard' };
+  // }
 
   // Jika halaman merupakan turunan dari pelanggan
   const pelangganChildPages = ['tambahpelanggan', 'editpelanggan', 'uploaddata'];
@@ -124,7 +127,7 @@ const Header = () => {
                 {/* Menu Items */}
                 <div className="py-1">
                   <Link
-                    to="/profile"
+                    to="/setting"
                     className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                     onClick={() => setIsDropdownOpen(false)}
                   >

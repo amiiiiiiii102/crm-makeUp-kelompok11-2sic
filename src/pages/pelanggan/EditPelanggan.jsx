@@ -14,12 +14,12 @@ const EditPelanggan = () => {
   const [nama, setNama] = useState('');
   const [email, setEmail] = useState('');
   const [alamat, setAlamat] = useState('');
-  const [noHp, setNoHp] = useState('');
-  const [fotoProfil, setFotoProfil] = useState(null);
+  const [nohp, setNoHp] = useState('');
+  const [fotoprofil, setFotoProfil] = useState(null);
   const [kategori, setKategori] = useState('bronze');
-  const [tanggalBergabung, setTanggalBergabung] = useState('');
-  const [totalPesanan, setTotalPesanan] = useState(0);
-  const [totalBelanja, setTotalBelanja] = useState(0);
+  const [tanggalbergabung, setTanggalBergabung] = useState('');
+  const [totalpesanan, setTotalPesanan] = useState(0);
+  const [totalbelanja, setTotalBelanja] = useState(0);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   useEffect(() => {
@@ -28,12 +28,12 @@ const EditPelanggan = () => {
       setNama(data.nama);
       setEmail(data.email);
       setAlamat(data.alamat);
-      setNoHp(data.noHp);
-      setFotoProfil(data.fotoProfil);
+      setNoHp(data.nohp);
+      setFotoProfil(data.fotoprofil);
       setKategori(data.kategori);
-      setTanggalBergabung(data.tanggalBergabung);
-      setTotalPesanan(data.totalPesanan);
-      setTotalBelanja(data.totalBelanja);
+      setTanggalBergabung(data.tanggalbergabung);
+      setTotalPesanan(data.totalpesanan);
+      setTotalBelanja(data.totalbelanja);
 
     }
   }, [pelanggan_id, pelanggan]);
@@ -50,18 +50,18 @@ const EditPelanggan = () => {
   };
 
   const handleSubmit = () => {
-    if (nama && email && alamat && noHp && kategori && tanggalBergabung) {
+    if (nama && email && alamat && nohp && kategori && tanggalbergabung) {
       const updatedData = {
         pelanggan_id,
         nama,
         email,
-        alamat,
-        noHp,
+        alamat, 
+        nohp,
         kategori,
-        tanggalBergabung,
-        fotoProfil,
-        totalPesanan,
-        totalBelanja,
+        tanggalbergabung,
+        fotoprofil,
+        totalpesanan,
+        totalbelanja,
       };
 
       editPelanggan(pelanggan_id, updatedData);
@@ -147,8 +147,8 @@ const EditPelanggan = () => {
                 </label>
                 <div className="flex items-center space-x-4">
                   <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center overflow-hidden">
-                    {fotoProfil ? (
-                      <img src={fotoProfil} alt="Preview" className="w-full h-full object-cover" />
+                    {fotoprofil ? (
+                      <img src={fotoprofil} alt="Preview" className="w-full h-full object-cover" />
                     ) : (
                       <User className="w-8 h-8 text-gray-400" />
                     )}
@@ -163,7 +163,7 @@ const EditPelanggan = () => {
                       className="hidden"
                     />
                   </label>
-                  {fotoProfil && (
+                  {fotoprofil && (
                     <button
                       onClick={() => setFotoProfil(null)}
                       className="text-red-600 hover:text-red-800 text-sm"
@@ -224,7 +224,7 @@ const EditPelanggan = () => {
                 </label>
                 <input
                   type="tel"
-                  value={noHp}
+                  value={nohp}
                   onChange={(e) => setNoHp(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                   placeholder="Nomor HP"
@@ -238,7 +238,7 @@ const EditPelanggan = () => {
                 </label>
                 <input
                   type="date"
-                  value={tanggalBergabung}
+                  value={tanggalbergabung}
                   onChange={(e) => setTanggalBergabung(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                 />
@@ -268,7 +268,7 @@ const EditPelanggan = () => {
                 </label>
                 <input
                   type="number"
-                  value={totalPesanan}
+                  value={totalpesanan}
                   onChange={(e) => setTotalPesanan(parseInt(e.target.value) || 0)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                   placeholder="0"
@@ -281,7 +281,7 @@ const EditPelanggan = () => {
                 </label>
                 <input
                   type="number"
-                  value={totalBelanja}
+                  value={totalbelanja}
                   onChange={(e) => setTotalBelanja(parseInt(e.target.value) || 0)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                   placeholder="0"
