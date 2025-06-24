@@ -36,14 +36,7 @@ export const AuthProvider = ({ children }) => {
       }
 
       // ✅ SUPABASE SIGNUP WITH EMAIL CONFIRMATION
-      const { data, error } = await supabase.auth.signUp({
-        email: email,
-        password: password,
-        options: {
-    emailRedirectTo: 'https://crm-make-up-kelompok11-2sic.vercel.app/login' // ganti sesuai URL deploy
-  },
-        created_at: new Date().toISOString()
-      });
+     
 
       if (error) {
         // Handle specific Supabase errors
