@@ -14,54 +14,46 @@ import {
   MessageCircle,
   Newspaper,
 } from 'lucide-react';
+
 import { Link, useLocation } from 'react-router-dom';
 import { useContext } from 'react';
-import { AuthContext } from '../pages/auth/AuthContext'; // pastikan path-nya sesuai
+import { AuthContext } from '../pages/auth/AuthContext'; // pastikan path ini sesuai
 
-const menuItems = [
-  { name: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/dashboard' },
-  { name: 'Produk', icon: <Box size={20} />, path: '/produk' },
-  { name: 'Pelanggan', icon: <User2Icon size={20} />, path: '/pelanggan' },
-  { name: 'Laporan', icon: <BarChart2 size={20} />, path: '/laporan' },
-  { name: 'Pemesanan', icon: <ShoppingCart size={20} />, path: '/listpemesanan' },
-  { name: 'FAQ', icon: <HelpCircle size={20} />, path: '/FAQ' },
-  { name: 'Form Produk', icon: <ClipboardList size={20} />, path: '/ProductForm' },
-  { name: 'Chat Pelanggan', icon: <MessageCircle size={20} />, path: '/ChatPelanggan' },
-  { name: 'Artikel', icon: <Newspaper size={20} />, path: '/artikel' },
-]
+// Semua menu dengan role-nya
 const allMenuItems = [
   { name: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/dashboard', roles: ['admin'] },
   { name: 'Produk', icon: <Box size={20} />, path: '/produk', roles: ['admin', 'pelanggan'] },
   { name: 'Pelanggan', icon: <User2Icon size={20} />, path: '/pelanggan', roles: ['admin'] },
   { name: 'Laporan', icon: <BarChart2 size={20} />, path: '/laporan', roles: ['admin'] },
   { name: 'Pemesanan', icon: <ShoppingCart size={20} />, path: '/pemesanan', roles: ['admin', 'pelanggan'] },
-  { name: 'FAQ', icon: <HelpCircle size={20} />, path: '/FAQ', roles: ['admin','pelanggan'] },
+  { name: 'FAQ', icon: <HelpCircle size={20} />, path: '/FAQ', roles: ['admin', 'pelanggan'] },
   { name: 'Form Produk', icon: <ClipboardList size={20} />, path: '/ProductForm', roles: ['admin'] },
   { name: 'Chat Pelanggan', icon: <MessageCircle size={20} />, path: '/ChatPelanggan', roles: ['admin'] },
-  { name: 'Artikel', icon: <Newspaper size={20} />, path: '/artikel', roles: ['admin','pelanggan'] },
+  { name: 'Artikel', icon: <Newspaper size={20} />, path: '/artikel', roles: ['admin', 'pelanggan'] },
 ];
 
+// Menu akun
 const accountItems = [
-  //{ name: 'Pengaturan Akun', icon: <Settings size={20} />, path: '/akun' },
   { name: 'Sign In', icon: <LogIn size={20} />, path: '/login' },
-  //{ name: 'Sign Up', icon: <UserPlus size={20} />, path: '/register' },
+  // Tambahkan Sign Up atau Setting akun jika dibutuhkan
 ];
 
 const Sidebar = () => {
   const location = useLocation();
   const { currentUser } = useContext(AuthContext);
-  const isActive = (path) => location.pathname === path;
 
-  // Tentukan role user
-  const role = currentUser?.role || 'guest'; // default guest jika belum login
+  // Tentukan role
+  const role = currentUser?.role || 'guest';
 
-  // Filter menu sesuai role
+  // Filter menu berdasarkan role
   const menuItems = allMenuItems.filter((item) => item.roles.includes(role));
+
+  const isActive = (path) => location.pathname === path;
 
   return (
     <aside className="fixed top-0 left-0 h-screen w-64 bg-white shadow-xl px-6 py-4 hidden md:flex flex-col z-30">
       
-      {/* Logo dan Judul */}
+      {/* Logo */}
       <Link to="/" className="flex flex-col items-center mb-4 cursor-pointer">
         <img
           src="/images/logo.png"
@@ -73,10 +65,8 @@ const Sidebar = () => {
         </h1>
       </Link>
 
-      {/* Navigasi Utama dan Akun */}
+      {/* Navigasi */}
       <div className="flex-1 overflow-y-auto mt-2 flex flex-col justify-between">
-        
-        {/* Menu Navigasi */}
         <nav className="space-y-1 mb-6">
           {menuItems.map((item) => (
             <Link
