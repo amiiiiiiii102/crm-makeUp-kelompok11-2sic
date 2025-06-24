@@ -67,7 +67,7 @@ const ChatPelanggan = () => {
   const selectedChat = chats.find((c) => c.user === selectedUser)
 
   return (
-    <div className="max-w-5xl mx-auto p-6 bg-white rounded-lg shadow-lg">
+    <div className="max-w-6xl mx-auto p-6 bg-white rounded-lg shadow-lg">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-extrabold flex items-center gap-3 text-[#C0360C]">
           <MessageCircle size={28} />
@@ -144,30 +144,55 @@ const ChatPelanggan = () => {
           )}
         </div>
       ) : (
-        // List View
-        <div className="grid gap-4">
-          {chats.map((chat) => (
-            <div key={chat.id} className="border rounded-md p-4 shadow-sm">
-              <div className="flex justify-between items-center">
-                <div>
-                  <p className="font-semibold text-[#C0360C]">{chat.user}</p>
-                  <p className="text-gray-800">
-                    “{chat.messages[0].text.length > 60 ? chat.messages[0].text.slice(0, 60) + '...' : chat.messages[0].text}”
-                  </p>
-                  <p className="text-sm text-gray-500">{chat.messages[0].time}</p>
-                </div>
-                <button
-                  onClick={() => {
-                    setSelectedUser(chat.user)
-                    setIsChatRoom(true)
-                  }}
-                  className="text-sm text-[#C0360C] border border-[#C0360C] px-3 py-1 rounded-md hover:bg-[#FFEDE5]"
-                >
-                  Balas Pesan
-                </button>
-              </div>
-            </div>
-          ))}
+        // List View as Table
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm border border-gray-200 rounded-md overflow-hidden">
+            <thead className="bg-[#FFF4F1] text-[#C0360C]">
+              <tr>
+                <th className="p-3 text-left">No</th>
+                <th className="p-3 text-left">Nama Pengguna</th>
+                <th className="p-3 text-left">Pesan Terakhir</th>
+                <th className="p-3 text-left">Waktu</th>
+                <th className="p-3 text-left">Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              {chats.length > 0 ? (
+                chats.map((chat, index) => {
+                  const lastMsg = chat.messages[chat.messages.length - 1]
+                  return (
+                    <tr key={chat.id} className="border-t hover:bg-[#FFF7F5]">
+                      <td className="p-3">{index + 1}</td>
+                      <td className="p-3 font-medium text-[#C0360C]">{chat.user}</td>
+                      <td className="p-3 text-gray-700">
+                        {lastMsg.text.length > 60
+                          ? lastMsg.text.slice(0, 60) + '...'
+                          : lastMsg.text}
+                      </td>
+                      <td className="p-3 text-gray-500">{lastMsg.time}</td>
+                      <td className="p-3">
+                        <button
+                          onClick={() => {
+                            setSelectedUser(chat.user)
+                            setIsChatRoom(true)
+                          }}
+                          className="text-sm text-white bg-[#C0360C] hover:bg-[#A42C07] px-4 py-1 rounded-md"
+                        >
+                          Balas
+                        </button>
+                      </td>
+                    </tr>
+                  )
+                })
+              ) : (
+                <tr>
+                  <td colSpan="5" className="p-6 text-center text-gray-500 italic">
+                    Belum ada chat dari pelanggan.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
       )}
     </div>

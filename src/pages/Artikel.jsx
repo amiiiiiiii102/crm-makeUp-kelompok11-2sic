@@ -1,174 +1,266 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
+import { Plus, Edit, Trash2, ChevronUp, ChevronDown } from 'lucide-react';
 
 const initialArticles = [
   {
     id: 1,
-    title: 'Manfaat Skincare untuk Remaja',
-    url: '/artikel/manfaat-skincare-remaja',
-    description: 'Penjelasan singkat tentang pentingnya skincare sejak remaja.',
-    status: 'published',
+    judulArtikel: 'Manfaat Skincare untuk Remaja',
+    thumbnailArtikel: 'https://via.placeholder.com/80',
+    isiArtikel: 'Penjelasan pentingnya skincare sejak usia muda.',
+    statusArtikel: 'publish',
+    created_at: '2025-06-20T10:00:00Z'
   },
   {
     id: 2,
-    title: 'Tips Memilih Sunscreen yang Tepat',
-    url: '/artikel/tips-memilih-sunscreen',
-    description: 'Cara menentukan sunscreen sesuai dengan jenis kulit.',
-    status: 'draft',
-  },
-]
+    judulArtikel: 'Tips Memilih Sunscreen yang Tepat',
+    thumbnailArtikel: 'https://via.placeholder.com/80',
+    isiArtikel: 'Cara menentukan sunscreen sesuai jenis kulit.',
+    statusArtikel: 'draft',
+    created_at: '2025-06-18T08:30:00Z'
+  }
+];
 
 const Artikel = () => {
-  const [articles, setArticles] = useState(initialArticles)
-  const [showForm, setShowForm] = useState(false)
-  const [isEditing, setIsEditing] = useState(false)
-  const [formData, setFormData] = useState({
-    id: null,
-    title: '',
-    url: '',
-    description: '',
-    status: 'draft',
-  })
+  const [articles, setArticles] = useState(initialArticles);
+  const [sortAsc, setSortAsc] = useState(true);
+  const [filterStatus, setFilterStatus] = useState('all');
+  const [showForm, setShowForm] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [currentId, setCurrentId] = useState(null);
 
-  const handleEdit = (article) => {
-    setFormData(article)
-    setIsEditing(true)
-    setShowForm(true)
-  }
+  const [formData, setFormData] = useState({
+    judulArtikel: '',
+    thumbnailArtikel: '',
+    isiArtikel: '',
+    statusArtikel: 'draft'
+  });
+
+  const toggleSort = () => setSortAsc(!sortAsc);
+
+  const filteredArticles = articles
+    .filter(a => filterStatus === 'all' || a.statusArtikel === filterStatus)
+    .sort((a, b) => {
+      if (sortAsc) return a.judulArtikel.localeCompare(b.judulArtikel);
+      else return b.judulArtikel.localeCompare(a.judulArtikel);
+    });
+
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString('id-ID', {
+      day: 'numeric', month: 'short', year: 'numeric'
+    });
+  };
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'publish': return 'bg-green-100 text-green-700';
+      case 'draft': return 'bg-yellow-100 text-yellow-700';
+      case 'archived': return 'bg-gray-100 text-gray-600';
+      default: return '';
+    }
+  };
 
   const handleDelete = (id) => {
-    setArticles(articles.filter((item) => item.id !== id))
-  }
+    if (confirm('Yakin ingin menghapus artikel ini?')) {
+      setArticles(articles.filter(a => a.id !== id));
+    }
+  };
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+
     if (isEditing) {
-      setArticles((prev) =>
-        prev.map((item) => (item.id === formData.id ? { ...formData } : item))
-      )
+      setArticles(articles.map(a => a.id === currentId ? { ...a, ...formData } : a));
     } else {
-      setArticles((prev) => [...prev, { ...formData, id: Date.now() }])
+      const newArticle = {
+        ...formData,
+        id: Date.now(),
+        created_at: new Date().toISOString()
+      };
+      setArticles([...articles, newArticle]);
     }
 
+    // Reset
     setFormData({
-      id: null,
-      title: '',
-      url: '',
-      description: '',
-      status: 'draft',
-    })
-    setIsEditing(false)
-    setShowForm(false)
-  }
+      judulArtikel: '',
+      thumbnailArtikel: '',
+      isiArtikel: '',
+      statusArtikel: 'draft'
+    });
+    setIsEditing(false);
+    setShowForm(false);
+  };
+
+  const handleEdit = (article) => {
+    setFormData({
+      judulArtikel: article.judulArtikel,
+      thumbnailArtikel: article.thumbnailArtikel,
+      isiArtikel: article.isiArtikel,
+      statusArtikel: article.statusArtikel
+    });
+    setCurrentId(article.id);
+    setIsEditing(true);
+    setShowForm(true);
+  };
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold text-[#C0360C] mb-4">Daftar Artikel</h2>
-
-      {!showForm && (
-        <>
-          <div className="grid gap-4 mb-6">
-            {articles.map((article) => (
-              <div key={article.id} className="border p-4 rounded shadow-sm">
-                <h3 className="text-lg font-semibold text-[#C0360C]">{article.title}</h3>
-                <p className="text-sm text-gray-600">{article.url}</p>
-                <p className="my-1">{article.description}</p>
-                <p className="text-sm italic text-gray-500">Status: {article.status}</p>
-                <div className="mt-2 flex gap-3">
-                  <button
-                    onClick={() => handleEdit(article)}
-                    className="text-sm text-blue-600 hover:underline"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(article.id)}
-                    className="text-sm text-red-600 hover:underline"
-                  >
-                    Hapus
-                  </button>
-                </div>
-              </div>
-            ))}
+    <div className="p-6 bg-gray-50 min-h-screen">
+      <div className="max-w-6xl mx-auto">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Manajemen Artikel</h1>
+            <p className="text-gray-600">Kelola konten artikel pada platform</p>
           </div>
           <button
-            className="bg-[#C0360C] text-white px-4 py-2 rounded hover:bg-[#A42C07]"
             onClick={() => {
+              setShowForm(!showForm);
+              setIsEditing(false);
               setFormData({
-                id: null,
-                title: '',
-                url: '',
-                description: '',
-                status: 'draft',
-              })
-              setIsEditing(false)
-              setShowForm(true)
+                judulArtikel: '',
+                thumbnailArtikel: '',
+                isiArtikel: '',
+                statusArtikel: 'draft'
+              });
             }}
+            className="flex items-center gap-2 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700"
           >
-            Tambah Artikel
+            <Plus className="w-4 h-4" />
+            {showForm && !isEditing ? 'Tutup Form' : 'Tambah Artikel'}
           </button>
-        </>
-      )}
+        </div>
 
-      {showForm && (
-        <form onSubmit={handleSubmit} className="space-y-4 border p-4 rounded-lg">
-          <h3 className="text-lg font-semibold mb-2">
-            {isEditing ? 'Edit Artikel' : 'Tambah Artikel Baru'}
-          </h3>
-          <input
-            type="text"
-            placeholder="Judul Artikel"
-            className="w-full p-2 border rounded"
-            value={formData.title}
-            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-            required
-          />
-          <input
-            type="text"
-            placeholder="URL Artikel"
-            className="w-full p-2 border rounded"
-            value={formData.url}
-            onChange={(e) => setFormData({ ...formData, url: e.target.value })}
-            required
-          />
-          <textarea
-            placeholder="Deskripsi Singkat"
-            className="w-full p-2 border rounded"
-            value={formData.description}
-            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-            required
-          />
+        {/* Form Tambah/Edit Artikel */}
+        {showForm && (
+          <form onSubmit={handleFormSubmit} className="bg-white p-6 rounded-lg shadow mb-6 space-y-4 border">
+            <h2 className="text-lg font-semibold text-gray-800">{isEditing ? 'Edit Artikel' : 'Tambah Artikel Baru'}</h2>
+            <input
+              type="text"
+              placeholder="Judul Artikel"
+              className="w-full p-2 border rounded"
+              value={formData.judulArtikel}
+              onChange={(e) => setFormData({ ...formData, judulArtikel: e.target.value })}
+              required
+            />
+            <input
+              type="text"
+              placeholder="URL Gambar Thumbnail"
+              className="w-full p-2 border rounded"
+              value={formData.thumbnailArtikel}
+              onChange={(e) => setFormData({ ...formData, thumbnailArtikel: e.target.value })}
+            />
+            <textarea
+              placeholder="Isi Artikel"
+              className="w-full p-2 border rounded"
+              rows={4}
+              value={formData.isiArtikel}
+              onChange={(e) => setFormData({ ...formData, isiArtikel: e.target.value })}
+            />
+            <select
+              className="w-full p-2 border rounded"
+              value={formData.statusArtikel}
+              onChange={(e) => setFormData({ ...formData, statusArtikel: e.target.value })}
+            >
+              <option value="draft">Draft</option>
+              <option value="publish">Publish</option>
+              <option value="archived">Archived</option>
+            </select>
+            <div className="flex gap-2">
+              <button type="submit" className="bg-orange-600 text-white px-4 py-2 rounded hover:bg-orange-700">
+                {isEditing ? 'Update' : 'Simpan'}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowForm(false);
+                  setIsEditing(false);
+                }}
+                className="text-orange-700 border border-orange-600 px-4 py-2 rounded hover:bg-orange-50"
+              >
+                Batal
+              </button>
+            </div>
+          </form>
+        )}
+
+        {/* Filter dan Sort */}
+        <div className="mb-4 flex gap-3">
           <select
-            className="w-full p-2 border rounded"
-            value={formData.status}
-            onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value)}
+            className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
           >
+            <option value="all">Semua Status</option>
+            <option value="publish">Publish</option>
             <option value="draft">Draft</option>
-            <option value="published">Published</option>
             <option value="archived">Archived</option>
           </select>
-          <div className="flex gap-3">
-            <button
-              type="submit"
-              className="bg-[#C0360C] text-white px-4 py-2 rounded hover:bg-[#A42C07]"
-            >
-              {isEditing ? 'Update Artikel' : 'Simpan Artikel'}
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setShowForm(false)
-                setFormData({ id: null, title: '', url: '', description: '', status: 'draft' })
-                setIsEditing(false)
-              }}
-              className="text-[#C0360C] border border-[#C0360C] px-4 py-2 rounded hover:bg-[#FFEDE5]"
-            >
-              Batal
-            </button>
-          </div>
-        </form>
-      )}
-    </div>
-  )
-}
+          <button
+            onClick={toggleSort}
+            className="flex items-center gap-1 text-sm px-3 py-2 border rounded-lg bg-white hover:bg-gray-100"
+          >
+            Urutkan Judul {sortAsc ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+          </button>
+        </div>
 
-export default Artikel
+        {/* Tabel Artikel */}
+        <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+          <table className="w-full table-auto">
+            <thead className="bg-gray-100 border-b">
+              <tr>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600">Thumbnail</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600">Judul</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600">Status</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600">Tanggal</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600">Aksi</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {filteredArticles.map((a) => (
+                <tr key={a.id} className="hover:bg-gray-50">
+                  <td className="px-4 py-3">
+                    <img src={a.thumbnailArtikel} alt={a.judulArtikel} className="w-16 h-16 object-cover rounded" />
+                  </td>
+                  <td className="px-4 py-3">
+                    <p className="font-semibold text-gray-900">{a.judulArtikel}</p>
+                    <p className="text-sm text-gray-500 truncate">{a.isiArtikel.slice(0, 60)}...</p>
+                  </td>
+                  <td className="px-4 py-3">
+                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(a.statusArtikel)}`}>
+                      {a.statusArtikel}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-sm text-gray-700">
+                    {formatDate(a.created_at)}
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleEdit(a)}
+                        className="text-blue-600 hover:underline text-sm flex items-center gap-1"
+                      >
+                        <Edit className="w-4 h-4" /> Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(a.id)}
+                        className="text-red-600 hover:underline text-sm flex items-center gap-1"
+                      >
+                        <Trash2 className="w-4 h-4" /> Hapus
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+              {filteredArticles.length === 0 && (
+                <tr>
+                  <td colSpan="5" className="text-center py-6 text-gray-500">Tidak ada artikel ditemukan.</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Artikel;
