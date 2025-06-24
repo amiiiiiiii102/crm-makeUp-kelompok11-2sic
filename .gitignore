@@ -8,7 +8,6 @@ pnpm-debug.log*
 lerna-debug.log*
 
 AkunAdmin.jsx
-Supabase.jsx
 
 node_modules
 dist
