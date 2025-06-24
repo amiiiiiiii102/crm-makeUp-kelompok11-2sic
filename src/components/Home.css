@@ -90,7 +90,8 @@ a {
 
 /* Hero Section */
 .hero-section {
-  background-image: url("/images/bg.jpg");
+  position: relative;
+  background-image: url("/images/bg2.jpg");
   background-size: cover;
   background-position: center;
   height: 90vh;
@@ -99,7 +100,28 @@ a {
   justify-content: center;
   text-align: center;
   color: var(--istana-white);
+  z-index: 1;
 }
+
+/* Overlay oranye transparan */
+.hero-section::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 102, 0, 0.2); /* Oranye transparan */
+  z-index: 2;
+}
+
+/* Tulisan di atas overlay */
+.hero-section .hero-content {
+  position: relative;
+  z-index: 3;
+  font-weight: bold;
+}
+
 
 .hero-content h1 {
   font-size: 48px;
@@ -144,7 +166,7 @@ section h2 {
 
 /* PRODUK */
 #produk {
-  background-color: var(--istana-white);
+  background-color: var(--istana-secondary);
 }
 
 .produk-desc {
@@ -161,57 +183,85 @@ section h2 {
   margin: 0 auto;
 }
 
-.produk-card {
-  background-color: var(--istana-white);
+.produk-card-desain {
+  position: relative;
+  width: 200px;
+  background-color: white;
   border-radius: 14px;
-  padding: 20px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  padding: 12px;
   text-align: center;
-  width: 250px;
+  font-size: 14px;
   transition: transform 0.3s ease;
 }
 
-.produk-card:hover {
+.produk-card-desain:hover {
   transform: translateY(-4px);
 }
 
-.produk-card img {
-  width: 60px;
-  margin: 0 auto 15px auto; /* atas kanan bawah kiri */
-  display: block; /* pastikan gambar dianggap sebagai blok agar margin auto bekerja */
-}
-
-.produk-buttons {
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-  margin-top: 10px;
-}
-
-.btn-keranjang {
-  background-color: var(--istana-primary);
+.diskon-label {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background-color: #e63946;
   color: white;
-  padding: 8px 12px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 4px 6px;
+  border-radius: 4px;
 }
 
-.btn-keranjang:hover {
+.produk-gambar {
+  width: 100%;
+  height: 160px;
+  object-fit: contain;
+  margin-bottom: 10px;
+}
+
+.btn-beli-desain {
+   background-color: var(--istana-hover);
+  color: white;
+  font-weight: 500;
+  border: none;
+  padding: 8px;
+  width: 100%;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-beli-desain:hover {
   background-color: var(--istana-hover);
 }
 
-.btn-beli {
-  background-color: #f1c40f;
-  color: black;
-  padding: 8px 12px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
+.produk-info h3 {
+  font-size: 14px;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 4px;
 }
 
-.btn-beli:hover {
-  background-color: #d4ac0d;
+.produk-deskripsi {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 6px;
+}
+
+.produk-harga {
+  color: #e63946;
+  font-weight: bold;
+  margin-bottom: 6px;
+}
+
+.produk-rating {
+  color: #e63946;
+  font-size: 13px;
+}
+
+.bintang {
+  color: #ff9f43;
+  margin-right: 4px;
 }
 
 /* ARTIKEL */
@@ -219,31 +269,51 @@ section h2 {
   background-color: var(--istana-secondary);
 }
 
-.artikel-cards {
+.artikel-cards-custom {
   display: flex;
-  justify-content: center;
-  gap: 20px;
   flex-wrap: wrap;
-  max-width: 800px;
+  justify-content: center;
+  gap: 25px;
+  max-width: 1000px;
   margin: 0 auto;
 }
 
-.artikel-card {
+.artikel-card-custom {
   background-color: var(--istana-white);
-  border-radius: 10px;
-  padding: 20px;
-  width: 350px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  border-radius: 14px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  overflow: hidden;
+  width: 280px;
+  display: flex;
+  flex-direction: column;
   transition: transform 0.3s ease;
 }
 
-.artikel-card:hover {
-  transform: translateY(-3px);
+.artikel-card-custom:hover {
+  transform: translateY(-5px);
 }
 
-.artikel-card h3 {
-  margin-bottom: 8px;
+.artikel-thumbnail {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+}
+
+.artikel-isi {
+  padding: 16px;
+}
+
+.artikel-judul {
+  font-size: 16px;
+  font-weight: bold;
   color: var(--istana-primary);
+  margin-bottom: 8px;
+}
+
+.artikel-teks {
+  font-size: 14px;
+  color: var(--istana-text);
+  line-height: 1.4;
 }
 
 .contact-section {
@@ -341,53 +411,52 @@ section h2 {
   text-align: center;
 }
 
-.testimoni-cards {
+.testimoni-cards-custom {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 25px;
-  max-width: 1000px;
-  margin: 0 auto;
+  gap: 24px;
+  margin-top: 30px;
 }
 
-.testimoni-card {
-  background-color: var(--istana-white); /* diubah dari secondary ke white */
-  border-left: 6px solid var(--istana-primary);
-  padding: 20px;
+.testimoni-card-custom {
+  width: 250px;
+  background-color: white;
   border-radius: 12px;
-  width: 100%;
-  max-width: 300px;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.06);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  text-align: left;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  text-align: center;
+  padding: 16px;
+  transition: 0.3s ease;
 }
 
-.testimoni-card:hover {
+.testimoni-card-custom:hover {
   transform: translateY(-5px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
 }
 
-.testimoni-card img.testimoni-foto {
-  width: 60px;
-  margin: 0 auto 15px auto; /* atas kanan bawah kiri */
-  display: block; /* pastikan gambar dianggap sebagai blok agar margin auto bekerja */
+.testimoni-foto-produk {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 12px;
 }
 
-.testimoni-header {
-  font-weight: bold;
+.testimoni-nama {
   color: var(--istana-primary);
-  margin-bottom: 10px;
+  font-weight: 600;
+  margin-bottom: 8px;
 }
 
-.testimoni-pesan {
+.testimoni-ulasan {
   font-style: italic;
   color: var(--istana-text);
-  line-height: 1.5;
+  font-size: 14px;
+  margin-bottom: 6px;
 }
 
 .testimoni-rating {
   color: gold;
-  margin-top: 5px;
+  font-size: 16px;
 }
 
 .btn-jelajahi {
@@ -411,7 +480,7 @@ section h2 {
 
 
 .footer {
-  background-color: var(--istana-dark);
+  background-color: var(--istana-hover);
   color: var(--istana-white);
   text-align: center;
   padding: 16px;
