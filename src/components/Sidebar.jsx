@@ -30,7 +30,7 @@ const allMenuItems = [
   { name: 'Form Produk', icon: <ClipboardList size={20} />, path: '/ProductForm', roles: ['admin'] },
   { name: 'Chat Pelanggan', icon: <MessageCircle size={20} />, path: '/ChatPelanggan', roles: ['admin'] },
   { name: 'Artikel', icon: <Newspaper size={20} />, path: '/listartikel', roles: ['admin','pelanggan'] },
-  { name: 'Artikel', icon: <Newspaper size={20} />, path: '/artikel', roles: ['admin', 'pelanggan'] },
+
 ];
 
 // Menu akun

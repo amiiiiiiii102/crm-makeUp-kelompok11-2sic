@@ -1,9 +1,8 @@
 // App.jsx
-import { Routes, Route } from "react-router-dom";
+
 import Home from "./components/home/Home";
 import { Routes, Route, Navigate } from "react-router-dom";
 
-import Home from "./components/Home";
 import MainLayout from "./components/MainLayout";
 import Dashboard from "./pages/Dashboard";
 import Pelanggan from "./pages/pelanggan/Pelanggan";
@@ -14,11 +13,7 @@ import SalesManagement from "./pages/SalesManagement";
 import ProductForm from "./pages/ProductForm";
 import ProductEditForm from "./pages/ProductEditForm";
 import ProductPage from "./pages/ProductPage";
-
 import Pemesanan from "./pages/Pemesanan";
-import ChatPelanggan from "./pages/ChatPelanggan";
-import FAQ from "./pages/FAQ";
-import Artikel from "./components/home/Artikel";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import ProtectedRoute from "./route/ProtectedRoute";
@@ -26,41 +21,24 @@ import PublicRoute from "./route/PublicRoute";
 import NotFound from "./pages/NotFound";
 import UploadData from "./pages/pelanggan/UploadData";
 import SettingAkun from "./pages/auth/SettingAkun";
-import ListArtikel from "./pages/ListArtikel";
-import ArtikelForm from "./pages/ArtikelForm";
-import ListPemesanan from "./pages/ListPemesanan";
-import PemesananForm from "./pages/PemesananForm";
 
 // Tambahan halaman publik
 import Produk from "./components/home/Produk";
 import Testimoni from "./components/home/Testimoni";
 import Kontak from "./components/home/Kontak";
+import Artikel from "./components/home/Artikel"
+import FAQ from "./components/home/Artikel"
 import ListPemesanan from "./pages/ListPemesanan";
 import PemesananForm from "./pages/PemesananForm";
 
 import ChatPelanggan from "./pages/ChatPelanggan";
-import FAQ from "./pages/FAQ";
+
 import FormFaq from "./pages/FormFaq";
 import ListFaq from "./pages/ListFaq";
 
-import Artikel from "./pages/Artikel";
+
 import ListArtikel from "./pages/ListArtikel";
 import ArtikelForm from "./pages/ArtikelForm";
-
-import Login from "./pages/auth/Login";
-import Register from "./pages/auth/Register";
-import SettingAkun from "./pages/auth/SettingAkun";
-
-import UploadData from "./pages/pelanggan/UploadData";
-
-import ProtectedRoute from "./route/ProtectedRoute";
-import PublicRoute from "./route/PublicRoute";
-import NotFound from "./pages/NotFound";
-
-// Halaman publik tambahan
-import Produk from "./components/Produk";
-import Testimoni from "./components/Testimoni";
-import Kontak from "./components/Kontak";
 
 function App() {
   return (
@@ -71,7 +49,7 @@ function App() {
       <Route path="/testimoni" element={<Testimoni />} />
       <Route path="/artikel" element={<Artikel />} />
       <Route path="/kontak" element={<Kontak />} />
-      <Route path="/homefaq" element={<FAQ />} />
+      <Route path="/faq" element={<FAQ />} />
       <Route path="*" element={<NotFound />} />
 
       {/* Halaman login dan register */}
@@ -180,7 +158,6 @@ function App() {
             </ProtectedRoute>
           }
         />
-
         <Route
           path="/pemesanan"
           element={
@@ -206,7 +183,6 @@ function App() {
           }
         />
         <Route path="/chatpelanggan" element={<ChatPelanggan />} />
-        <Route path="/faq" element={<FAQ />} />
         <Route path="/formfaq" element={<FormFaq />} />
         <Route path="/listfaq" element={<ListFaq />} />
         <Route path="/listartikel" element={<ListArtikel />} />
