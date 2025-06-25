@@ -1,6 +1,6 @@
 // App.jsx
 import { Routes, Route } from "react-router-dom";
-import Home from "./components/Home";
+import Home from "./components/home/Home";
 import MainLayout from "./components/MainLayout";
 import Dashboard from "./pages/Dashboard";
 import Pelanggan from "./pages/pelanggan/Pelanggan";
@@ -12,7 +12,7 @@ import ProductForm from "./pages/ProductForm";
 import Pemesanan from "./pages/Pemesanan";
 import ChatPelanggan from "./pages/ChatPelanggan";
 import FAQ from "./pages/FAQ";
-import Artikel from "./components/Artikel";
+import Artikel from "./components/home/Artikel";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import ProtectedRoute from "./route/ProtectedRoute";
@@ -26,9 +26,9 @@ import ListPemesanan from "./pages/ListPemesanan";
 import PemesananForm from "./pages/PemesananForm";
 
 // Tambahan halaman publik
-import Produk from "./components/Produk";
-import Testimoni from "./components/Testimoni";
-import Kontak from "./components/Kontak";
+import Produk from "./components/home/Produk";
+import Testimoni from "./components/home/Testimoni";
+import Kontak from "./components/home/Kontak";
 
 function App() {
   return (
@@ -39,6 +39,7 @@ function App() {
       <Route path="/testimoni" element={<Testimoni />} />
       <Route path="/artikel" element={<Artikel />} />
       <Route path="/kontak" element={<Kontak />} />
+      <Route path="/homefaq" element={<FAQ />} />
       <Route path="*" element={<NotFound />} />
 
       {/* Halaman login dan register */}

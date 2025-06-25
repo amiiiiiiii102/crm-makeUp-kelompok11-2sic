@@ -31,14 +31,14 @@ const menuItems = [
 ]
 const allMenuItems = [
   { name: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/dashboard', roles: ['admin'] },
-  { name: 'Produk', icon: <Box size={20} />, path: '/produk', roles: ['admin', 'pelanggan'] },
+  { name: 'Produk', icon: <Box size={20} />, path: '/listproduk', roles: ['admin', 'pelanggan'] },
   { name: 'Pelanggan', icon: <User2Icon size={20} />, path: '/pelanggan', roles: ['admin'] },
   { name: 'Laporan', icon: <BarChart2 size={20} />, path: '/laporan', roles: ['admin'] },
   { name: 'Pemesanan', icon: <ShoppingCart size={20} />, path: '/pemesanan', roles: ['admin', 'pelanggan'] },
   { name: 'FAQ', icon: <HelpCircle size={20} />, path: '/FAQ', roles: ['admin','pelanggan'] },
   { name: 'Form Produk', icon: <ClipboardList size={20} />, path: '/ProductForm', roles: ['admin'] },
   { name: 'Chat Pelanggan', icon: <MessageCircle size={20} />, path: '/ChatPelanggan', roles: ['admin'] },
-  { name: 'Artikel', icon: <Newspaper size={20} />, path: '/artikel', roles: ['admin','pelanggan'] },
+  { name: 'Artikel', icon: <Newspaper size={20} />, path: '/listartikel', roles: ['admin','pelanggan'] },
 ];
 
 const accountItems = [

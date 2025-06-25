@@ -36,7 +36,7 @@ export default function Navbar({ activeNav }) {
         <a href="/produk" style={linkStyle("produk")}>Produk</a>
         <a href="/testimoni" style={linkStyle("testimoni")}>Testimonial</a>
         <a href="/artikel" style={linkStyle("artikel")}>Artikel</a>
-        <a href="/faq" style={linkStyle("faq")}>FAQ</a>
+        <a href="/homefaq" style={linkStyle("faq")}>FAQ</a>
         <a href="/kontak" style={linkStyle("kontak")}>Kontak</a>
       </div>
 
