@@ -29,6 +29,7 @@ const allMenuItems = [
   { name: 'FAQ', icon: <HelpCircle size={20} />, path: '/FAQ', roles: ['admin', 'pelanggan'] },
   { name: 'Form Produk', icon: <ClipboardList size={20} />, path: '/ProductForm', roles: ['admin'] },
   { name: 'Chat Pelanggan', icon: <MessageCircle size={20} />, path: '/ChatPelanggan', roles: ['admin'] },
+  { name: 'Testimoni', icon: <MessageCircle size={20} />, path: '/listtestimoni', roles: ['admin'] },
   { name: 'Artikel', icon: <Newspaper size={20} />, path: '/listartikel', roles: ['admin','pelanggan'] },
 
 ];

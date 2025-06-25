@@ -39,6 +39,7 @@ import ListFaq from "./pages/ListFaq";
 
 import ListArtikel from "./pages/ListArtikel";
 import ArtikelForm from "./pages/ArtikelForm";
+import TestimoniList from "./pages/TestimoniList";
 
 function App() {
   return (
@@ -186,6 +187,7 @@ function App() {
         <Route path="/formfaq" element={<FormFaq />} />
         <Route path="/listfaq" element={<ListFaq />} />
         <Route path="/listartikel" element={<ListArtikel />} />
+        <Route path="/listtestimoni" element={<TestimoniList />} />
         <Route path="/formartikel" element={<ArtikelForm />} />
         <Route path="/setting" element={<SettingAkun />} />
       </Route>
