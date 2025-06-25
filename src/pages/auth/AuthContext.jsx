@@ -36,11 +36,7 @@ export const AuthProvider = ({ children }) => {
       }
 
       // ✅ SUPABASE SIGNUP WITH EMAIL CONFIRMATION
-      const { data, error } = await supabase.auth.signUp({
-        email: email,
-        password: password,
-        created_at: new Date().toISOString()
-      });
+     
 
       if (error) {
         // Handle specific Supabase errors
