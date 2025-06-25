@@ -1,27 +1,25 @@
-// src/components/home/FAQ.jsx
-import { useState } from "react";
-import Navbar from "./Navbar";
-import Footer from "./Footer";
+import { useState, useEffect } from "react";
+import { supabase } from "../../supabase";
 
-export default function FAQ({ withLayout = true }) {
+export default function FAQ({ withLayout = false }) {
   const warnaUtama = "#b4380d";
-
-  const pertanyaan = [
-    {
-      q: "Apakah produk ini aman untuk semua jenis kulit?",
-      a: "Ya, produk kami telah teruji dermatologis dan cocok untuk semua jenis kulit, termasuk kulit sensitif.",
-    },
-    {
-      q: "Berapa lama pengiriman produk sampai?",
-      a: "Waktu pengiriman rata-rata 2-5 hari kerja tergantung lokasi pengiriman.",
-    },
-    {
-      q: "Apakah saya bisa mengembalikan produk jika rusak?",
-      a: "Tentu, Anda bisa mengajukan pengembalian jika produk rusak atau tidak sesuai, maksimal 3 hari setelah diterima.",
-    },
-  ];
-
+  const [faqList, setFaqList] = useState([]);
   const [openIndex, setOpenIndex] = useState(null);
+  const [showAll, setShowAll] = useState(false);
+
+  useEffect(() => {
+    const fetchFAQ = async () => {
+      const { data, error } = await supabase
+        .from("faq")
+        .select("*")
+        .order("created_at", { ascending: true });
+      if (!error) setFaqList(data);
+    };
+
+    fetchFAQ();
+  }, []);
+
+  const displayedFAQ = showAll ? faqList : faqList.slice(0, 5);
 
   const content = (
     <section
@@ -29,60 +27,85 @@ export default function FAQ({ withLayout = true }) {
       style={{
         padding: "60px 20px",
         backgroundColor: "#fff6ea",
-        minHeight: "100vh",
         display: "flex",
         flexWrap: "wrap",
         gap: 40,
-        alignItems: "flex-start",
         justifyContent: "center",
       }}
     >
-      {/* Kiri: Pertanyaan */}
       <div style={{ flex: "1 1 500px", maxWidth: 600 }}>
-        <h2
-          style={{
-            fontSize: 28,
-            color: warnaUtama,
-            fontWeight: "bold",
-            marginBottom: 20,
-          }}
-        >
+        <h2 style={{ fontSize: 28, color: warnaUtama, fontWeight: "bold", marginBottom: 20 }}>
           Pertanyaan Umum (FAQ)
         </h2>
-        {pertanyaan.map((item, index) => (
-          <div
-            key={index}
-            style={{
-              backgroundColor: "#fff",
-              marginBottom: 12,
-              borderRadius: 12,
-              boxShadow: "0 4px 10px rgba(0,0,0,0.08)",
-              padding: "16px 20px",
-              cursor: "pointer",
-              transition: "0.3s ease",
-            }}
-            onClick={() => setOpenIndex(openIndex === index ? null : index)}
-          >
-            <h4 style={{ color: warnaUtama, fontWeight: "bold", fontSize: 16 }}>
-              {item.q}
-            </h4>
-            {openIndex === index && (
-              <p style={{ marginTop: 10, color: "#333", fontSize: 14 }}>
-                {item.a}
-              </p>
-            )}
+
+        {displayedFAQ.map((item, index) => {
+          const isOpen = openIndex === index;
+          return (
+            <div
+              key={item.id}
+              style={{
+                backgroundColor: "#fff",
+                marginBottom: 16,
+                borderRadius: 12,
+                boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
+                overflow: "hidden",
+                transition: "0.3s ease",
+              }}
+            >
+              <div
+                onClick={() => setOpenIndex(isOpen ? null : index)}
+                style={{
+                  padding: "16px 20px",
+                  cursor: "pointer",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  backgroundColor: "#f9f9f9",
+                }}
+              >
+                <h4 style={{ margin: 0, fontSize: 16, color: warnaUtama }}>{item.pertanyaan}</h4>
+                <div
+                  style={{
+                    transform: isOpen ? "rotate(45deg)" : "rotate(0deg)",
+                    transition: "0.3s",
+                    fontSize: 20,
+                    color: warnaUtama,
+                  }}
+                >
+                  +
+                </div>
+              </div>
+              {isOpen && (
+                <div style={{ padding: "0 20px 16px", fontSize: 14, color: "#444" }}>
+                  {item.jawaban}
+                </div>
+              )}
+            </div>
+          );
+        })}
+
+        {faqList.length > 5 && (
+          <div style={{ textAlign: "center", marginTop: 16 }}>
+            <button
+              onClick={() => setShowAll(!showAll)}
+              style={{
+                backgroundColor: warnaUtama,
+                color: "#fff",
+                padding: "10px 20px",
+                borderRadius: 20,
+                border: "none",
+                fontWeight: "bold",
+                cursor: "pointer",
+              }}
+            >
+              {showAll ? "Sembunyikan" : "Lihat Semua"}
+            </button>
           </div>
-        ))}
+        )}
       </div>
 
-      {/* Kanan: Gambar */}
-      <div
-        style={{
-          flex: "1 1 300px",
-          textAlign: "center",
-          maxWidth: 400,
-        }}
-      >
+      {/* Gambar Samping */}
+      <div style={{ flex: "1 1 300px", textAlign: "center", maxWidth: 400 }}>
         <img
           src="/images/1png.png"
           alt="Ilustrasi FAQ"
@@ -92,13 +115,5 @@ export default function FAQ({ withLayout = true }) {
     </section>
   );
 
-  return withLayout ? (
-    <>
-      <Navbar activeNav="faq" />
-      {content}
-      <Footer />
-    </>
-  ) : (
-    content
-  );
+  return content;
 }

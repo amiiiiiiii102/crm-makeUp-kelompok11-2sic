@@ -108,6 +108,15 @@ export default function Produk({ withLayout = true }) {
               padding: 16,
               textAlign: "center",
               cursor: "pointer",
+              transition: "transform 0.3s, box-shadow 0.3s",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = "scale(1.03)";
+              e.currentTarget.style.boxShadow = "0 8px 20px rgba(0,0,0,0.3)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = "scale(1)";
+              e.currentTarget.style.boxShadow = "0 6px 16px rgba(0,0,0,0.2)";
             }}
           >
             <div
@@ -144,10 +153,17 @@ export default function Produk({ withLayout = true }) {
                 border: "none",
                 padding: "10px 0",
                 width: "100%",
-                borderRadius: 20,
+                borderRadius: 30,
                 marginBottom: 10,
                 cursor: "pointer",
+                transition: "background-color 0.3s",
               }}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.backgroundColor = "#932f0b")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.backgroundColor = warnaUtama)
+              }
             >
               🛍 Beli Sekarang
             </button>
@@ -176,7 +192,14 @@ export default function Produk({ withLayout = true }) {
             borderRadius: 30,
             fontWeight: 500,
             cursor: "pointer",
+            transition: "background-color 0.3s",
           }}
+          onMouseEnter={(e) =>
+            (e.currentTarget.style.backgroundColor = "#932f0b")
+          }
+          onMouseLeave={(e) =>
+            (e.currentTarget.style.backgroundColor = warnaUtama)
+          }
         >
           {showAll ? "Sembunyikan" : "Lihat Lainnya"}
         </button>

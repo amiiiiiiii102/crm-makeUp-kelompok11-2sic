@@ -32,6 +32,17 @@ export default function Home() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const buttonStyle = {
+    backgroundColor: "#f37021",
+    color: "#ffffff",
+    padding: "10px 24px",
+    borderRadius: 30,
+    fontWeight: "bold",
+    transition: "all 0.3s ease",
+    border: "none",
+    cursor: "pointer",
+  };
+
   return (
     <div>
       <Navbar activeNav={activeNav} />
@@ -50,6 +61,7 @@ export default function Home() {
           justifyContent: "center",
           textAlign: "center",
           color: "#ffffff",
+          transition: "0.3s ease",
         }}
       >
         <div
@@ -64,48 +76,57 @@ export default function Home() {
           }}
         ></div>
         <div style={{ position: "relative", zIndex: 3, fontWeight: "bold" }}>
-          <h1 style={{ fontSize: 48, marginBottom: 10 }}>
+          <h1 style={{ fontSize: 48, marginBottom: 10, animation: "fadeInDown 0.6s" }}>
             Selamat Datang di Istana Cosmetic
           </h1>
-          <p style={{ fontSize: 18, marginBottom: 20 }}>
+          <p style={{ fontSize: 18, marginBottom: 20, animation: "fadeInUp 0.6s" }}>
             Kecantikan yang membuatmu percaya diri setiap hari.
           </p>
           <a href="#produk">
             <button
-              style={{
-                backgroundColor: "#f37021",
-                color: "#ffffff",
-                padding: "10px 24px",
-                borderRadius: 30,
-                fontWeight: "bold",
-                transition: "0.3s",
-                border: "none",
-                cursor: "pointer",
+              style={buttonStyle}
+              onMouseEnter={(e) => {
+                e.target.style.backgroundColor = "#d95d17";
+                e.target.style.transform = "scale(1.05)";
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.backgroundColor = "#f37021";
+                e.target.style.transform = "scale(1)";
               }}
             >
-              Jelajahi Sekarang
+              Jelajahi Sekarang ✨
             </button>
           </a>
         </div>
       </section>
 
       {/* Produk Section */}
-      <Produk withLayout={false} />
+      <div style={{ transition: "opacity 0.5s ease-in" }}>
+        <Produk withLayout={false} />
+      </div>
 
       {/* Testimoni Section */}
-      <Testimoni withLayout={false} />
+      <div style={{ transition: "opacity 0.5s ease-in-out" }}>
+        <Testimoni withLayout={false} />
+      </div>
 
       {/* Artikel Section */}
-      <Artikel withLayout={false} />
+      <div style={{ transition: "transform 0.5s ease-in-out" }}>
+        <Artikel withLayout={false} />
+      </div>
 
       {/* Spacer antara artikel dan faq */}
       <div style={{ height: 60, backgroundColor: "#fff6ea" }}></div>
 
       {/* FAQ Section */}
-      <FAQ withLayout={false} />
+      <div style={{ transition: "opacity 0.5s ease-out" }}>
+        <FAQ withLayout={false} />
+      </div>
 
       {/* Kontak Section */}
-      <Kontak withLayout={false} />
+      <div style={{ transition: "transform 0.4s ease-in-out" }}>
+        <Kontak withLayout={false} />
+      </div>
 
       {/* Footer */}
       <Footer />
