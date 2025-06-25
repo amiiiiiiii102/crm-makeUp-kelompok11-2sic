@@ -12,7 +12,7 @@ export default function Home() {
 
   useEffect(() => {
     const handleScroll = () => {
-      const sections = ["home", "produk", "testimoni", "artikel", "kontak"];
+      const sections = ["home", "produk", "testimoni", "artikel", "faq", "kontak"];
       const scrollPosition = window.scrollY + window.innerHeight / 3;
 
       for (let id of sections) {
@@ -89,23 +89,25 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Produk Section tanpa layout */}
+      {/* Produk Section */}
       <Produk withLayout={false} />
 
-
-      {/* Testimoni Section tanpa layout */}
+      {/* Testimoni Section */}
       <Testimoni withLayout={false} />
 
-      {/* Artikel Section tanpa layout */}
+      {/* Artikel Section */}
       <Artikel withLayout={false} />
 
-       {/* Produk Section tanpa layout */}
+      {/* Spacer antara artikel dan faq */}
+      <div style={{ height: 60, backgroundColor: "#fff6ea" }}></div>
+
+      {/* FAQ Section */}
       <FAQ withLayout={false} />
 
-      {/* Kontak Section tanpa layout */}
+      {/* Kontak Section */}
       <Kontak withLayout={false} />
 
-      {/* Footer tetap di akhir */}
+      {/* Footer */}
       <Footer />
     </div>
   );

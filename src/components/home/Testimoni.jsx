@@ -1,5 +1,6 @@
 // src/components/home/Testimoni.jsx
 export default function Testimoni({ withLayout = true }) {
+  const warnaUtama = "#b4380d";
   const data = [
     {
       nama: "Ayu Lestari",
@@ -23,13 +24,14 @@ export default function Testimoni({ withLayout = true }) {
 
   const content = (
     <section
-      id="testimoni"
-      style={{
-        backgroundColor: "#ffffff",
-        padding: "60px 20px",
-        textAlign: "center"
-      }}
-    >
+  id="testimoni"
+  style={{
+    backgroundColor: "#fff6ea", // sama seperti FAQ
+    padding: "60px 20px",
+    textAlign: "center"
+  }}
+>
+
       <h2 style={{ fontSize: 28, color: "#f37021", marginBottom: 20 }}>Testimoni Pelanggan</h2>
       <p style={{ marginBottom: 30 }}>Pendapat pelanggan tentang produk kami</p>
       <div style={{
