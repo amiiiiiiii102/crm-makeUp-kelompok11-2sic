@@ -10,6 +10,7 @@ import Pelanggan from "./pages/pelanggan/Pelanggan";
 import TambahPelanggan from "./pages/pelanggan/TambahPelanggan";
 import EditPelanggan from "./pages/pelanggan/EditPelanggan";
 import ProductManagement from "./pages/ProductManagement";
+import ProductUser from "./pages/ProductUser";
 import SalesManagement from "./pages/SalesManagement";
 import ProductForm from "./pages/ProductForm";
 import ProductEditForm from "./pages/ProductEditForm";
@@ -126,6 +127,14 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={["admin"]}>
               <ProductManagement />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/ProdukUser"
+          element={
+            <ProtectedRoute allowedRoles={["pelanggan"]}>
+              <ProductUser />
             </ProtectedRoute>
           }
         />

@@ -1,110 +1,88 @@
-import React, { useEffect, useState } from 'react'
-import { supabase } from '../supabase'
-import { useAuth } from '../pages/auth/AuthContext'
+import React, { useEffect, useRef, useState } from 'react';
+import { MessageCircle, Send, Clock, CheckCheck } from 'lucide-react';
+import { supabase } from '../supabase';
+import { useAuth } from '../pages/auth/AuthContext';
 
 const ChatUser = () => {
-  const [messages, setMessages] = useState([])
-  const [input, setInput] = useState('')
-  const [conversationId, setConversationId] = useState(null)
-  const { currentUser } = useAuth()
-  const [adminId, setAdminId] = useState(null)
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState('');
+  const [conversationId, setConversationId] = useState(null);
+  const { currentUser } = useAuth();
+  const [adminId, setAdminId] = useState(null);
 
   const formatTime = iso => {
-    const d = new Date(iso)
-    return `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`
-  }
+    const d = new Date(iso);
+    return `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
+  };
 
-  // Ambil satu admin (untuk dikaitkan dengan conversation)
   useEffect(() => {
     const fetchAdmin = async () => {
       const { data, error } = await supabase
         .from('admin')
         .select('id')
         .limit(1)
-        .maybeSingle()
+        .maybeSingle();
 
-      if (data) {
-        setAdminId(data.id)
-      } else {
-        console.error('Gagal mendapatkan admin:', error)
-      }
-    }
+      if (data) setAdminId(data.id);
+      else console.error('Gagal mendapatkan admin:', error);
+    };
 
-    fetchAdmin()
-  }, [])
+    fetchAdmin();
+  }, []);
 
-  // Ambil pesan & polling setiap 5 detik
   useEffect(() => {
-    if (!currentUser?.id || !adminId) return
+    if (!currentUser?.id || !adminId) return;
 
     const fetchMessages = async () => {
-      const { data: conv, error } = await supabase
+      const { data: conv } = await supabase
         .from('conversations')
         .select('id')
         .eq('user_id', currentUser.id)
         .eq('admin_id', adminId)
-        .maybeSingle()
-
-      if (error) {
-        console.error('Gagal mengambil percakapan:', error)
-        return
-      }
+        .maybeSingle();
 
       if (conv) {
-        setConversationId(conv.id)
-
-        const { data: pesan, error: pesanErr } = await supabase
+        setConversationId(conv.id);
+        const { data: pesan } = await supabase
           .from('pesan')
           .select('*')
           .eq('conversation_id', conv.id)
-          .order('sent_at', { ascending: true })
+          .order('sent_at', { ascending: true });
 
-        if (pesanErr) {
-          console.error('Gagal mengambil pesan:', pesanErr)
-        } else {
-          setMessages(
-            pesan.map(m => ({
-              id: m.id,
-              text: m.message,
-              from: m.sender_role,
-              time: formatTime(m.sent_at),
-            }))
-          )
-        }
+        setMessages(
+          pesan.map(m => ({
+            id: m.id,
+            text: m.message,
+            from: m.sender_role,
+            time: formatTime(m.sent_at),
+            is_read: m.is_read,
+          }))
+        );
       }
-    }
+    };
 
-    fetchMessages()
-    const interval = setInterval(fetchMessages, 5000)
-
-    return () => clearInterval(interval)
-  }, [currentUser, adminId])
+    fetchMessages();
+    const interval = setInterval(fetchMessages, 5000);
+    return () => clearInterval(interval);
+  }, [currentUser, adminId]);
 
   const sendMessage = async () => {
-    if (!input.trim() || !currentUser || !adminId) return
+    if (!input.trim() || !currentUser || !adminId) return;
+    let convId = conversationId;
 
-    let convId = conversationId
-
-    // Cek apakah conversation sudah ada
     if (!convId) {
-      const { data: existingConv, error: findError } = await supabase
+      const { data: existingConv } = await supabase
         .from('conversations')
         .select('id')
         .eq('user_id', currentUser.id)
         .eq('admin_id', adminId)
-        .maybeSingle()
-
-      if (findError) {
-        console.error('Gagal mengecek conversation:', findError)
-        return
-      }
+        .maybeSingle();
 
       if (existingConv) {
-        convId = existingConv.id
-        setConversationId(convId)
+        convId = existingConv.id;
+        setConversationId(convId);
       } else {
-        // Buat baru
-        const { data: newConv, error: insertError } = await supabase
+        const { data: newConv } = await supabase
           .from('conversations')
           .insert({
             user_id: currentUser.id,
@@ -112,20 +90,14 @@ const ChatUser = () => {
             started_at: new Date(),
           })
           .select('id')
-          .single()
+          .single();
 
-        if (insertError) {
-          console.error('Gagal membuat percakapan:', insertError)
-          return
-        }
-
-        convId = newConv.id
-        setConversationId(convId)
+        convId = newConv.id;
+        setConversationId(convId);
       }
     }
 
-    // Kirim pesan
-    const { error: sendError } = await supabase.from('pesan').insert({
+    await supabase.from('pesan').insert({
       conversation_id: convId,
       user_id: currentUser.id,
       admin_id: adminId,
@@ -133,56 +105,102 @@ const ChatUser = () => {
       message: input,
       sent_at: new Date(),
       is_read: false,
-    })
+    });
 
-    if (sendError) {
-      console.error('Gagal mengirim pesan:', sendError)
-    } else {
-      setInput('')
-    }
-  }
+    setInput('');
+  };
 
-  // Jangan tampilkan form jika user belum login atau belum dapat admin
-  if (!currentUser || !adminId || currentUser.isAdmin) return null
+  if (!currentUser || !adminId || currentUser.isAdmin) return null;
 
   return (
-    <div className="p-6 max-w-2xl mx-auto bg-white rounded shadow">
-      <h2 className="text-xl font-bold mb-4 text-[#C0360C]">Chat dengan Admin</h2>
+    <div className="absolute inset-0 top-[64px] left-[240px] right-0 bottom-0 bg-gray-50 z-30 overflow-hidden">
+      <div className="h-full flex flex-col">
+        <div className="bg-white border-b border-gray-200 px-6 py-4 flex items-center space-x-3 sticky top-0 z-10">
+          <div className="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center">
+            <MessageCircle size={20} className="text-white" />
+          </div>
+          <div>
+            <h1 className="text-xl font-semibold text-gray-900">Chat dengan Admin</h1>
+            <p className="text-sm text-gray-500">Layanan Bantuan</p>
+          </div>
+        </div>
 
-      <div className="h-96 overflow-y-auto border p-4 rounded space-y-4">
-        {messages.map(msg => (
-          <div
-            key={msg.id}
-            className={`flex ${msg.from === 'pelanggan' ? 'justify-end' : 'justify-start'}`}
-          >
+        <div className="flex-1 p-6 space-y-4 overflow-y-auto">
+          {messages.map((msg, idx) => (
             <div
-              className={`p-3 rounded-xl max-w-xs shadow ${
-                msg.from === 'pelanggan' ? 'bg-[#FFDACC]' : 'bg-[#FFF1ED]'
+              key={idx}
+              className={`flex items-end space-x-2 ${
+                msg.from === 'pelanggan' ? 'justify-end' : 'justify-start'
               }`}
             >
-              <p className="text-sm">{msg.text}</p>
-              <p className="text-xs text-gray-500 text-right mt-1">{msg.time}</p>
-            </div>
-          </div>
-        ))}
-      </div>
+              {/* Avatar for admin messages (left side) */}
+              {msg.from === 'admin' && (
+                <div className="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center text-xs font-semibold text-white">
+                  A
+                </div>
+              )}
+              
+              {/* Message bubble */}
+              <div className={`max-w-xs lg:max-w-md px-4 py-3 rounded-2xl ${
+                msg.from === 'pelanggan'
+                  ? 'bg-orange-500 text-white'
+                  : 'bg-white border border-gray-200 text-gray-800'
+              }`}>
+                <p className="text-sm font-medium mb-1 opacity-75">
+                  {msg.from === 'pelanggan' ? 'Anda' : 'Admin'}
+                </p>
+                <p className="text-sm leading-relaxed">{msg.text}</p>
+                <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-200 border-opacity-20">
+                  <div className="flex items-center space-x-1 text-xs opacity-75">
+                    <Clock size={12} />
+                    <span>{msg.time}</span>
+                  </div>
+                  {msg.from === 'pelanggan' && (
+                    <div className="flex items-center space-x-1 text-xs">
+                      <CheckCheck size={12} className={msg.is_read ? 'text-green-500' : 'text-gray-400'} />
+                      <span className={msg.is_read ? 'text-green-500' : 'text-gray-400'}>
+                        {msg.is_read ? 'Dibaca' : 'Terkirim'}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
 
-      <div className="mt-4 flex gap-2">
-        <input
-          value={input}
-          onChange={e => setInput(e.target.value)}
-          className="flex-grow p-2 border rounded"
-          placeholder="Tulis pesan..."
-        />
-        <button
-          onClick={sendMessage}
-          className="bg-[#C0360C] text-white px-4 py-2 rounded hover:bg-[#A42C07]"
-        >
-          Kirim
-        </button>
+              {/* Avatar for customer messages (right side) */}
+              {msg.from === 'pelanggan' && (
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-pink-400 to-purple-600 flex items-center justify-center text-xs font-semibold text-white">
+                  {currentUser.email?.[0]?.toUpperCase() || 'P'}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+
+        <div className="p-6 bg-white border-t border-gray-200">
+          <div className="flex items-end space-x-3">
+            <div className="flex-1">
+              <input
+                type="text"
+                placeholder="Tulis pesan..."
+                className="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-none"
+                value={input}
+                onChange={e => setInput(e.target.value)}
+                onKeyPress={e => e.key === 'Enter' && sendMessage()}
+              />
+            </div>
+            <button
+              onClick={sendMessage}
+              disabled={!input.trim()}
+              className="px-6 py-3 bg-orange-500 text-white rounded-2xl hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2"
+            >
+              <Send size={16} />
+              <span>Kirim</span>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ChatUser
+export default ChatUser;
