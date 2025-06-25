@@ -65,7 +65,7 @@ export default function Home() {
         <div style={{ position: "relative", zIndex: 3, fontWeight: "bold" }}>
           <h1 style={{ fontSize: 48, marginBottom: 10 }}>Selamat Datang di Istana Cosmetic</h1>
           <p style={{ fontSize: 18, marginBottom: 20 }}>Kecantikan yang membuatmu percaya diri setiap hari.</p>
-          <a href="#produk">
+          <a href="/produk">
             <button style={{
               backgroundColor: "#f37021",
               color: "#ffffff",

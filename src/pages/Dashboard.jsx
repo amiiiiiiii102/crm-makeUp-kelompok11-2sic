@@ -1,5 +1,13 @@
 import React from 'react'
 import {
+  Chart,
+  LineController,
+  Filler // <== ini penting
+} from 'chart.js'
+
+Chart.register(LineController, Filler)
+
+import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,

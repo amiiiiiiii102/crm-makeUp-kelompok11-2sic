@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { AuthContext } from './AuthContext';
-import { supabase } from '../../Supabase';
+import { supabase } from '../../supabase';
 import bcrypt from 'bcryptjs';
 import { Eye, EyeOff, Mail, Lock, Star, User, Phone, Check, X, Shield } from 'lucide-react';
 

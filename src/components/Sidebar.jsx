@@ -22,9 +22,10 @@ import { AuthContext } from '../pages/auth/AuthContext'; // pastikan path ini se
 // Semua menu dengan role-nya
 const allMenuItems = [
   { name: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/dashboard', roles: ['admin'] },
-  { name: 'Produk', icon: <Box size={20} />, path: '/produk', roles: ['admin', 'pelanggan'] },
+  { name: 'Produk', icon: <Box size={20} />, path: '/produkmanagement', roles: ['admin', 'pelanggan'] },
   { name: 'Pelanggan', icon: <User2Icon size={20} />, path: '/pelanggan', roles: ['admin'] },
   { name: 'Laporan', icon: <BarChart2 size={20} />, path: '/laporan', roles: ['admin'] },
+  { name: 'chatuser', icon: <MessageCircle size={20} />, path: '/chatuser', roles: ['pelanggan'] },
   { name: 'Pemesanan', icon: <ShoppingCart size={20} />, path: '/pemesanan', roles: ['admin', 'pelanggan'] },
   { name: 'FAQ', icon: <HelpCircle size={20} />, path: '/FAQ', roles: ['admin', 'pelanggan'] },
   { name: 'Form Produk', icon: <ClipboardList size={20} />, path: '/ProductForm', roles: ['admin'] },
