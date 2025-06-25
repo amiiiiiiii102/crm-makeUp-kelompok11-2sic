@@ -3,7 +3,7 @@ import { Upload, CheckCircle, AlertCircle, X, Users, FileText } from 'lucide-rea
 import Papa from 'papaparse';
 import * as XLSX from 'xlsx';
 import { PelangganContext } from './PelangganContext';
-import { supabase } from '../../Supabase';
+import { supabase } from '../../supabase';
 import { generateDefaultImage } from '../../generateDefaultImage';
 
 const UploadData = () => {

@@ -2,7 +2,7 @@ import React, { useState, useContext } from 'react';
 import { PelangganContext } from '../pelanggan/PelangganContext';
 import { useNavigate } from 'react-router-dom';
 import { generateDefaultImage } from '../../generateDefaultImage';
-import { supabase } from '../../Supabase'; // Import supabase client
+import { supabase } from '../../supabase'; // Import supabase client
 import {
   ArrowLeft, User, Mail, Phone, MapPin, Calendar,
   CreditCard, Star, Camera, Upload, CheckCircle, X,
