@@ -175,48 +175,35 @@ const ChatPelanggan = ({ adminId }) => {
   }
 
   return (
-    <div className="h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto h-full flex flex-col">
+    <div className="absolute inset-0 top-[64px] left-[240px] right-0 bottom-0 bg-gray-50 z-30 overflow-hidden">
+      <div className="h-full flex flex-col">
         {/* Header */}
-        <div className="bg-white border-b border-gray-200 px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              {isChatRoom && (
-                <button
-                  onClick={() => {
-                    setIsChatRoom(false);
-                    setSelectedUser(null);
-                    setSelectedUserEmail('');
-                    setSelectedMessages([]);
-                    setInputText('');
-                    setEditMode({ msgId: null });
-                  }}
-                  className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-                >
-                  <ArrowLeft size={20} className="text-gray-600" />
-                </button>
-              )}
-              <div className="flex items-center space-x-2">
-  <div className="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center">
-    <MessageCircle size={20} className="text-white" />
-  </div>
-  <div>
-    <h1 className="text-xl font-semibold text-gray-900">
-      {isChatRoom ? selectedUserEmail : 'Chat Pelanggan'}
-    </h1>
-    {isChatRoom && (
-      <p className="text-sm text-gray-500">Customer Support</p>
-    )}
-  </div>
-</div>
-
-            </div>
-            {!isChatRoom && (
-              <div className="flex items-center space-x-2 text-sm text-gray-600">
-                <Users size={16} />
-                <span>{chats.length} Percakapan</span>
-              </div>
-            )}
+        <div className="bg-white border-b border-gray-200 px-6 py-4 flex items-center space-x-3 sticky top-0 z-10">
+          {isChatRoom && (
+            <button
+              onClick={() => {
+                setIsChatRoom(false);
+                setSelectedUser(null);
+                setSelectedUserEmail('');
+                setSelectedMessages([]);
+                setInputText('');
+                setEditMode({ msgId: null });
+              }}
+              className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+            >
+              <ArrowLeft size={20} className="text-gray-600" />
+            </button>
+          )}
+          <div className="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center">
+            <MessageCircle size={20} className="text-white" />
+          </div>
+          <div className="flex-1">
+            <h1 className="text-xl font-semibold text-gray-900">
+              {isChatRoom ? `Chat dengan ${selectedUserEmail}` : 'Chat Pelanggan'}
+            </h1>
+            <p className="text-sm text-gray-500">
+              {isChatRoom ? 'Customer Support' : `${chats.length} Percakapan Aktif`}
+            </p>
           </div>
         </div>
 
@@ -225,16 +212,29 @@ const ChatPelanggan = ({ adminId }) => {
           {isChatRoom ? (
             <div className="h-full flex flex-col">
               {/* Messages */}
-              <div className="flex-1 overflow-y-auto p-6 space-y-4">
+              <div className="flex-1 p-6 space-y-4 overflow-y-auto">
                 {selectedMessages.map((msg, idx) => (
-                  <div key={idx} className={`flex ${msg.from === 'pelanggan' ? 'justify-start' : 'justify-end'}`}>
+                  <div
+                    key={idx}
+                    className={`flex items-end space-x-2 ${
+                      msg.from === 'admin' ? 'justify-end' : 'justify-start'
+                    }`}
+                  >
+                    {/* Avatar for customer messages (left side) */}
+                    {msg.from === 'pelanggan' && (
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-pink-400 to-purple-600 flex items-center justify-center text-xs font-semibold text-white">
+                        {selectedUserEmail?.[0]?.toUpperCase() || 'P'}
+                      </div>
+                    )}
+                    
+                    {/* Message bubble */}
                     <div className={`max-w-xs lg:max-w-md px-4 py-3 rounded-2xl ${
-                      msg.from === 'pelanggan'
-                        ? 'bg-white border border-gray-200 text-gray-800'
-                        : 'bg-orange-500 text-white'
+                      msg.from === 'admin'
+                        ? 'bg-orange-500 text-white'
+                        : 'bg-white border border-gray-200 text-gray-800'
                     }`}>
                       <p className="text-sm font-medium mb-1 opacity-75">
-                        {msg.from === 'pelanggan' ? 'Pelanggan' : 'Admin'}
+                        {msg.from === 'admin' ? 'Admin' : 'Pelanggan'}
                       </p>
                       <p className="text-sm leading-relaxed">{msg.text}</p>
                       <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-200 border-opacity-20">
@@ -253,8 +253,8 @@ const ChatPelanggan = ({ adminId }) => {
                           )}
                           {msg.from === 'pelanggan' && (
                             <div className="flex items-center space-x-1 text-xs">
-                              <CheckCheck size={12} className={msg.is_read ? 'text-orange-400' : 'text-gray-400'} />
-                              <span className={msg.is_read ? 'text-orange-400' : 'text-gray-400'}>
+                              <CheckCheck size={12} className={msg.is_read ? 'text-green-500' : 'text-gray-400'} />
+                              <span className={msg.is_read ? 'text-green-500' : 'text-gray-400'}>
                                 {msg.is_read ? 'Dibaca' : 'Terkirim'}
                               </span>
                             </div>
@@ -262,6 +262,13 @@ const ChatPelanggan = ({ adminId }) => {
                         </div>
                       </div>
                     </div>
+
+                    {/* Avatar for admin messages (right side) */}
+                    {msg.from === 'admin' && (
+                      <div className="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center text-xs font-semibold text-white">
+                        A
+                      </div>
+                    )}
                   </div>
                 ))}
                 <div ref={bottomRef} />
@@ -292,7 +299,7 @@ const ChatPelanggan = ({ adminId }) => {
               </div>
             </div>
           ) : (
-            <div className="p-6">
+            <div className="flex-1 p-6 overflow-y-auto">
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                 <div className="px-6 py-4 border-b border-gray-200">
                   <h2 className="text-lg font-semibold text-gray-900">Daftar Percakapan</h2>
@@ -305,7 +312,7 @@ const ChatPelanggan = ({ adminId }) => {
                       <div key={chat.id} className="px-6 py-4 hover:bg-gray-50 transition-colors">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center space-x-3">
-                            <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-purple-600 rounded-full flex items-center justify-center">
+                            <div className="w-10 h-10 bg-gradient-to-br from-pink-400 to-purple-600 rounded-full flex items-center justify-center">
                               <span className="text-white font-medium text-sm">
                                 {chat.email.charAt(0).toUpperCase()}
                               </span>

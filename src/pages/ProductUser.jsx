@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { Star, Trash2, Pencil, Search, Sparkles, Filter } from "lucide-react";
+import { Star, Search, Heart, ShoppingBag, Sparkles, Filter } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../supabase";
 
-const ProductManagement = () => {
+const ProductUser = () => {
   const [products, setProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [sortBy, setSortBy] = useState("newest");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -25,64 +27,38 @@ const ProductManagement = () => {
     }
   };
 
-  const handleDelete = async (id_produk, image) => {
-    const confirm = window.confirm("Yakin ingin menghapus produk ini?");
-    if (!confirm) return;
-
-    let fullImagePath = null;
-    if (image) {
-      try {
-        const url = new URL(image);
-        const pathSegments = url.pathname.split('/');
-        const publicIndex = pathSegments.indexOf('public');
-        if (publicIndex > -1 && pathSegments.length > publicIndex + 1) {
-          const bucketNameIndex = pathSegments.indexOf('gambar-produk');
-          if (bucketNameIndex > -1 && pathSegments.length > bucketNameIndex + 1) {
-            fullImagePath = pathSegments.slice(bucketNameIndex + 1).join('/');
-          } else {
-            fullImagePath = url.pathname.split('/public/').pop();
-          }
-        }
-      } catch (e) {
-        fullImagePath = image;
-      }
-    }
-
-    if (fullImagePath) {
-      const { error: deleteFileError } = await supabase.storage.from("gambar-produk").remove([fullImagePath]);
-      if (deleteFileError) {
-        console.warn("Gagal menghapus file dari bucket:", deleteFileError.message);
-      }
-    }
-
-    const { error } = await supabase.from("produk").delete().eq("id_produk", id_produk);
-    if (error) {
-      alert("Gagal menghapus produk.");
-      console.error(error);
-    } else {
-      setProducts((prev) => prev.filter((p) => p.id_produk !== id_produk));
-    }
-  };
-
-  const handleEdit = (product) => {
-    navigate("/edit/produk", { state: { product } });
-  };
-
+  const categories = ["all", "skincare", "makeup", "haircare", "fragrance"];
+  
   const filteredProducts = useMemo(() => {
-    return products.filter((product) =>
+    let filtered = products.filter((product) =>
       product.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
-  }, [products, searchTerm]);
 
-  const avgRating = useMemo(() => {
-    if (!products.length) return 0;
-    const total = products.reduce((sum, p) => sum + (p.rating || 0), 0);
-    return (total / products.length).toFixed(2);
-  }, [products]);
+    if (selectedCategory !== "all") {
+      filtered = filtered.filter((product) =>
+        product.category?.toLowerCase() === selectedCategory
+      );
+    }
 
-  const totalStock = useMemo(() => {
-    return products.reduce((sum, p) => sum + (p.stock || 0), 0);
-  }, [products]);
+    // Sort products
+    switch (sortBy) {
+      case "price-low":
+        filtered.sort((a, b) => a.price - b.price);
+        break;
+      case "price-high":
+        filtered.sort((a, b) => b.price - a.price);
+        break;
+      case "rating":
+        filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+        break;
+      case "newest":
+      default:
+        filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        break;
+    }
+
+    return filtered;
+  }, [products, searchTerm, selectedCategory, sortBy]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50">
@@ -94,23 +70,23 @@ const ProductManagement = () => {
             <Sparkles className="w-16 h-16 text-orange-200 animate-pulse" />
           </div>
           <h1 className="text-5xl md:text-6xl font-bold text-white mb-4 tracking-tight">
-            Manajemen <span className="text-orange-200">Produk</span>
+            Istana <span className="text-orange-200">Cosmetik</span>
           </h1>
           <p className="text-xl text-orange-100 mb-8 max-w-2xl mx-auto leading-relaxed">
-            Kelola semua produk kecantikan premium Istana Cosmetik dengan mudah dan efisien
+            Temukan produk kecantikan premium yang akan membuatmu tampil memukau setiap hari
           </p>
           <div className="flex justify-center space-x-4 text-orange-100">
             <div className="flex items-center space-x-2">
-              <Pencil className="w-5 h-5" />
-              <span>Edit Mudah</span>
+              <Heart className="w-5 h-5" />
+              <span>100% Original</span>
             </div>
             <div className="flex items-center space-x-2">
               <Star className="w-5 h-5 fill-current" />
-              <span>Statistik Lengkap</span>
+              <span>Kualitas Premium</span>
             </div>
             <div className="flex items-center space-x-2">
-              <Filter className="w-5 h-5" />
-              <span>Pencarian Cepat</span>
+              <ShoppingBag className="w-5 h-5" />
+              <span>Pengiriman Cepat</span>
             </div>
           </div>
         </div>
@@ -128,7 +104,7 @@ const ProductManagement = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-12">
-        {/* Search Section */}
+        {/* Search and Filter Section */}
         <div className="bg-white rounded-3xl shadow-xl p-8 mb-12 border border-orange-100">
           <div className="flex flex-col lg:flex-row gap-6 items-center">
             {/* Search Bar */}
@@ -136,20 +112,43 @@ const ProductManagement = () => {
               <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-orange-400 w-5 h-5" />
               <input
                 type="text"
-                placeholder="Cari produk berdasarkan nama..."
+                placeholder="Cari produk impianmu..."
                 className="w-full pl-12 pr-4 py-4 border-2 border-orange-200 rounded-2xl focus:outline-none focus:border-orange-400 focus:ring-4 focus:ring-orange-100 transition-all duration-300 text-gray-700 bg-orange-50"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
 
-            {/* Add Product Button */}
-            <button
-              onClick={() => navigate("/tambah/produk")}
-              className="bg-gradient-to-r from-orange-500 to-amber-500 text-white px-6 py-4 rounded-2xl text-lg font-semibold hover:from-orange-600 hover:to-amber-600 transition-all duration-300 transform hover:scale-105 shadow-lg"
-            >
-              + Tambah Produk
-            </button>
+            {/* Category Filter */}
+            <div className="flex items-center space-x-3">
+              <Filter className="w-5 h-5 text-orange-600" />
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="px-4 py-3 border-2 border-orange-200 rounded-xl focus:outline-none focus:border-orange-400 bg-white text-gray-700 font-medium"
+              >
+                <option value="all">Semua Kategori</option>
+                <option value="skincare">Perawatan Kulit</option>
+                <option value="makeup">Makeup</option>
+                <option value="haircare">Perawatan Rambut</option>
+                <option value="fragrance">Parfum</option>
+              </select>
+            </div>
+
+            {/* Sort Filter */}
+            <div className="flex items-center space-x-3">
+              <span className="text-orange-600 font-medium">Urutkan:</span>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="px-4 py-3 border-2 border-orange-200 rounded-xl focus:outline-none focus:border-orange-400 bg-white text-gray-700 font-medium"
+              >
+                <option value="newest">Terbaru</option>
+                <option value="price-low">Harga Terendah</option>
+                <option value="price-high">Harga Tertinggi</option>
+                <option value="rating">Rating Tertinggi</option>
+              </select>
+            </div>
           </div>
         </div>
 
@@ -160,19 +159,13 @@ const ProductManagement = () => {
               <Search className="w-16 h-16 text-orange-600" />
             </div>
             <h3 className="text-2xl font-bold text-gray-800 mb-4">Produk tidak ditemukan</h3>
-            <p className="text-gray-600 text-lg mb-8">Coba ubah kata kunci pencarian atau tambahkan produk baru</p>
-            <button
-              onClick={() => navigate("/tambah/produk")}
-              className="bg-gradient-to-r from-orange-500 to-amber-500 text-white px-8 py-4 rounded-full text-lg font-bold hover:from-orange-600 hover:to-amber-600 transition-all duration-300 transform hover:scale-105 shadow-xl"
-            >
-              Tambah Produk Pertama
-            </button>
+            <p className="text-gray-600 text-lg">Coba ubah kata kunci pencarian atau filter yang dipilih</p>
           </div>
         ) : (
           <>
             <div className="flex justify-between items-center mb-8">
               <h2 className="text-3xl font-bold text-gray-800">
-                Daftar Produk <span className="text-orange-600">({filteredProducts.length})</span>
+                Koleksi Produk <span className="text-orange-600">({filteredProducts.length})</span>
               </h2>
             </div>
 
@@ -228,21 +221,10 @@ const ProductManagement = () => {
                         </div>
                       )}
 
-                      {/* Action Buttons */}
-                      <div className="absolute bottom-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300">
-                        <button 
-                          onClick={() => handleEdit(product)}
-                          className="w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center text-blue-600 hover:bg-blue-600 hover:text-white transition-all duration-300 shadow-lg"
-                        >
-                          <Pencil className="w-5 h-5" />
-                        </button>
-                        <button 
-                          onClick={() => handleDelete(product.id_produk, product.image)}
-                          className="w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center text-red-600 hover:bg-red-600 hover:text-white transition-all duration-300 shadow-lg"
-                        >
-                          <Trash2 className="w-5 h-5" />
-                        </button>
-                      </div>
+                      {/* Wishlist Button */}
+                      <button className="absolute bottom-4 right-4 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center text-orange-600 hover:bg-orange-600 hover:text-white transition-all duration-300 shadow-lg opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0">
+                        <Heart className="w-5 h-5" />
+                      </button>
                     </div>
 
                     {/* Product Info */}
@@ -292,7 +274,7 @@ const ProductManagement = () => {
                         )}
                       </div>
 
-                      {/* Status and Actions */}
+                      {/* Status */}
                       <div className="flex items-center justify-between">
                         <span
                           className={`text-xs font-semibold px-3 py-2 rounded-full flex items-center gap-2 ${
@@ -309,22 +291,10 @@ const ProductManagement = () => {
                           {product.status === "In Stock" ? "Tersedia" : "Habis"}
                         </span>
 
-                        <div className="flex gap-2">
-                          <button 
-                            onClick={() => handleEdit(product)}
-                            className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white px-3 py-2 rounded-full text-xs font-semibold hover:from-blue-600 hover:to-cyan-600 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center gap-1"
-                          >
-                            <Pencil className="w-3 h-3" />
-                            Edit
-                          </button>
-                          <button 
-                            onClick={() => handleDelete(product.id_produk, product.image)}
-                            className="bg-gradient-to-r from-red-500 to-pink-500 text-white px-3 py-2 rounded-full text-xs font-semibold hover:from-red-600 hover:to-pink-600 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center gap-1"
-                          >
-                            <Trash2 className="w-3 h-3" />
-                            Hapus
-                          </button>
-                        </div>
+                        <button className="bg-gradient-to-r from-orange-500 to-amber-500 text-white px-4 py-2 rounded-full text-sm font-semibold hover:from-orange-600 hover:to-amber-600 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                          <ShoppingBag className="w-4 h-4 inline mr-1" />
+                          Beli
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -333,22 +303,6 @@ const ProductManagement = () => {
             </div>
           </>
         )}
-
-        {/* Statistics Section */}
-        <div className="mt-20 mb-8">
-          <div className="bg-white rounded-3xl shadow-xl p-8 border border-orange-100">
-            <h3 className="text-3xl font-bold text-gray-800 mb-8 text-center">
-              Statistik <span className="text-orange-600">Produk</span>
-            </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-              <StatCard color="blue" value={products.length} label="Total Produk" />
-              <StatCard color="green" value={products.filter((p) => p.status === "In Stock").length} label="Tersedia" />
-              <StatCard color="orange" value={products.filter((p) => p.is_new).length} label="Produk Baru" />
-              <StatCard color="purple" value={avgRating} label="Rating Rata-rata" />
-              <StatCard color="gray" value={totalStock} label="Total Stok" />
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* Footer CTA */}
@@ -356,16 +310,13 @@ const ProductManagement = () => {
         <div className="max-w-4xl mx-auto text-center px-6">
           <Sparkles className="w-16 h-16 mx-auto mb-6 text-orange-200" />
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Kelola Produk dengan Mudah dan Efisien
+            Mulai Perjalanan Kecantikanmu Hari Ini
           </h2>
           <p className="text-xl text-orange-100 mb-8 leading-relaxed">
-            Dashboard manajemen produk yang powerful untuk mengelola semua produk kecantikan Anda
+            Dapatkan produk kecantikan terbaik dengan kualitas premium dan harga terjangkau
           </p>
-          <button 
-            onClick={() => navigate("/tambah/produk")}
-            className="bg-white text-orange-600 px-8 py-4 rounded-full text-lg font-bold hover:bg-orange-50 transition-all duration-300 transform hover:scale-105 shadow-xl"
-          >
-            Tambah Produk Baru
+          <button className="bg-white text-orange-600 px-8 py-4 rounded-full text-lg font-bold hover:bg-orange-50 transition-all duration-300 transform hover:scale-105 shadow-xl">
+            Jelajahi Semua Produk
           </button>
         </div>
       </div>
@@ -373,24 +324,4 @@ const ProductManagement = () => {
   );
 };
 
-const StatCard = ({ color = "gray", value, label }) => {
-  const colorClasses = {
-    blue: "from-blue-500 to-cyan-500 text-blue-600",
-    green: "from-green-500 to-emerald-500 text-green-600", 
-    orange: "from-orange-500 to-amber-500 text-orange-600",
-    purple: "from-purple-500 to-pink-500 text-purple-600",
-    gray: "from-gray-500 to-slate-500 text-gray-600",
-  }[color];
-
-  return (
-    <div className="bg-white p-6 rounded-2xl shadow-lg text-center hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-orange-100 group">
-      <div className={`text-4xl font-extrabold ${colorClasses.split(' ')[2]} mb-3 group-hover:scale-110 transition-transform duration-300`}>
-        {value}
-      </div>
-      <div className="text-gray-700 text-lg font-medium">{label}</div>
-      <div className={`h-1 w-full bg-gradient-to-r ${colorClasses.substring(0, colorClasses.lastIndexOf(' '))} rounded-full mt-3 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300`}></div>
-    </div>
-  );
-};
-
-export default ProductManagement;
+export default ProductUser;
