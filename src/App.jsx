@@ -5,6 +5,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 
 import MainLayout from "./components/MainLayout";
 import Dashboard from "./pages/Dashboard";
+import HalamanChatPelanggan from "./pages/HalamanChatPelanggan";
 import Pelanggan from "./pages/pelanggan/Pelanggan";
 import TambahPelanggan from "./pages/pelanggan/TambahPelanggan";
 import EditPelanggan from "./pages/pelanggan/EditPelanggan";
@@ -13,6 +14,7 @@ import SalesManagement from "./pages/SalesManagement";
 import ProductForm from "./pages/ProductForm";
 import ProductEditForm from "./pages/ProductEditForm";
 import ProductPage from "./pages/ProductPage";
+import ChatUser from "./pages/ChatUser";
 import Pemesanan from "./pages/Pemesanan";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
@@ -183,7 +185,22 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route path="/chatpelanggan" element={<ChatPelanggan />} />
+        <Route
+          path="/chatpelanggan"
+          element={
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <HalamanChatPelanggan />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/chatuser"
+          element={
+            <ProtectedRoute allowedRoles={["pelanggan"]}>
+              <ChatUser />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/formfaq" element={<FormFaq />} />
         <Route path="/listfaq" element={<ListFaq />} />
         <Route path="/listartikel" element={<ListArtikel />} />

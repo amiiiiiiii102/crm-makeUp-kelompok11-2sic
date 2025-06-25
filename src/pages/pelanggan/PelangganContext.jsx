@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect } from 'react';
-import { supabase } from '../../Supabase'; // Sesuaikan path ke file supabase Anda
+import { supabase } from '../../supabase'; // Sesuaikan path ke file supabase Anda
 
 export const PelangganContext = createContext();
 

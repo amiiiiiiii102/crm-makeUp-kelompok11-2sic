@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import { supabase } from '../../Supabase'; // Pastikan path ini sesuai dengan setup Supabase Anda
+import { supabase } from '../../supabase'; // Pastikan path ini sesuai dengan setup Supabase Anda
 import { generateDefaultImage } from '../../generateDefaultImage'; // Import akun admin dari file terpisah
 import bcrypt from 'bcryptjs'; 
 
@@ -115,6 +115,7 @@ export const AuthProvider = ({ children }) => {
       const passwordMatch = await bcrypt.compare(password, adminData.password);
       if (passwordMatch) {
         const adminSession = {
+          id: adminData.id,
           email: adminData.email,
           role: 'admin',
           loginAt: new Date().toISOString(),
