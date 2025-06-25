@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 export default function Navbar({ activeNav }) {
   const navigate = useNavigate();
@@ -24,23 +24,25 @@ export default function Navbar({ activeNav }) {
 
   return (
     <nav style={navStyle}>
-      {/* Logo dan nama toko (rata kiri) */}
+      {/* Logo dan nama toko */} 
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
         <img src="/images/logo.png" alt="Logo" style={{ width: 40, height: 40 }} />
-        <span style={{ fontSize: 20, fontWeight: "bold", color: "#f37021" }}>Istana Cosmetic</span>
+        <span style={{ fontSize: 20, fontWeight: "bold", color: "#f37021" }}>
+          Istana Cosmetic
+        </span>
       </div>
 
-      {/* Navigasi utama (rata tengah) */}
+      {/* Navigasi utama */}
       <div style={{ display: "flex", gap: "1.5rem" }}>
-        <a href="/" style={linkStyle("home")}>Home</a>
-        <a href="/produk" style={linkStyle("produk")}>Produk</a>
-        <a href="/testimoni" style={linkStyle("testimoni")}>Testimonial</a>
-        <a href="/artikel" style={linkStyle("artikel")}>Artikel</a>
-        <a href="/faq" style={linkStyle("faq")}>FAQ</a>
-        <a href="/kontak" style={linkStyle("kontak")}>Kontak</a>
+        <Link to="/" style={linkStyle("home")}>Home</Link>
+        <Link to="/produk" style={linkStyle("produk")}>Produk</Link>
+        <Link to="/testimoni" style={linkStyle("testimoni")}>Testimonial</Link>
+        <Link to="/artikel" style={linkStyle("artikel")}>Artikel</Link>
+        <Link to="/faq" style={linkStyle("faq")}>FAQ</Link>
+        <Link to="/kontak" style={linkStyle("kontak")}>Kontak</Link>
       </div>
 
-      {/* Login (rata kanan) */}
+      {/* Tombol Login */}
       <div>
         <button
           onClick={() => navigate("/login")}

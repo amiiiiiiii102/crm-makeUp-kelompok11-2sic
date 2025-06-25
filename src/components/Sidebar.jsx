@@ -22,7 +22,7 @@ import { AuthContext } from '../pages/auth/AuthContext'; // pastikan path ini se
 // Semua menu dengan role-nya
 const allMenuItems = [
   { name: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/dashboard', roles: ['admin'] },
-  { name: 'Produk', icon: <Box size={20} />, path: '/produkmanagement', roles: ['admin', 'pelanggan'] },
+  { name: 'Produk', icon: <Box size={20} />, path: '/listproduk', roles: ['admin', 'pelanggan'] },
   { name: 'Pelanggan', icon: <User2Icon size={20} />, path: '/pelanggan', roles: ['admin'] },
   { name: 'Laporan', icon: <BarChart2 size={20} />, path: '/laporan', roles: ['admin'] },
   { name: 'chatuser', icon: <MessageCircle size={20} />, path: '/chatuser', roles: ['pelanggan'] },
@@ -30,7 +30,8 @@ const allMenuItems = [
   { name: 'FAQ', icon: <HelpCircle size={20} />, path: '/FAQ', roles: ['admin', 'pelanggan'] },
   { name: 'Form Produk', icon: <ClipboardList size={20} />, path: '/ProductForm', roles: ['admin'] },
   { name: 'Chat Pelanggan', icon: <MessageCircle size={20} />, path: '/ChatPelanggan', roles: ['admin'] },
-  { name: 'Artikel', icon: <Newspaper size={20} />, path: '/artikel', roles: ['admin', 'pelanggan'] },
+  { name: 'Artikel', icon: <Newspaper size={20} />, path: '/listartikel', roles: ['admin','pelanggan'] },
+
 ];
 
 // Menu akun

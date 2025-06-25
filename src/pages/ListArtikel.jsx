@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { supabase } from '../supabase';
+import { supabase } from "../supabase";
 import ArtikelForm from './ArtikelForm';
 
 function ListArtikel() {
@@ -17,7 +17,6 @@ function ListArtikel() {
   };
 
   const addArtikel = async (artikel) => {
-    console.log("Data yang dikirim:", artikel);
     const { error } = await supabase.from('artikel').insert([artikel]);
     if (error) {
       console.error("Gagal insert:", error);
@@ -34,7 +33,7 @@ function ListArtikel() {
         judulartikel: artikel.judulartikel,
         thumbnailartikel: artikel.thumbnailartikel,
         isiartikel: artikel.isiartikel,
-        statusartikel: artikel.statusartikel
+        statusartikel: artikel.statusartikel,
       })
       .eq('id', artikel.id);
 
@@ -56,43 +55,69 @@ function ListArtikel() {
   }, []);
 
   return (
-    <div className="max-w-2xl mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">CRUD Artikel dengan Supabase</h1>
+    <div className="max-w-6xl mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4">Manajemen Artikel</h1>
+
       <ArtikelForm
         addArtikel={addArtikel}
         updateArtikel={updateArtikel}
         editingArtikel={editingArtikel}
       />
-      <ul className="mt-4 space-y-4">
-        {artikels.map((artikel) => (
-          <li key={artikel.id} className="border p-4 rounded shadow-sm bg-white">
-            <div>
-              <p className="font-semibold text-lg">{artikel.judulartikel}</p>
-              <p className="text-sm text-gray-600 mb-1">{artikel.statusartikel}</p>
-              <img
-                src={artikel.thumbnailartikel}
-                alt="Thumbnail"
-                className="w-full h-40 object-cover rounded mb-2"
-              />
-              <p className="text-sm text-gray-700">{artikel.isiartikel}</p>
-            </div>
-            <div className="mt-2 flex space-x-4">
-              <button
-                onClick={() => setEditingArtikel(artikel)}
-                className="text-blue-600 hover:underline"
-              >
-                Edit
-              </button>
-              <button
-                onClick={() => deleteArtikel(artikel.id)}
-                className="text-red-600 hover:underline"
-              >
-                Hapus
-              </button>
-            </div>
-          </li>
-        ))}
-      </ul>
+
+      <div className="overflow-x-auto mt-6">
+        <table className="min-w-full border text-sm bg-white rounded shadow">
+          <thead>
+            <tr className="bg-orange-100 text-left text-sm text-orange-700">
+              <th className="p-3 border">#</th>
+              <th className="p-3 border">Judul</th>
+              <th className="p-3 border">Gambar</th>
+              <th className="p-3 border">Isi</th>
+              <th className="p-3 border">Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            {artikels.map((artikel, index) => (
+              <tr key={artikel.id} className="hover:bg-orange-50">
+                <td className="p-3 border">{index + 1}</td>
+                <td className="p-3 border font-medium">{artikel.judulartikel}</td>
+                <td className="p-3 border">
+                  <img
+                    src={artikel.thumbnailartikel}
+                    alt="thumbnail"
+                    className="w-40 h-32 object-contain rounded"
+                  />
+                </td>
+                <td className="p-3 border text-gray-700">
+                  {artikel.isiartikel?.length > 100
+                    ? artikel.isiartikel.slice(0, 100) + '...'
+                    : artikel.isiartikel}
+                </td>
+                <td className="p-3 border space-x-2">
+                  <button
+                    onClick={() => setEditingArtikel(artikel)}
+                    className="text-blue-600 hover:underline"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => deleteArtikel(artikel.id)}
+                    className="text-red-600 hover:underline"
+                  >
+                    Hapus
+                  </button>
+                </td>
+              </tr>
+            ))}
+            {artikels.length === 0 && (
+              <tr>
+                <td colSpan="5" className="text-center p-4 text-gray-500">
+                  Belum ada artikel
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

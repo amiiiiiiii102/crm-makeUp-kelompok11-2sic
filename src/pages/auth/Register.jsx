@@ -212,7 +212,7 @@ const Register = () => {
           <div className="text-center mb-8">
             <div className="flex items-center justify-center mb-4">
               <div className="bg-gradient-to-r from-pink-500 to-purple-600 p-3 rounded-2xl shadow-lg">
-                <img src="./public/images/logo.png" alt="logo" className="w-18 h-18 object-contain" />
+                <img src="/images/logo.png" alt="logo" className="w-18 h-18 object-contain" />
               </div>
             </div>
             <h1 className="text-3xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent mb-2">

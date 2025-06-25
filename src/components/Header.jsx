@@ -1,8 +1,8 @@
-import { Search, User, ChevronDown, Settings, LogOut } from 'lucide-react'
-import { useLocation, Link, useNavigate } from 'react-router-dom'
-import { useContext, useState, useRef, useEffect } from 'react'
-import { AuthContext } from '../pages/auth/AuthContext'
-import { capitalize } from 'lodash'
+import { Search, User, ChevronDown, Settings, LogOut } from 'lucide-react';
+import { useLocation, Link, useNavigate } from 'react-router-dom';
+import { useContext, useState, useRef, useEffect } from 'react';
+import { AuthContext } from '../pages/auth/AuthContext';
+import { capitalize } from 'lodash';
 import SettingAkun from '../pages/auth/SettingAkun';
 
 const Header = () => {
@@ -26,47 +26,40 @@ const Header = () => {
     };
   }, []);
 
- const getBreadcrumb = (pathname) => {
-  const segments = pathname.split('/').filter(Boolean);
+  const getBreadcrumb = (pathname) => {
+    const segments = pathname.split('/').filter(Boolean);
 
-  const pageMap = {
-    dashboard: 'Dashboard',
-    pelanggan: 'Pelanggan',
-    produk: 'Produk',
-    penjualan: 'Penjualan',
-    productform: 'Form Produk',
-    chatpelanggan: 'Chat Pelanggan',
-    faq: 'FAQ',
-    artikel: 'Artikel',
-    pemesanan: 'Pemesanan',
-    uploaddata: 'Upload Data Pelanggan',
-    tambahpelanggan: 'Tambah Pelanggan',
-    editpelanggan: 'Edit Pelanggan',
-    SettingAkun: 'Pengaturan Akun',
-  };
+    const pageMap = {
+      dashboard: 'Dashboard',
+      pelanggan: 'Pelanggan',
+      produk: 'Produk',
+      penjualan: 'Penjualan',
+      productform: 'Form Produk',
+      chatpelanggan: 'Chat Pelanggan',
+      faq: 'FAQ',
+      artikel: 'Artikel',
+      pemesanan: 'Pemesanan',
+      uploaddata: 'Upload Data Pelanggan',
+      tambahpelanggan: 'Tambah Pelanggan',
+      editpelanggan: 'Edit Pelanggan',
+      SettingAkun: 'Pengaturan Akun',
+    };
 
-  const firstSegment = segments[0]?.toLowerCase();
+    const firstSegment = segments[0]?.toLowerCase();
 
-  // Halaman utama /dashboard
-  // if (!firstSegment || firstSegment === 'dashboard') {
-  //   return { current: 'Dashboard' };
-  // }
+    const pelangganChildPages = ['tambahpelanggan', 'editpelanggan', 'uploaddata'];
+    if (pelangganChildPages.includes(firstSegment)) {
+      return {
+        parent: 'Pelanggan',
+        parentPath: '/pelanggan',
+        current: pageMap[firstSegment] || capitalize(firstSegment),
+      };
+    }
 
-  // Jika halaman merupakan turunan dari pelanggan
-  const pelangganChildPages = ['tambahpelanggan', 'editpelanggan', 'uploaddata'];
-  if (pelangganChildPages.includes(firstSegment)) {
     return {
-      parent: 'Pelanggan',
-      parentPath: '/pelanggan',
       current: pageMap[firstSegment] || capitalize(firstSegment),
     };
-  }
-
-  // Default - hanya 1 level breadcrumb
-  return {
-    current: pageMap[firstSegment] || capitalize(firstSegment),
   };
-};
 
   const handleLogout = () => {
     logout();
@@ -93,9 +86,6 @@ const Header = () => {
       </div>
 
       <div className="flex items-center gap-4">
-        
-
-        {/* User Menu - Show different content based on authentication */}
         {isAuthenticated() ? (
           <div className="relative" ref={dropdownRef}>
             <button
@@ -111,10 +101,8 @@ const Header = () => {
               <ChevronDown className={`w-4 h-4 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
             </button>
 
-            {/* Dropdown Menu */}
             {isDropdownOpen && (
               <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-xl shadow-lg py-2 z-20">
-                {/* User Info */}
                 <div className="px-4 py-2 border-b border-gray-100">
                   <p className="text-sm font-semibold text-gray-900 truncate">
                     {currentUser?.email?.split('@')[0] || 'User'}
@@ -124,7 +112,6 @@ const Header = () => {
                   </p>
                 </div>
 
-                {/* Menu Items */}
                 <div className="py-1">
                   <Link
                     to="/setting"
