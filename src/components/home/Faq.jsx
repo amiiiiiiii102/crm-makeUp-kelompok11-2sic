@@ -1,27 +1,34 @@
-// src/components/home/FAQ.jsx
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
+import { supabase } from "../../supabase"; // Pastikan path benar
+import { ChevronDown, ChevronUp } from "lucide-react";
 
 export default function FAQ({ withLayout = true }) {
   const warnaUtama = "#b4380d";
-
-  const pertanyaan = [
-    {
-      q: "Apakah produk ini aman untuk semua jenis kulit?",
-      a: "Ya, produk kami telah teruji dermatologis dan cocok untuk semua jenis kulit, termasuk kulit sensitif.",
-    },
-    {
-      q: "Berapa lama pengiriman produk sampai?",
-      a: "Waktu pengiriman rata-rata 2-5 hari kerja tergantung lokasi pengiriman.",
-    },
-    {
-      q: "Apakah saya bisa mengembalikan produk jika rusak?",
-      a: "Tentu, Anda bisa mengajukan pengembalian jika produk rusak atau tidak sesuai, maksimal 3 hari setelah diterima.",
-    },
-  ];
-
+  const [faqList, setFaqList] = useState([]);
   const [openIndex, setOpenIndex] = useState(null);
+
+  const fetchFaq = async () => {
+    const { data, error } = await supabase
+      .from("faq")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error("Gagal mengambil FAQ:", error);
+    } else {
+      setFaqList(data || []);
+    }
+  };
+
+  useEffect(() => {
+    fetchFaq();
+  }, []);
+
+  const toggle = (index) => {
+    setOpenIndex(openIndex === index ? null : index);
+  };
 
   const content = (
     <section
@@ -37,7 +44,7 @@ export default function FAQ({ withLayout = true }) {
         justifyContent: "center",
       }}
     >
-      {/* Kiri: Pertanyaan */}
+      {/* Kiri: Pertanyaan dari database Supabase */}
       <div style={{ flex: "1 1 500px", maxWidth: 600 }}>
         <h2
           style={{
@@ -49,33 +56,51 @@ export default function FAQ({ withLayout = true }) {
         >
           Pertanyaan Umum (FAQ)
         </h2>
-        {pertanyaan.map((item, index) => (
-          <div
-            key={index}
-            style={{
-              backgroundColor: "#fff",
-              marginBottom: 12,
-              borderRadius: 12,
-              boxShadow: "0 4px 10px rgba(0,0,0,0.08)",
-              padding: "16px 20px",
-              cursor: "pointer",
-              transition: "0.3s ease",
-            }}
-            onClick={() => setOpenIndex(openIndex === index ? null : index)}
-          >
-            <h4 style={{ color: warnaUtama, fontWeight: "bold", fontSize: 16 }}>
-              {item.q}
-            </h4>
-            {openIndex === index && (
-              <p style={{ marginTop: 10, color: "#333", fontSize: 14 }}>
-                {item.a}
-              </p>
-            )}
-          </div>
-        ))}
+
+        {faqList.length === 0 ? (
+          <p style={{ color: "#888" }}>Belum ada data FAQ tersedia.</p>
+        ) : (
+          faqList.map((faq, index) => (
+            <div
+              key={faq.id}
+              onClick={() => toggle(index)}
+              style={{
+                backgroundColor: "#fff",
+                marginBottom: 12,
+                borderRadius: 12,
+                boxShadow: "0 4px 10px rgba(0,0,0,0.08)",
+                padding: "16px 20px",
+                cursor: "pointer",
+                transition: "0.3s ease",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <h4 style={{ color: warnaUtama, fontWeight: "bold", fontSize: 16 }}>
+                  {faq.pertanyaan}
+                </h4>
+                {openIndex === index ? (
+                  <ChevronUp size={18} color={warnaUtama} />
+                ) : (
+                  <ChevronDown size={18} color={warnaUtama} />
+                )}
+              </div>
+              {openIndex === index && (
+                <p style={{ marginTop: 10, color: "#333", fontSize: 14 }}>
+                  {faq.jawaban}
+                </p>
+              )}
+            </div>
+          ))
+        )}
       </div>
 
-      {/* Kanan: Gambar */}
+      {/* Kanan: Ilustrasi Gambar */}
       <div
         style={{
           flex: "1 1 300px",
