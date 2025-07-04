@@ -27,10 +27,15 @@ const allMenuItems = [
   { name: 'Pelanggan', icon: <User2Icon size={20} />, path: '/pelanggan', roles: ['admin'] },
   { name: 'Laporan', icon: <BarChart2 size={20} />, path: '/laporan', roles: ['admin'] },
   { name: 'chat', icon: <MessageCircle size={20} />, path: '/chatuser', roles: ['pelanggan'] },
+
   { name: 'Pemesanan Saya', icon: <ShoppingCart size={20} />, path: '/InfoPemesananPelanggan', roles: ['pelanggan'] },
   { name: 'Pemesanan', icon: <ShoppingCart size={20} />, path: '/AdminOrders', roles: ['admin'] },
   { name: 'FAQ', icon: <HelpCircle size={20} />, path: '/ListFAQ', roles: ['admin'] },
   { name: 'FAQ', icon: <HelpCircle size={20} />, path: '/ListFaqPelanggan', roles: ['pelanggan'] },
+
+  { name: 'Pemesanan', icon: <ShoppingCart size={20} />, path: '/pemesanan', roles: ['admin', 'pelanggan'] },
+  { name: 'FAQ', icon: <HelpCircle size={20} />, path: '/ListFaq', roles: ['admin', 'pelanggan'] },
+
   { name: 'Form Produk', icon: <ClipboardList size={20} />, path: '/ProductForm', roles: ['admin'] },
   { name: 'Chat Pelanggan', icon: <MessageCircle size={20} />, path: '/ChatPelanggan', roles: ['admin'] },
   { name: 'Testimoni', icon: <MessageCircle size={20} />, path: '/listtestimoni', roles: ['admin'] },

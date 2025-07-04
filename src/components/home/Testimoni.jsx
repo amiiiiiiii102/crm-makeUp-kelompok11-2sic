@@ -1,20 +1,21 @@
-// src/components/home/Testimoni.jsx
-import { useEffect, useState } from 'react';
-import { supabase } from '../../supabase';
-import Navbar from './Navbar';
-import Footer from './Footer';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from "react";
+import { supabase } from "../../supabase";
+import Navbar from "./Navbar";
+import Footer from "./Footer";
+import FormTestimoni from "../../pages/FormTestimoni";
 
 export default function Testimoni({ withLayout = true }) {
   const [list, setList] = useState([]);
   const [showAll, setShowAll] = useState(false);
-  const navigate = useNavigate();
+  const [showModal, setShowModal] = useState(false);
+
+  const warnaUtama = "#b4380d";
 
   const fetchTestimoni = async () => {
     const { data, error } = await supabase
-      .from('testimoni')
-      .select('*')
-      .order('created_at', { ascending: false });
+      .from("testimoni")
+      .select("*")
+      .order("created_at", { ascending: false });
     if (!error) setList(data);
   };
 
@@ -22,92 +23,169 @@ export default function Testimoni({ withLayout = true }) {
     fetchTestimoni();
   }, []);
 
-  const warnaUtama = '#b4380d';
+  const displayList = showAll ? list : list.slice(0, 4);
 
   const content = (
     <section
       id="testimoni"
       style={{
-        backgroundColor: '#fff6ea',
-        padding: '60px 20px',
-        textAlign: 'center',
+        backgroundColor: "#fff6ea",
+        padding: "60px 20px",
+        textAlign: "center",
+        transition: "all 0.3s ease-in-out",
       }}
     >
       <h2 style={{ fontSize: 28, color: warnaUtama, marginBottom: 20 }}>
         Testimoni Pelanggan
       </h2>
+
       <div
         style={{
-          display: 'flex',
-          flexWrap: 'wrap',
-          justifyContent: 'center',
+          display: "flex",
+          flexWrap: "wrap",
+          justifyContent: "center",
           gap: 24,
-          marginBottom: 20,
         }}
       >
-        {(showAll ? list : list.slice(0, 4)).map((item, index) => (
+        {displayList.map((item, index) => (
           <div
             key={index}
             style={{
               width: 250,
-              backgroundColor: 'white',
-              borderRadius: 12,
-              boxShadow: '0 4px 10px rgba(0,0,0,0.08)',
+              backgroundColor: "white",
+              borderRadius: 16,
+              boxShadow: "0 4px 10px rgba(0,0,0,0.08)",
               padding: 16,
+              transition: "transform 0.3s",
             }}
+            onMouseEnter={(e) =>
+              (e.currentTarget.style.transform = "scale(1.03)")
+            }
+            onMouseLeave={(e) =>
+              (e.currentTarget.style.transform = "scale(1)")
+            }
           >
             <img
               src={item.foto}
               alt={item.nama}
               style={{
-                width: '100%',
+                width: "100%",
                 height: 180,
-                objectFit: 'cover',
+                objectFit: "cover",
                 borderRadius: 10,
                 marginBottom: 12,
               }}
             />
             <h4 style={{ color: warnaUtama, fontWeight: 600 }}>{item.nama}</h4>
-            <p style={{ fontSize: 14, color: '#333', fontStyle: 'italic' }}>
-              {item.ulasan}
+            <p style={{ fontSize: 14, color: "#333", fontStyle: "italic" }}>
+              "{item.ulasan}"
             </p>
           </div>
         ))}
       </div>
 
-      <div>
-        {!showAll && list.length > 4 && (
+      {/* Tombol aksi */}
+      <div style={{ marginTop: 40, display: "flex", gap: 12, justifyContent: "center" }}>
+        {list.length > 4 && (
           <button
-            onClick={() => setShowAll(true)}
+            onClick={() => setShowAll(!showAll)}
             style={{
-              padding: '10px 20px',
+              padding: "10px 24px",
               backgroundColor: warnaUtama,
-              color: '#fff',
-              border: 'none',
+              color: "#fff",
+              border: "none",
               borderRadius: 30,
-              cursor: 'pointer',
-              marginBottom: 20,
-              marginRight: 10,
+              cursor: "pointer",
+              fontWeight: "bold",
+              transition: "all 0.3s ease",
             }}
+            onMouseEnter={(e) =>
+              (e.currentTarget.style.backgroundColor = "#932f0b")
+            }
+            onMouseLeave={(e) =>
+              (e.currentTarget.style.backgroundColor = warnaUtama)
+            }
           >
-            Lihat Lainnya
+            {showAll ? "Sembunyikan" : "Lihat Testimoni Lainnya"}
           </button>
         )}
 
         <button
-          onClick={() => navigate('/formtestimoni')}
+          onClick={() => setShowModal(true)}
           style={{
-            padding: '10px 20px',
-            backgroundColor: '#f37021',
-            color: '#fff',
-            border: 'none',
+            padding: "10px 24px",
+            backgroundColor: "#f37021",
+            color: "#fff",
+            border: "none",
             borderRadius: 30,
-            cursor: 'pointer',
+            cursor: "pointer",
+            fontWeight: "bold",
+            transition: "all 0.3s ease",
           }}
+          onMouseEnter={(e) =>
+            (e.currentTarget.style.backgroundColor = "#d65d12")
+          }
+          onMouseLeave={(e) =>
+            (e.currentTarget.style.backgroundColor = "#f37021")
+          }
         >
-          Tambah Testimoni
+          Tambah Testimoni ✍️
         </button>
       </div>
+
+      {/* Modal Form Testimoni */}
+      {showModal && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0,0,0,0.4)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 9999,
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: "white",
+              borderRadius: 16,
+              padding: 30,
+              width: "90%",
+              maxWidth: 500,
+              position: "relative",
+              animation: "fadeIn 0.4s ease-in-out",
+            }}
+          >
+            <button
+              onClick={() => setShowModal(false)}
+              style={{
+                position: "absolute",
+                top: 10,
+                right: 10,
+                backgroundColor: "#ccc",
+                border: "none",
+                borderRadius: "50%",
+                width: 30,
+                height: 30,
+                cursor: "pointer",
+                fontWeight: "bold",
+              }}
+            >
+              ✕
+            </button>
+            <FormTestimoni
+              onSuccess={() => {
+                setShowModal(false);
+                fetchTestimoni();
+              }}
+            />
+          </div>
+        </div>
+      )}
     </section>
   );
 

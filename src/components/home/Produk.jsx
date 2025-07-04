@@ -63,6 +63,7 @@ export default function Produk({ withLayout = true }) {
           margin: "0 auto",
         }}
       >
+
         {produkToShow.map((p, index) => {
           const hasDiscount = p.discount && p.discount > 0;
           const priceDisplay =
@@ -71,17 +72,85 @@ export default function Produk({ withLayout = true }) {
               : `Rp${Number(p.price).toLocaleString("id-ID")}`;
 
           return (
+
+        {produkToShow.map((produk, index) => (
+          <div
+            key={index}
+            style={{
+              position: "relative",
+              backgroundColor: "#ffffff",
+              borderRadius: 16,
+              boxShadow: "0 6px 16px rgba(0,0,0,0.2)",
+              padding: 16,
+              textAlign: "center",
+              cursor: "pointer",
+              transition: "transform 0.3s, box-shadow 0.3s",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = "scale(1.03)";
+              e.currentTarget.style.boxShadow = "0 8px 20px rgba(0,0,0,0.3)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = "scale(1)";
+              e.currentTarget.style.boxShadow = "0 6px 16px rgba(0,0,0,0.2)";
+            }}
+          >
+
             <div
               key={index}
               style={{
+
                 position: "relative",
                 backgroundColor: "#ffffff",
                 borderRadius: 16,
                 boxShadow: "0 6px 16px rgba(0,0,0,0.2)",
                 padding: 16,
                 textAlign: "center",
-                cursor: "pointer",
+
+                position: "absolute",
+                top: 10,
+                left: -20,
+                backgroundColor: warnaUtama,
+                color: "white",
+                fontSize: 12,
+                fontWeight: "bold",
+                padding: "4px 30px",
+                transform: "rotate(-45deg)",
               }}
+            >
+              {produk.diskon}
+            </div>
+            <img
+              src={produk.gambar}
+              alt={produk.nama}
+              style={{
+                width: "100%",
+                height: 160,
+                objectFit: "cover",
+                borderRadius: 12,
+                marginBottom: 10,
+              }}
+            />
+            <button
+              style={{
+                backgroundColor: warnaUtama,
+                color: "white",
+                fontWeight: 500,
+                border: "none",
+                padding: "10px 0",
+                width: "100%",
+                borderRadius: 30,
+                marginBottom: 10,
+
+                cursor: "pointer",
+                transition: "background-color 0.3s",
+              }}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.backgroundColor = "#932f0b")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.backgroundColor = warnaUtama)
+              }
             >
               {hasDiscount && (
                 <div
@@ -177,7 +246,14 @@ export default function Produk({ withLayout = true }) {
             borderRadius: 30,
             fontWeight: 500,
             cursor: "pointer",
+            transition: "background-color 0.3s",
           }}
+          onMouseEnter={(e) =>
+            (e.currentTarget.style.backgroundColor = "#932f0b")
+          }
+          onMouseLeave={(e) =>
+            (e.currentTarget.style.backgroundColor = warnaUtama)
+          }
         >
           {showAll ? "Sembunyikan" : "Lihat Lainnya"}
         </button>
