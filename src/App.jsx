@@ -17,7 +17,7 @@ import ProductEditForm from "./pages/ProductEditForm";
 import AdminOrders from "./pages/AdminOrders";
 import ProductPage from "./pages/ProductPage";
 import ChatUser from "./pages/ChatUser";
-import Pemesanan from "./pages/Pemesanan";
+
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import ProtectedRoute from "./route/ProtectedRoute";
@@ -173,14 +173,8 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/pemesanan"
-          element={
-            <ProtectedRoute allowedRoles={["admin"]}>
-              <Pemesanan />
-            </ProtectedRoute>
-          }
-        />
+       
+        
         <Route
   path="/listpemesanan"
   element={

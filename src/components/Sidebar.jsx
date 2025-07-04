@@ -33,8 +33,8 @@ const allMenuItems = [
   { name: 'FAQ', icon: <HelpCircle size={20} />, path: '/ListFAQ', roles: ['admin'] },
   { name: 'FAQ', icon: <HelpCircle size={20} />, path: '/ListFaqPelanggan', roles: ['pelanggan'] },
 
-  { name: 'Pemesanan', icon: <ShoppingCart size={20} />, path: '/pemesanan', roles: ['admin', 'pelanggan'] },
-  { name: 'FAQ', icon: <HelpCircle size={20} />, path: '/ListFaq', roles: ['admin', 'pelanggan'] },
+
+
 
   { name: 'Form Produk', icon: <ClipboardList size={20} />, path: '/ProductForm', roles: ['admin'] },
   { name: 'Chat Pelanggan', icon: <MessageCircle size={20} />, path: '/ChatPelanggan', roles: ['admin'] },
