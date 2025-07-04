@@ -14,6 +14,7 @@ import ProductUser from "./pages/ProductUser";
 import SalesManagement from "./pages/SalesManagement";
 import ProductForm from "./pages/ProductForm";
 import ProductEditForm from "./pages/ProductEditForm";
+import AdminOrders from "./pages/AdminOrders";
 import ProductPage from "./pages/ProductPage";
 import ChatUser from "./pages/ChatUser";
 import Pemesanan from "./pages/Pemesanan";
@@ -24,25 +25,19 @@ import PublicRoute from "./route/PublicRoute";
 import NotFound from "./pages/NotFound";
 import UploadData from "./pages/pelanggan/UploadData";
 import SettingAkun from "./pages/auth/SettingAkun";
-
-// Tambahan halaman publik
+import InfoPemesananPelanggan from "./pages/InfoPemesananPelanggan";
 import Produk from "./components/home/Produk";
 import Testimoni from "./components/home/Testimoni";
 import Kontak from "./components/home/Kontak";
 import Artikel from "./components/home/Artikel"
-import FAQ from "./components/home/Artikel"
+import FAQ from "./components/home/Faq"
 import ListPemesanan from "./pages/ListPemesanan";
-import PemesananForm from "./pages/PemesananForm";
-
-import ChatPelanggan from "./pages/ChatPelanggan";
-
 import FormFaq from "./pages/FormFaq";
 import ListFaq from "./pages/ListFaq";
-
-
 import ListArtikel from "./pages/ListArtikel";
 import ArtikelForm from "./pages/ArtikelForm";
 import TestimoniList from "./pages/TestimoniList";
+import ListFaqPelanggan from "./pages/ListFaqPelanggan";
 
 function App() {
   return (
@@ -91,6 +86,14 @@ function App() {
           }
         />
         <Route
+          path="/InfoPemesananPelanggan"
+          element={
+            <ProtectedRoute allowedRoles={["pelanggan"]}>
+              <InfoPemesananPelanggan/>
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/pelanggan"
           element={
             <ProtectedRoute allowedRoles={["admin"]}>
@@ -131,7 +134,7 @@ function App() {
           }
         />
         <Route
-          path="/ProdukUser"
+          path="/produkuser"
           element={
             <ProtectedRoute allowedRoles={["pelanggan"]}>
               <ProductUser />
@@ -179,18 +182,19 @@ function App() {
           }
         />
         <Route
-          path="/listpemesanan"
-          element={
-            <ProtectedRoute allowedRoles={["admin"]}>
-              <ListPemesanan />
-            </ProtectedRoute>
-          }
-        />
+  path="/listpemesanan"
+  element={
+    <ProtectedRoute allowedRoles={["pelanggan"]}>
+      <ListPemesanan />
+    </ProtectedRoute>
+  }
+/>
+
         <Route
-          path="/formpemesanan"
+          path="/AdminOrders"
           element={
             <ProtectedRoute allowedRoles={["admin"]}>
-              <PemesananForm />
+              <AdminOrders />
             </ProtectedRoute>
           }
         />
@@ -212,6 +216,7 @@ function App() {
         />
         <Route path="/formfaq" element={<FormFaq />} />
         <Route path="/listfaq" element={<ListFaq />} />
+        <Route path="/ListFaqPelanggan" element={<ListFaqPelanggan />} />
         <Route path="/listartikel" element={<ListArtikel />} />
         <Route path="/listtestimoni" element={<TestimoniList />} />
         <Route path="/formartikel" element={<ArtikelForm />} />
