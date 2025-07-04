@@ -38,6 +38,7 @@ import ListArtikel from "./pages/ListArtikel";
 import ArtikelForm from "./pages/ArtikelForm";
 import TestimoniList from "./pages/TestimoniList";
 import ListFaqPelanggan from "./pages/ListFaqPelanggan";
+import Prediksi from "./pages/Prediksi";
 
 function App() {
   return (
@@ -49,6 +50,7 @@ function App() {
       <Route path="/artikel" element={<Artikel />} />
       <Route path="/kontak" element={<Kontak />} />
       <Route path="/faq" element={<FAQ />} />
+      <Route path="/prediksi" element={<Prediksi />} />
       <Route path="*" element={<NotFound />} />
 
       {/* Halaman login dan register */}
