@@ -1,4 +1,3 @@
-// src/pages/TestimoniList.jsx
 import { useEffect, useState } from "react";
 import { supabase } from "../supabase";
 
@@ -11,7 +10,21 @@ export default function TestimoniList() {
       .select("*")
       .order("created_at", { ascending: false });
 
-    if (!error) setData(data);
+    if (!error && data) {
+      const updatedData = data.map((item) => {
+        const { data: imageData } = supabase
+          .storage
+          .from("testimoni-foto") // nama bucket kamu
+          .getPublicUrl(item.foto); // item.foto = nama file di tabel
+
+        return {
+          ...item,
+          foto: imageData?.publicUrl ?? "", // fallback ke string kosong
+        };
+      });
+
+      setData(updatedData);
+    }
   };
 
   useEffect(() => {
@@ -73,6 +86,10 @@ export default function TestimoniList() {
                       borderRadius: "50%",
                       objectFit: "cover",
                       boxShadow: "0 0 6px rgba(0,0,0,0.1)"
+                    }}
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = "https://via.placeholder.com/50?text=No+Image";
                     }}
                   />
                 </td>

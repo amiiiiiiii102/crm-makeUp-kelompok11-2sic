@@ -16,7 +16,22 @@ export default function Testimoni({ withLayout = true }) {
       .from("testimoni")
       .select("*")
       .order("created_at", { ascending: false });
-    if (!error) setList(data);
+
+    if (!error && data) {
+      const updatedData = data.map((item) => {
+        const { data: publicUrl } = supabase
+          .storage
+          .from("testimoni-foto")
+          .getPublicUrl(item.foto); // item.foto = nama file
+
+        return {
+          ...item,
+          foto: publicUrl?.publicUrl ?? "", // ubah jadi URL lengkap
+        };
+      });
+
+      setList(updatedData);
+    }
   };
 
   useEffect(() => {
@@ -74,6 +89,10 @@ export default function Testimoni({ withLayout = true }) {
                 objectFit: "cover",
                 borderRadius: 10,
                 marginBottom: 12,
+              }}
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = "https://via.placeholder.com/250x180?text=No+Image";
               }}
             />
             <h4 style={{ color: warnaUtama, fontWeight: 600 }}>{item.nama}</h4>
@@ -180,7 +199,7 @@ export default function Testimoni({ withLayout = true }) {
             <FormTestimoni
               onSuccess={() => {
                 setShowModal(false);
-                fetchTestimoni();
+                fetchTestimoni(); // refresh data setelah submit
               }}
             />
           </div>

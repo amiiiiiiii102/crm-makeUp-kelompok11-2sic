@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  PieChart, Pie, Cell, Legend
+  PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend
 } from 'recharts';
 
 const inputStyle = "p-2 border rounded-lg w-full";
-const PIE_COLORS = ['#FB923C', '#C084FC', '#FACC15', '#60A5FA']; // Lipstik, Foundation, Eyeshadow, Highlighter
+const PIE_COLORS = ['#FB923C', '#C084FC', '#FACC15', '#60A5FA']; // Warna: Lipstik, Foundation, Eyeshadow, Highlighter
 
 const Prediksi = () => {
   const [formData, setFormData] = useState({
@@ -26,11 +25,16 @@ const Prediksi = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (parseInt(formData.usia) < 13) {
+      alert("❗ Usia minimal 13 tahun.");
+      return;
+    }
+
     setLoading(true);
     setResult(null);
 
     try {
-      const response = await fetch("https://2737-35-222-144-171.ngrok-free.app/predict", {
+      const response = await fetch( "https://0db3-34-83-163-92.ngrok-free.app/predict", {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
@@ -39,21 +43,12 @@ const Prediksi = () => {
       const data = await response.json();
       setResult(data);
     } catch (error) {
-      console.error('Error:', error);
+      console.error('❌ Error:', error);
       setResult({ success: false, error: 'Gagal memproses prediksi.' });
     }
 
     setLoading(false);
   };
-
-  const grafikInputUser = [
-    { name: 'Usia', value: parseInt(formData.usia || 0) },
-    { name: 'Warna Kulit', value: formData.warna_kulit ? 1 : 0 },
-    { name: 'Undertone', value: formData.undertone ? 1 : 0 },
-    { name: 'Jenis Kulit', value: formData.jenis_kulit ? 1 : 0 },
-    { name: 'Gaya Makeup', value: formData.gaya_makeup ? 1 : 0 },
-    { name: 'Finish', value: formData.finish ? 1 : 0 }
-  ];
 
   const grafikConfidence = result?.confidence
     ? Object.entries(result.confidence).map(([label, prob]) => ({
@@ -63,7 +58,7 @@ const Prediksi = () => {
     : [];
 
   return (
-    <div className="flex justify-center py-10 font-sans bg-[#fdfdfc]">
+    <div className="flex justify-center py-10 font-sans bg-[#fdfdfc] min-h-screen">
       <div className="w-full max-w-2xl bg-white rounded-2xl shadow-xl p-6">
         <h2 className="text-2xl font-bold text-orange-500 mb-4">Form Rekomendasi Makeup</h2>
 
@@ -105,35 +100,29 @@ const Prediksi = () => {
             </label>
           ))}
 
-          <button type="submit" disabled={loading} className="bg-orange-500 text-white py-2 rounded-xl font-semibold">
+          <button
+            type="submit"
+            disabled={loading}
+            className="bg-orange-500 text-white py-2 rounded-xl font-semibold hover:bg-orange-600 transition duration-200"
+          >
             {loading ? 'Memproses...' : 'Rekomendasikan'}
           </button>
         </form>
 
+        {/* Hasil Rekomendasi */}
         {result && (
-          <div className="mt-6 bg-gray-50 p-4 rounded-xl space-y-6">
+          <div className="mt-6 bg-gray-50 p-4 rounded-xl space-y-6 overflow-auto">
             {result.success ? (
               <>
+                {/* Rekomendasi Produk */}
                 <div>
                   <h3 className="text-green-600 text-lg font-bold mb-2">Rekomendasi Makeup untuk Kamu:</h3>
-                  <p>💄 <strong>Lipstik:</strong> {result.rekomendasi_produk?.["Lipstik (Brand + Shade)"] || '-'}</p>
-                  <p>🧴 <strong>Foundation:</strong> {result.rekomendasi_produk?.["Foundation (Brand + Shade)"] || '-'}</p>
-                  <p>🎨 <strong>Eyeshadow:</strong> {result.rekomendasi_produk?.["Eyeshadow (Brand + Shade)"] || '-'}</p>
-                  <p>✨ <strong>Highlighter:</strong> {result.rekomendasi_produk?.["Highlighter (Brand + Shade)"] || '-'}</p>
-                </div>
-
-                {/* Bar Chart Input */}
-                <div>
-                  <h4 className="font-semibold text-orange-500 mb-2">📊 Data yang Dimasukkan</h4>
-                  <ResponsiveContainer width="100%" height={250}>
-                    <BarChart data={grafikInputUser} margin={{ top: 20, bottom: 20 }}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" angle={-10} textAnchor="end" interval={0} />
-                      <YAxis allowDecimals={false} />
-                      <Tooltip />
-                      <Bar dataKey="value" fill="#FB923C" />
-                    </BarChart>
-                  </ResponsiveContainer>
+                  <ul className="space-y-1">
+                    <li>💄 <strong>Lipstik:</strong> {result.rekomendasi_produk?.["Lipstik (Brand + Shade)"]}</li>
+                    <li>🧴 <strong>Foundation:</strong> {result.rekomendasi_produk?.["Foundation (Brand + Shade)"]}</li>
+                    <li>🎨 <strong>Eyeshadow:</strong> {result.rekomendasi_produk?.["Eyeshadow (Brand + Shade)"]}</li>
+                    <li>✨ <strong>Highlighter:</strong> {result.rekomendasi_produk?.["Highlighter (Brand + Shade)"]}</li>
+                  </ul>
                 </div>
 
                 {/* Pie Chart Confidence */}
@@ -148,7 +137,7 @@ const Prediksi = () => {
                         cx="50%"
                         cy="50%"
                         outerRadius={85}
-                        label
+                        label={({ name, value }) => `${name} (${value}%)`}
                       >
                         {grafikConfidence.map((entry, index) => (
                           <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
@@ -161,7 +150,7 @@ const Prediksi = () => {
                 </div>
               </>
             ) : (
-              <p className="text-red-600">Gagal menghasilkan rekomendasi: {result.error}</p>
+              <p className="text-red-600 font-semibold">❗ Gagal: {result.error}</p>
             )}
           </div>
         )}

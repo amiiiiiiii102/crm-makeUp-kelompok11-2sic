@@ -6,10 +6,11 @@ export default function FormTestimoni({ onSuccess }) {
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
-    if (e.target.name === "foto") {
-      setForm({ ...form, foto: e.target.files[0] });
+    const { name, value, files } = e.target;
+    if (name === "foto") {
+      setForm({ ...form, foto: files[0] });
     } else {
-      setForm({ ...form, [e.target.name]: e.target.value });
+      setForm({ ...form, [name]: value });
     }
   };
 
@@ -17,48 +18,60 @@ export default function FormTestimoni({ onSuccess }) {
     e.preventDefault();
     setLoading(true);
 
-    // Upload gambar ke Supabase Storage
-    const fileExt = form.foto.name.split(".").pop();
-    const fileName = `${Date.now()}.${fileExt}`;
-    const { data: uploadData, error: uploadError } = await supabase.storage
-      .from("testimoni-foto")
-      .upload(fileName, form.foto);
-
-    if (uploadError) {
-      alert("Gagal upload gambar");
+    if (!form.foto) {
+      alert("❗ Upload gambar dulu ya");
       setLoading(false);
       return;
     }
 
-    const url = `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/testimoni-foto/${fileName}`;
+    // Generate nama file unik
+    const fileExt = form.foto.name.split(".").pop();
+    const fileName = `${Date.now()}.${fileExt}`;
 
-    // Simpan data ke database
-    const { error: insertError } = await supabase.from("testimoni").insert([
-      {
-        nama: form.nama,
-        ulasan: form.ulasan,
-        foto: url,
-      },
-    ]);
+    // Upload ke Supabase Storage
+    const { error: uploadError } = await supabase.storage
+      .from("testimoni-foto")
+      .upload(fileName, form.foto);
+
+    if (uploadError) {
+      alert("❌ Gagal upload gambar");
+      setLoading(false);
+      return;
+    }
+
+    // Simpan data ke tabel testimoni
+    const { error: insertError } = await supabase
+      .from("testimoni")
+      .insert([
+        {
+          nama: form.nama,
+          ulasan: form.ulasan,
+          foto: fileName, // hanya nama file
+        },
+      ]);
 
     if (insertError) {
-      alert("Gagal simpan data");
+      alert("❌ Gagal simpan data testimoni");
     } else {
-      if (onSuccess) onSuccess();
+      alert("✅ Testimoni berhasil dikirim!");
+      if (onSuccess) onSuccess(); // trigger refresh
       setForm({ nama: "", ulasan: "", foto: null });
     }
+
     setLoading(false);
   };
 
   return (
-    <div style={{
-      maxWidth: 400,
-      margin: "0 auto",
-      padding: 24,
-      backgroundColor: "#fff",
-      borderRadius: 12,
-      boxShadow: "0 4px 12px rgba(0,0,0,0.08)"
-    }}>
+    <div
+      style={{
+        maxWidth: 400,
+        margin: "0 auto",
+        padding: 24,
+        backgroundColor: "#fff",
+        borderRadius: 12,
+        boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+      }}
+    >
       <h3 style={{ color: "#b4380d", marginBottom: 16 }}>Berikan Testimoni Anda</h3>
       <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
         <input
@@ -106,7 +119,7 @@ export default function FormTestimoni({ onSuccess }) {
             border: "none",
             borderRadius: 8,
             fontWeight: "bold",
-            cursor: "pointer"
+            cursor: "pointer",
           }}
         >
           {loading ? "Mengirim..." : "Kirim"}
