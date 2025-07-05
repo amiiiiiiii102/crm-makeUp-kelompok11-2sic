@@ -4,7 +4,7 @@ import { ChevronDown, ChevronUp } from "lucide-react";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 
-export default function FAQ({ withLayout = false }) {
+export default function FAQ({ withLayout = true }) {
   const warnaUtama = "#b4380d";
   const [faqList, setFaqList] = useState([]);
   const [openIndex, setOpenIndex] = useState(null);

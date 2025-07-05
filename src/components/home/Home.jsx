@@ -4,7 +4,7 @@ import Footer from "./Footer";
 import Produk from "./Produk";
 import Testimoni from "./Testimoni";
 import Artikel from "./Artikel";
-import Kontak from "./Kontak";
+import TokoPage from "./TokoPage";
 import FAQ from "./Faq";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -194,7 +194,7 @@ export default function Home() {
       <div><Artikel withLayout={false} /></div>
       <div style={{ height: 60, backgroundColor: "#fff6ea" }}></div>
       <div><FAQ withLayout={false} /></div>
-      <div><Kontak withLayout={false} /></div>
+      <div><TokoPage withLayout={false} /></div>
 
       <Footer />
 
