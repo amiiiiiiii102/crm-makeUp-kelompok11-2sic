@@ -17,7 +17,6 @@ import ProductEditForm from "./pages/ProductEditForm";
 import AdminOrders from "./pages/AdminOrders";
 import ProductPage from "./pages/ProductPage";
 import ChatUser from "./pages/ChatUser";
-
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import ProtectedRoute from "./route/ProtectedRoute";
@@ -28,6 +27,7 @@ import SettingAkun from "./pages/auth/SettingAkun";
 import InfoPemesananPelanggan from "./pages/InfoPemesananPelanggan";
 import Produk from "./components/home/Produk";
 import Testimoni from "./components/home/Testimoni";
+import TokoPage from "./components/home/TokoPage";
 import Kontak from "./components/home/Kontak";
 import Artikel from "./components/home/Artikel"
 import FAQ from "./components/home/Faq"
@@ -48,7 +48,7 @@ function App() {
       <Route path="/produk" element={<Produk />} />
       <Route path="/testimoni" element={<Testimoni />} />
       <Route path="/artikel" element={<Artikel />} />
-      <Route path="/kontak" element={<Kontak />} />
+      <Route path="/TokoPage" element={<TokoPage />} />
       <Route path="/faq" element={<FAQ />} />
       <Route path="/prediksi" element={<Prediksi />} />
       <Route path="*" element={<NotFound />} />

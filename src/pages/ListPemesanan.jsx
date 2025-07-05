@@ -757,28 +757,36 @@ const ListPemesanan = () => {
 
             {/* Confirmation Modal */}
             {showConfirmationModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-lg p-8 shadow-xl max-w-sm text-center">
-                        <AlertTriangle className="w-16 h-16 text-yellow-500 mx-auto mb-4" />
-                        <h3 className="text-xl font-semibold mb-4 text-gray-800">Konfirmasi Perubahan Data</h3>
-                        <p className="text-gray-600 mb-6">{confirmationMessage}</p>
-                        <div className="flex justify-center space-x-4">
-                            <button
-                                onClick={handleCancelConfirmation}
-                                className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"
-                            >
-                                Batal
-                            </button>
-                            <button
-                                onClick={handleConfirmAction}
-                                className="px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
-                            >
-                                Lanjutkan
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
+    <div
+        style={{
+            backgroundColor: 'rgba(100, 100, 100, 0.5)', /* Latar belakang abu-abu semi-transparan */
+            backdropFilter: 'blur(5px)', /* Efek blur */
+            WebkitBackdropFilter: 'blur(5px)' /* Untuk kompatibilitas browser lama seperti Safari */
+        }}
+        className="fixed inset-0 flex items-center justify-center z-50"
+    >
+        <div className="bg-white rounded-lg p-8 shadow-xl max-w-sm text-center">
+            {/* Tambahkan kelas animasi di sini */}
+            <AlertTriangle className="w-16 h-16 text-yellow-500 mx-auto mb-4 animate-scale-in" /> 
+            <h3 className="text-xl font-semibold mb-4 text-gray-800">Konfirmasi Perubahan Data</h3>
+            <p className="text-gray-600 mb-6">{confirmationMessage}</p>
+            <div className="flex justify-center space-x-4">
+                <button
+                    onClick={handleCancelConfirmation}
+                    className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"
+                >
+                    Batal
+                </button>
+                <button
+                    onClick={handleConfirmAction}
+                    className="px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
+                >
+                    Lanjutkan
+                </button>
+            </div>
+        </div>
+    </div>
+)}
 
             {/* Floating Notification */}
             <FloatingNotification

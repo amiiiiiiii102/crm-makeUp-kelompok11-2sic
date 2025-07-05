@@ -39,7 +39,7 @@ export default function Navbar({ activeNav }) {
         <Link to="/testimoni" style={linkStyle("testimoni")}>Testimonial</Link>
         <Link to="/artikel" style={linkStyle("artikel")}>Artikel</Link>
         <Link to="/faq" style={linkStyle("faq")}>FAQ</Link>
-        <Link to="/kontak" style={linkStyle("kontak")}>Kontak</Link>
+        <Link to="/TokoPage" style={linkStyle("TokoPage")}>Toko Kami</Link>
       </div>
 
       {/* Tombol Login */}

@@ -86,9 +86,9 @@ const Login = () => {
           if (result?.user?.role === 'admin') {
             navigate('/dashboard');
           } else {
-            navigate('/produk');
+            navigate('/produkuser');
           }
-        }, 1000);
+        },1);
 
       } else {
         // Handle specific Supabase login errors
