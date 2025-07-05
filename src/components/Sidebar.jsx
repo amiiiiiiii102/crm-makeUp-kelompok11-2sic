@@ -25,9 +25,7 @@ const allMenuItems = [
   { name: 'Produk', icon: <Box size={20} />, path: '/produkmanagement', roles: ['admin'] },
   { name: 'Produk', icon: <Box size={20} />, path: '/produkuser', roles: ['pelanggan'] },
   { name: 'Pelanggan', icon: <User2Icon size={20} />, path: '/pelanggan', roles: ['admin'] },
-  { name: 'Laporan', icon: <BarChart2 size={20} />, path: '/laporan', roles: ['admin'] },
   { name: 'chat', icon: <MessageCircle size={20} />, path: '/chatuser', roles: ['pelanggan'] },
-
   { name: 'Pemesanan Saya', icon: <ShoppingCart size={20} />, path: '/InfoPemesananPelanggan', roles: ['pelanggan'] },
   { name: 'Pemesanan', icon: <ShoppingCart size={20} />, path: '/AdminOrders', roles: ['admin'] },
   { name: 'FAQ', icon: <HelpCircle size={20} />, path: '/ListFAQ', roles: ['admin'] },
