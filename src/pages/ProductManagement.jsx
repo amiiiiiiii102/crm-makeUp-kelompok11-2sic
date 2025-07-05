@@ -145,7 +145,7 @@ const ProductManagement = () => {
 
             {/* Add Product Button */}
             <button
-              onClick={() => navigate("/tambah/produk")}
+              onClick={() => navigate("/ProductForm")}
               className="bg-gradient-to-r from-orange-500 to-amber-500 text-white px-6 py-4 rounded-2xl text-lg font-semibold hover:from-orange-600 hover:to-amber-600 transition-all duration-300 transform hover:scale-105 shadow-lg"
             >
               + Tambah Produk

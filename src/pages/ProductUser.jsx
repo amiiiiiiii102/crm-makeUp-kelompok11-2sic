@@ -1,24 +1,22 @@
 import React, { useState, useEffect, useMemo } from "react";
 // Impor ikon dari Lucide React
-import { Star, Search, Heart, ShoppingBag, Sparkles, Filter } from "lucide-react";
+import { Star, Search, Heart, ShoppingBag, Sparkles } from "lucide-react"; // Menghilangkan Filter
 // Impor hook navigasi dari React Router DOM
 import { useNavigate } from "react-router-dom";
 // Impor instance Supabase client yang sudah dikonfigurasi
-import { supabase } from "../supabase"; 
+import { supabase } from "../supabase";
 
 const ProductUser = () => {
   // State untuk menyimpan daftar produk
   const [products, setProducts] = useState([]);
   // State untuk menyimpan kata kunci pencarian
   const [searchTerm, setSearchTerm] = useState("");
-  // State untuk menyimpan kategori yang dipilih
-  const [selectedCategory, setSelectedCategory] = useState("all");
   // State untuk menyimpan kriteria pengurutan
   const [sortBy, setSortBy] = useState("newest");
   // State untuk menunjukkan apakah data sedang dimuat
-  const [loading, setLoading] = useState(true); 
+  const [loading, setLoading] = useState(true);
   // State untuk menyimpan pesan error jika terjadi
-  const [error, setError] = useState(null); 
+  const [error, setError] = useState(null);
   // Hook untuk navigasi antar halaman
   const navigate = useNavigate();
 
@@ -35,7 +33,7 @@ const ProductUser = () => {
       // Mengambil data dari tabel 'produk'
       const { data, error } = await supabase
         .from("produk") // Nama tabel di Supabase
-        .select("*")    // Mengambil semua kolom
+        .select("*") // Mengambil semua kolom
         .order("created_at", { ascending: false }); // Mengurutkan berdasarkan waktu pembuatan terbaru
 
       if (error) {
@@ -47,7 +45,7 @@ const ProductUser = () => {
         setProducts(data || []); // Pastikan data tidak null, set ke array kosong jika null
         console.log("DEBUG: Data mentah dari Supabase berhasil diambil:", data);
         if (data && data.length > 0) {
-            console.log("DEBUG: Contoh ID Produk pertama dari Supabase:", data[0].id_produk);
+          console.log("DEBUG: Contoh ID Produk pertama dari Supabase:", data[0].id_produk);
         }
       }
     } catch (err) {
@@ -59,22 +57,12 @@ const ProductUser = () => {
     }
   };
 
-  // Daftar kategori produk yang tersedia
-  const categories = ["all", "skincare", "makeup", "haircare", "fragrance"];
-
   // useMemo untuk memfilter dan mengurutkan produk secara efisien
-  // Ini akan dihitung ulang hanya jika `products`, `searchTerm`, `selectedCategory`, atau `sortBy` berubah
+  // Ini akan dihitung ulang hanya jika `products`, `searchTerm`, atau `sortBy` berubah
   const filteredProducts = useMemo(() => {
     let filtered = products.filter((product) =>
       product.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
-
-    if (selectedCategory !== "all") {
-      filtered = filtered.filter((product) =>
-        // Gunakan optional chaining (?) untuk menghindari error jika 'category' tidak ada
-        product.category?.toLowerCase() === selectedCategory
-      );
-    }
 
     // Logika pengurutan produk berdasarkan kriteria yang dipilih
     switch (sortBy) {
@@ -97,10 +85,10 @@ const ProductUser = () => {
 
     console.log("DEBUG: Produk setelah filter dan sort:", filtered);
     if (filtered && filtered.length > 0) {
-        console.log("DEBUG: Contoh ID Produk pertama setelah filter/sort:", filtered[0].id_produk);
+      console.log("DEBUG: Contoh ID Produk pertama setelah filter/sort:", filtered[0].id_produk);
     }
     return filtered;
-  }, [products, searchTerm, selectedCategory, sortBy]); // Dependensi useMemo
+  }, [products, searchTerm, sortBy]); // Dependensi useMemo
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50">
@@ -115,7 +103,8 @@ const ProductUser = () => {
             Istana <span className="text-orange-200">Cosmetic</span>
           </h1>
           <p className="text-xl text-orange-100 mb-8 max-w-2xl mx-auto leading-relaxed">
-            Temukan produk kecantikan premium yang akan membuatmu tampil memukau setiap hari
+            Temukan produk kecantikan premium yang akan membuatmu tampil memukau
+            setiap hari
           </p>
           <div className="flex justify-center space-x-4 text-orange-100">
             <div className="flex items-center space-x-2">
@@ -135,7 +124,10 @@ const ProductUser = () => {
         {/* Desain gelombang di bagian bawah hero section */}
         <div className="absolute bottom-0 left-0 right-0">
           <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M0 120L60 105C120 90 240 60 360 45C480 30 600 30 720 37.5C840 45 960 60 1080 67.5C1200 75 1320 75 1380 75L1440 75V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z" fill="url(#gradient1)"/>
+            <path
+              d="M0 120L60 105C120 90 240 60 360 45C480 30 600 30 720 37.5C840 45 960 60 1080 67.5C1200 75 1320 75 1380 75L1440 75V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z"
+              fill="url(#gradient1)"
+            />
             <defs>
               <linearGradient id="gradient1" x1="0%" y1="0%" x2="0%" y2="100%">
                 <stop offset="0%" stopColor="rgba(255,165,0,0.3)" />
@@ -162,23 +154,7 @@ const ProductUser = () => {
               />
             </div>
 
-            {/* Category Filter */}
-            <div className="flex items-center space-x-3">
-              <Filter className="w-5 h-5 text-orange-600" />
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="px-4 py-3 border-2 border-orange-200 rounded-xl focus:outline-none focus:border-orange-400 bg-white text-gray-700 font-medium"
-              >
-                <option value="all">Semua Kategori</option>
-                <option value="skincare">Perawatan Kulit</option>
-                <option value="makeup">Makeup</option>
-                <option value="haircare">Perawatan Rambut</option>
-                <option value="fragrance">Parfum</option>
-              </select>
-            </div>
-
-            {/* Sort Filter */}
+            {/* Sort Filter - Filter Kategori Dihilangkan */}
             <div className="flex items-center space-x-3">
               <span className="text-orange-600 font-medium">Urutkan:</span>
               <select
@@ -219,15 +195,22 @@ const ProductUser = () => {
             <div className="w-32 h-32 mx-auto mb-8 bg-gradient-to-br from-orange-200 to-amber-200 rounded-full flex items-center justify-center">
               <Search className="w-16 h-16 text-orange-600" />
             </div>
-            <h3 className="text-2xl font-bold text-gray-800 mb-4">Produk tidak ditemukan</h3>
-            <p className="text-gray-600 text-lg">Coba ubah kata kunci pencarian atau filter yang dipilih</p>
+            <h3 className="text-2xl font-bold text-gray-800 mb-4">
+              Produk tidak ditemukan
+            </h3>
+            <p className="text-gray-600 text-lg">
+              Coba ubah kata kunci pencarian atau filter yang dipilih
+            </p>
           </div>
         ) : (
           // Tampilan utama grid produk jika ada produk yang ditemukan
           <>
             <div className="flex justify-between items-center mb-8">
               <h2 className="text-3xl font-bold text-gray-800">
-                Koleksi Produk <span className="text-orange-600">({filteredProducts.length})</span>
+                Koleksi Produk{" "}
+                <span className="text-orange-600">
+                  ({filteredProducts.length})
+                </span>
               </h2>
             </div>
 
@@ -235,14 +218,15 @@ const ProductUser = () => {
               {filteredProducts.map((product) => {
                 // DEBUG: Log nilai product.id_produk saat merender kartu
                 console.log("DEBUG: Merender kartu produk. Product ID:", product.id_produk);
-                
+
                 const hasDiscount = product.discount > 0;
                 // Menghitung harga diskon:
                 // Jika ada diskon (discount > 0) DAN original_price ada, gunakan original_price untuk perhitungan.
                 // Jika tidak ada diskon ATAU original_price tidak ada, gunakan harga 'price' normal.
-                const discountedPrice = hasDiscount && product.original_price
-                  ? product.original_price * (1 - product.discount / 100)
-                  : product.price;
+                const discountedPrice =
+                  hasDiscount && product.original_price
+                    ? product.original_price * (1 - product.discount / 100)
+                    : product.price;
 
                 return (
                   // Penting: Gunakan product.id_produk sebagai key untuk kinerja React yang optimal
@@ -304,7 +288,8 @@ const ProductUser = () => {
                       </h3>
 
                       <p className="text-gray-600 text-sm mb-4 line-clamp-2 leading-relaxed">
-                        {product.description || "Produk kecantikan berkualitas premium untuk tampilan memukau Anda."}
+                        {product.description ||
+                          "Produk kecantikan berkualitas premium untuk tampilan memukau Anda."}
                       </p>
 
                       {/* Rating */}
@@ -332,7 +317,10 @@ const ProductUser = () => {
                           <div className="space-y-1">
                             <div className="text-sm text-gray-400 line-through">
                               {/* Tampilkan original_price jika ada, jika tidak, gunakan price */}
-                              Rp {Number(product.original_price || product.price).toLocaleString("id-ID")}
+                              Rp{" "}
+                              {Number(product.original_price || product.price).toLocaleString(
+                                "id-ID"
+                              )}
                             </div>
                             <div className="text-2xl font-bold bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent">
                               Rp {Number(discountedPrice).toLocaleString("id-ID")}
@@ -366,13 +354,21 @@ const ProductUser = () => {
                         <button
                           // KRUSIAL: Pengecekan untuk mencegah id_produk=eq.undefined
                           onClick={() => {
-                            console.log("DEBUG: Tombol 'Beli' diklik. product.id_produk saat klik:", product.id_produk);
+                            console.log(
+                              "DEBUG: Tombol 'Beli' diklik. product.id_produk saat klik:",
+                              product.id_produk
+                            );
                             if (product.id_produk) {
                               navigate(`/listpemesanan?id=${product.id_produk}`);
                             } else {
                               // Ini akan dieksekusi jika product.id_produk memang undefined saat klik
-                              console.warn("PERINGATAN: Mencoba navigasi dengan ID produk tidak valid untuk:", product.name);
-                              alert("Maaf, produk ini tidak dapat dipesan saat ini. Silakan coba produk lain.");
+                              console.warn(
+                                "PERINGATAN: Mencoba navigasi dengan ID produk tidak valid untuk:",
+                                product.name
+                              );
+                              alert(
+                                "Maaf, produk ini tidak dapat dipesan saat ini. Silakan coba produk lain."
+                              );
                             }
                           }}
                           className="bg-gradient-to-r from-orange-500 to-amber-500 text-white px-4 py-2 rounded-full text-sm font-semibold hover:from-orange-600 hover:to-amber-600 transition-all duration-300 transform hover:scale-105 shadow-lg"
@@ -398,7 +394,8 @@ const ProductUser = () => {
             Mulai Perjalanan Kecantikanmu Hari Ini
           </h2>
           <p className="text-xl text-orange-100 mb-8 leading-relaxed">
-            Dapatkan produk kecantikan terbaik dengan kualitas premium dan harga terjangkau
+            Dapatkan produk kecantikan terbaik dengan kualitas premium dan harga
+            terjangkau
           </p>
           <button className="bg-white text-orange-600 px-8 py-4 rounded-full text-lg font-bold hover:bg-orange-50 transition-all duration-300 transform hover:scale-105 shadow-xl">
             Jelajahi Semua Produk

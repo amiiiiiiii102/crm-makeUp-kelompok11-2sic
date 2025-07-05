@@ -8,7 +8,7 @@ export default function Home() {
 
   useEffect(() => {
     const handleScroll = () => {
-      const sections = ["home", "produk", "testimoni", "artikel","faq", "kontak"];
+      const sections = ["home", "produk", "testimoni", "artikel","faq", "TokoPage"];
       const scrollPosition = window.scrollY + window.innerHeight / 3;
 
       for (let id of sections) {
