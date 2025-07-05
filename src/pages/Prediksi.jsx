@@ -34,7 +34,7 @@ const Prediksi = () => {
     setResult(null);
 
     try {
-      const response = await fetch( "https://0db3-34-83-163-92.ngrok-free.app/predict", {
+      const response = await fetch("https://1915-34-34-5-109.ngrok-free.app/predict", {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
@@ -44,16 +44,16 @@ const Prediksi = () => {
       setResult(data);
     } catch (error) {
       console.error('❌ Error:', error);
-      setResult({ success: false, error: 'Gagal memproses prediksi.' });
+      setResult({ status: 'error', message: 'Gagal memproses prediksi.' });
     }
 
     setLoading(false);
   };
 
-  const grafikConfidence = result?.confidence
-    ? Object.entries(result.confidence).map(([label, prob]) => ({
+  const grafikConfidence = result?.status === "success"
+    ? Object.entries(result.result).map(([label, data]) => ({
         name: label,
-        value: Math.round(prob * 100)
+        value: parseFloat(data.confidence.replace('%', ''))
       }))
     : [];
 
@@ -112,20 +112,19 @@ const Prediksi = () => {
         {/* Hasil Rekomendasi */}
         {result && (
           <div className="mt-6 bg-gray-50 p-4 rounded-xl space-y-6 overflow-auto">
-            {result.success ? (
+            {result.status === "success" ? (
               <>
-                {/* Rekomendasi Produk */}
                 <div>
                   <h3 className="text-green-600 text-lg font-bold mb-2">Rekomendasi Makeup untuk Kamu:</h3>
                   <ul className="space-y-1">
-                    <li>💄 <strong>Lipstik:</strong> {result.rekomendasi_produk?.["Lipstik (Brand + Shade)"]}</li>
-                    <li>🧴 <strong>Foundation:</strong> {result.rekomendasi_produk?.["Foundation (Brand + Shade)"]}</li>
-                    <li>🎨 <strong>Eyeshadow:</strong> {result.rekomendasi_produk?.["Eyeshadow (Brand + Shade)"]}</li>
-                    <li>✨ <strong>Highlighter:</strong> {result.rekomendasi_produk?.["Highlighter (Brand + Shade)"]}</li>
+                    {Object.entries(result.result).map(([label, data]) => (
+                      <li key={label}>
+                        <strong>{label}:</strong> {data.produk}
+                      </li>
+                    ))}
                   </ul>
                 </div>
 
-                {/* Pie Chart Confidence */}
                 <div>
                   <h4 className="font-semibold text-purple-600 mb-2">📈 Confidence Prediksi</h4>
                   <ResponsiveContainer width="100%" height={250}>
@@ -150,7 +149,7 @@ const Prediksi = () => {
                 </div>
               </>
             ) : (
-              <p className="text-red-600 font-semibold">❗ Gagal: {result.error}</p>
+              <p className="text-red-600 font-semibold">❗ Gagal: {result.message}</p>
             )}
           </div>
         )}
