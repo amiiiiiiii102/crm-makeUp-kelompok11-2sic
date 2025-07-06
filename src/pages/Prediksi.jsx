@@ -3,7 +3,7 @@ import {
   PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend
 } from 'recharts';
 
-const inputStyle = "p-2 border rounded-lg w-full";
+const inputStyle = "p-2 border rounded-xl w-full bg-white shadow-inner";
 const PIE_COLORS = ['#FB923C', '#C084FC', '#FACC15', '#60A5FA']; // Warna: Lipstik, Foundation, Eyeshadow, Highlighter
 
 const Prediksi = () => {
@@ -25,16 +25,17 @@ const Prediksi = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (parseInt(formData.usia) < 13) {
-      alert("❗ Usia minimal 13 tahun.");
-      return;
-    }
+    if (parseInt(formData.usia) < 17) {
+  alert("❗ Usia minimal 17 tahun.");
+  return;
+}
+
 
     setLoading(true);
     setResult(null);
 
     try {
-      const response = await fetch("https://1915-34-34-5-109.ngrok-free.app/predict", {
+      const response = await fetch("https://a294-34-83-159-237.ngrok-free.app/predict", {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
@@ -58,11 +59,14 @@ const Prediksi = () => {
     : [];
 
   return (
-    <div className="flex justify-center py-10 font-sans bg-[#fdfdfc] min-h-screen">
-      <div className="w-full max-w-2xl bg-white rounded-2xl shadow-xl p-6">
-        <h2 className="text-2xl font-bold text-orange-500 mb-4">Form Rekomendasi Makeup</h2>
+    <div className="flex justify-center py-10 font-sans bg-[#fdfdfc] min-h-screen px-4">
+      <div className="w-full max-w-2xl bg-white rounded-3xl shadow-2xl p-8">
+        <h2 className="text-3xl font-bold text-orange-500 mb-3 text-center">✨ Rekomendasi Makeup Istimewa ✨</h2>
+        <p className="text-sm text-center text-gray-600 mb-6">
+          Masukkan detail kecantikanmu di bawah ini, dan biarkan sistem kami memberikan produk makeup terbaik sesuai profilmu! 💖
+        </p>
 
-        <form onSubmit={handleSubmit} className="grid gap-4">
+        <form onSubmit={handleSubmit} className="grid gap-5">
           {[
             { label: "Usia", name: "usia", type: "number", placeholder: "Contoh: 25" },
             { label: "Warna Kulit", name: "warna_kulit", options: ["Light", "Medium", "Tan", "Deep"] },
@@ -71,8 +75,8 @@ const Prediksi = () => {
             { label: "Gaya Makeup", name: "gaya_makeup", options: ["Natural", "Glowing", "Fresh", "Bold Glam", "No-Makeup"] },
             { label: "Finish", name: "finish", options: ["Matte", "Dewy", "Semi-Matte"] }
           ].map((field, index) => (
-            <label key={index}>
-              <span className="text-sm font-semibold text-gray-700">{field.label}</span>
+            <label key={index} className="block text-gray-700 text-sm font-medium">
+              {field.label}
               {field.options ? (
                 <select
                   name={field.name}
@@ -103,20 +107,20 @@ const Prediksi = () => {
           <button
             type="submit"
             disabled={loading}
-            className="bg-orange-500 text-white py-2 rounded-xl font-semibold hover:bg-orange-600 transition duration-200"
+            className="bg-orange-500 text-white py-3 rounded-xl font-semibold hover:bg-orange-600 transition duration-200"
           >
-            {loading ? 'Memproses...' : 'Rekomendasikan'}
+            {loading ? 'Memproses...' : '💄 Rekomendasikan Sekarang'}
           </button>
         </form>
 
         {/* Hasil Rekomendasi */}
         {result && (
-          <div className="mt-6 bg-gray-50 p-4 rounded-xl space-y-6 overflow-auto">
+          <div className="mt-8 bg-[#fef9f5] p-5 rounded-xl space-y-6 shadow-inner">
             {result.status === "success" ? (
               <>
                 <div>
-                  <h3 className="text-green-600 text-lg font-bold mb-2">Rekomendasi Makeup untuk Kamu:</h3>
-                  <ul className="space-y-1">
+                  <h3 className="text-pink-600 text-lg font-bold mb-2">✨ Ini dia pilihan terbaik untuk kamu!</h3>
+                  <ul className="space-y-1 text-sm text-gray-700">
                     {Object.entries(result.result).map(([label, data]) => (
                       <li key={label}>
                         <strong>{label}:</strong> {data.produk}
@@ -126,7 +130,7 @@ const Prediksi = () => {
                 </div>
 
                 <div>
-                  <h4 className="font-semibold text-purple-600 mb-2">📈 Confidence Prediksi</h4>
+                  <h4 className="font-semibold text-purple-600 mb-2">📊 Persentase Keyakinan Model</h4>
                   <ResponsiveContainer width="100%" height={250}>
                     <PieChart>
                       <Pie
