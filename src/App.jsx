@@ -39,6 +39,8 @@ import ArtikelForm from "./pages/ArtikelForm";
 import TestimoniList from "./pages/TestimoniList";
 import ListFaqPelanggan from "./pages/ListFaqPelanggan";
 import Prediksi from "./pages/Prediksi";
+import DaftarArtikel from "./pages/DaftarArtikel";
+import FormTestimoni from "./pages/FormTestimoni";
 
 function App() {
   return (
@@ -217,6 +219,8 @@ function App() {
         <Route path="/listtestimoni" element={<TestimoniList />} />
         <Route path="/formartikel" element={<ArtikelForm />} />
         <Route path="/setting" element={<SettingAkun />} />
+        <Route path="/daftarartikel" element={<DaftarArtikel />} />
+         <Route path="/formtestimoni" element={<FormTestimoni />} />
       </Route>
     </Routes>
   );

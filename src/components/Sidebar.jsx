@@ -13,6 +13,7 @@ import {
   User2Icon,
   MessageCircle,
   Newspaper,
+  Quote,
 } from 'lucide-react';
 
 import { Link, useLocation } from 'react-router-dom';
@@ -36,9 +37,10 @@ const allMenuItems = [
 
   { name: 'Form Produk', icon: <ClipboardList size={20} />, path: '/ProductForm', roles: ['admin'] },
   { name: 'Chat Pelanggan', icon: <MessageCircle size={20} />, path: '/ChatPelanggan', roles: ['admin'] },
-  { name: 'Testimoni', icon: <MessageCircle size={20} />, path: '/listtestimoni', roles: ['admin'] },
-  { name: 'Artikel', icon: <Newspaper size={20} />, path: '/listartikel', roles: ['admin','pelanggan'] },
-
+  { name: 'Testimoni', icon: <Quote size={20} />, path: '/listtestimoni', roles: ['admin'] },
+  { name: 'Testimoni', icon: <Quote size={20} />, path: '/formtestimoni', roles: ['pelanggan'] },
+  { name: 'Artikel', icon: <Newspaper size={20} />, path: '/listartikel', roles: ['admin'] },
+  { name: 'Artikel', icon: <Newspaper size={20} />, path: '/daftarartikel', roles: ['pelanggan'] },
 ];
 
 // Menu akun

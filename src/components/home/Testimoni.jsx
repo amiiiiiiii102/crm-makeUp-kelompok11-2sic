@@ -2,19 +2,23 @@ import { useEffect, useState } from "react";
 import { supabase } from "../../supabase";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
-import FormTestimoni from "../../pages/FormTestimoni";
+import { Star } from "lucide-react";
 
 export default function Testimoni({ withLayout = true }) {
   const [list, setList] = useState([]);
   const [showAll, setShowAll] = useState(false);
-  const [showModal, setShowModal] = useState(false);
-
   const warnaUtama = "#b4380d";
 
   const fetchTestimoni = async () => {
     const { data, error } = await supabase
       .from("testimoni")
-      .select("*")
+      .select(`
+        id, ulasan, foto, rating, created_at,
+        id_user ( email ),
+        id_pesanan (
+          produk ( name, image )
+        )
+      `)
       .order("created_at", { ascending: false });
 
     if (!error && data) {
@@ -22,11 +26,15 @@ export default function Testimoni({ withLayout = true }) {
         const { data: publicUrl } = supabase
           .storage
           .from("testimoni-foto")
-          .getPublicUrl(item.foto); // item.foto = nama file
+          .getPublicUrl(item.foto);
 
         return {
           ...item,
-          foto: publicUrl?.publicUrl ?? "", // ubah jadi URL lengkap
+          fotoUser: publicUrl?.publicUrl ?? "",
+          namaUser: item.id_user?.email?.split("@")[0] ?? "Anonim",
+          namaProduk: item.id_pesanan?.produk?.name ?? "Produk tidak ditemukan",
+          fotoProduk: item.id_pesanan?.produk?.image ?? "",
+          isExpanded: false,
         };
       });
 
@@ -38,6 +46,12 @@ export default function Testimoni({ withLayout = true }) {
     fetchTestimoni();
   }, []);
 
+  const toggleUlasan = (index) => {
+    const updatedList = [...list];
+    updatedList[index].isExpanded = !updatedList[index].isExpanded;
+    setList(updatedList);
+  };
+
   const displayList = showAll ? list : list.slice(0, 4);
 
   const content = (
@@ -47,7 +61,6 @@ export default function Testimoni({ withLayout = true }) {
         backgroundColor: "#fff6ea",
         padding: "60px 20px",
         textAlign: "center",
-        transition: "all 0.3s ease-in-out",
       }}
     >
       <h2 style={{ fontSize: 28, color: warnaUtama, marginBottom: 20 }}>
@@ -62,49 +75,116 @@ export default function Testimoni({ withLayout = true }) {
           gap: 24,
         }}
       >
-        {displayList.map((item, index) => (
-          <div
-            key={index}
-            style={{
-              width: 250,
-              backgroundColor: "white",
-              borderRadius: 16,
-              boxShadow: "0 4px 10px rgba(0,0,0,0.08)",
-              padding: 16,
-              transition: "transform 0.3s",
-            }}
-            onMouseEnter={(e) =>
-              (e.currentTarget.style.transform = "scale(1.03)")
-            }
-            onMouseLeave={(e) =>
-              (e.currentTarget.style.transform = "scale(1)")
-            }
-          >
-            <img
-              src={item.foto}
-              alt={item.nama}
+        {displayList.map((item, index) => {
+          const isLong = item.ulasan.length > 100;
+          const ulasanDisplayed = item.isExpanded
+            ? item.ulasan
+            : item.ulasan.slice(0, 100);
+
+          return (
+            <div
+              key={index}
               style={{
-                width: "100%",
-                height: 180,
-                objectFit: "cover",
-                borderRadius: 10,
-                marginBottom: 12,
+                width: 290,
+                backgroundColor: "#ffffff",
+                borderRadius: 16,
+                boxShadow: "0 6px 20px rgba(0,0,0,0.08)",
+                padding: 16,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                transition: "transform 0.3s",
               }}
-              onError={(e) => {
-                e.target.onerror = null;
-                e.target.src = "https://via.placeholder.com/250x180?text=No+Image";
-              }}
-            />
-            <h4 style={{ color: warnaUtama, fontWeight: 600 }}>{item.nama}</h4>
-            <p style={{ fontSize: 14, color: "#333", fontStyle: "italic" }}>
-              "{item.ulasan}"
-            </p>
-          </div>
-        ))}
+              onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.02)")}
+              onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+            >
+              {/* Foto Produk */}
+              <img
+                src={item.fotoProduk || "https://via.placeholder.com/250x180?text=No+Image"}
+                alt={item.namaProduk}
+                style={{
+                  width: "100%",
+                  height: 160,
+                  objectFit: "cover",
+                  borderRadius: 12,
+                  marginBottom: 10,
+                }}
+              />
+
+              {/* Rating */}
+              <div style={{ marginBottom: 6 }}>
+                {Array.from({ length: 5 }, (_, i) => (
+                  <Star
+                    key={i}
+                    size={16}
+                    className={`inline-block ${
+                      i < item.rating ? "text-yellow-400 fill-yellow-400" : "text-gray-300"
+                    }`}
+                  />
+                ))}
+              </div>
+
+              {/* Ulasan */}
+              <p
+                style={{
+                  fontSize: 14,
+                  color: "#555",
+                  fontStyle: "italic",
+                  marginBottom: 6,
+                }}
+              >
+                "{ulasanDisplayed}"
+                {isLong && !item.isExpanded && "…"}
+              </p>
+
+              {/* Button Baca Selengkapnya */}
+              {isLong && (
+                <button
+                  onClick={() => toggleUlasan(index)}
+                  style={{
+                    fontSize: 12,
+                    color: warnaUtama,
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                    fontStyle: "italic",
+                    marginBottom: 6,
+                  }}
+                >
+                  {item.isExpanded ? "Tutup" : "Baca Selengkapnya"}
+                </button>
+              )}
+
+              {/* Foto dari User */}
+              {item.isExpanded && item.fotoUser && (
+                <img
+                  src={item.fotoUser}
+                  alt="Foto dari user"
+                  style={{
+                    width: "100%",
+                    height: 140,
+                    objectFit: "cover",
+                    borderRadius: 12,
+                    marginTop: 8,
+                    border: "1px solid #f37021",
+                  }}
+                />
+              )}
+
+              {/* Nama Produk */}
+              <h4 style={{ color: warnaUtama, fontWeight: 600, marginTop: 10 }}>
+                {item.namaProduk}
+              </h4>
+
+              {/* Nama User */}
+              <p style={{ fontSize: 12, color: "#888" }}>~ {item.namaUser}</p>
+            </div>
+          );
+        })}
       </div>
 
-      {/* Tombol aksi */}
-      <div style={{ marginTop: 40, display: "flex", gap: 12, justifyContent: "center" }}>
+      {/* Tombol Aksi */}
+      <div style={{ marginTop: 40 }}>
         {list.length > 4 && (
           <button
             onClick={() => setShowAll(!showAll)}
@@ -118,93 +198,11 @@ export default function Testimoni({ withLayout = true }) {
               fontWeight: "bold",
               transition: "all 0.3s ease",
             }}
-            onMouseEnter={(e) =>
-              (e.currentTarget.style.backgroundColor = "#932f0b")
-            }
-            onMouseLeave={(e) =>
-              (e.currentTarget.style.backgroundColor = warnaUtama)
-            }
           >
             {showAll ? "Sembunyikan" : "Lihat Testimoni Lainnya"}
           </button>
         )}
-
-        <button
-          onClick={() => setShowModal(true)}
-          style={{
-            padding: "10px 24px",
-            backgroundColor: "#f37021",
-            color: "#fff",
-            border: "none",
-            borderRadius: 30,
-            cursor: "pointer",
-            fontWeight: "bold",
-            transition: "all 0.3s ease",
-          }}
-          onMouseEnter={(e) =>
-            (e.currentTarget.style.backgroundColor = "#d65d12")
-          }
-          onMouseLeave={(e) =>
-            (e.currentTarget.style.backgroundColor = "#f37021")
-          }
-        >
-          Tambah Testimoni ✍️
-        </button>
       </div>
-
-      {/* Modal Form Testimoni */}
-      {showModal && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: "rgba(0,0,0,0.4)",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            zIndex: 9999,
-          }}
-        >
-          <div
-            style={{
-              backgroundColor: "white",
-              borderRadius: 16,
-              padding: 30,
-              width: "90%",
-              maxWidth: 500,
-              position: "relative",
-              animation: "fadeIn 0.4s ease-in-out",
-            }}
-          >
-            <button
-              onClick={() => setShowModal(false)}
-              style={{
-                position: "absolute",
-                top: 10,
-                right: 10,
-                backgroundColor: "#ccc",
-                border: "none",
-                borderRadius: "50%",
-                width: 30,
-                height: 30,
-                cursor: "pointer",
-                fontWeight: "bold",
-              }}
-            >
-              ✕
-            </button>
-            <FormTestimoni
-              onSuccess={() => {
-                setShowModal(false);
-                fetchTestimoni(); // refresh data setelah submit
-              }}
-            />
-          </div>
-        </div>
-      )}
     </section>
   );
 
