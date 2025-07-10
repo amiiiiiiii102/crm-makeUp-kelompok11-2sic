@@ -371,7 +371,7 @@ const ProductUser = () => {
                               );
                             }
                           }}
-                          className="bg-gradient-to-r from-orange-500 to-amber-500 text-white px-4 py-2 rounded-full text-sm font-semibold hover:from-orange-600 hover:to-amber-600 transition-all duration-300 transform hover:scale-105 shadow-lg"
+                          className="cursor-pointer bg-gradient-to-r from-orange-500 to-amber-500 text-white px-4 py-2 rounded-full text-sm font-semibold hover:from-orange-600 hover:to-amber-600 transition-all duration-300 transform hover:scale-105 shadow-lg"
                         >
                           <ShoppingBag className="w-4 h-4 inline mr-1" />
                           Beli
