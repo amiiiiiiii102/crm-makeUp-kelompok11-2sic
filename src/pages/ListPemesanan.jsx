@@ -612,7 +612,7 @@ const ListPemesanan = () => {
                                 <div className="flex items-center bg-gray-50 rounded-xl p-2">
                                     <button
                                         onClick={() => setJumlah(Math.max(1, jumlah - 1))}
-                                        className="w-8 h-8 bg-white rounded-lg shadow-sm flex items-center justify-center text-gray-600 hover:bg-orange-50 hover:text-orange-600 transition-colors"
+                                        className="cursor-pointer w-8 h-8 bg-white rounded-lg shadow-sm flex items-center justify-center text-gray-600 hover:bg-orange-50 hover:text-orange-600 transition-colors"
                                     >
                                         -
                                     </button>
@@ -621,11 +621,11 @@ const ListPemesanan = () => {
                                         min="1"
                                         value={jumlah}
                                         onChange={(e) => setJumlah(Number(e.target.value))}
-                                        className="w-16 text-center bg-transparent font-medium text-gray-800"
+                                        className="cursor-pointer w-16 text-center bg-transparent font-medium text-gray-800"
                                     />
                                     <button
                                         onClick={() => setJumlah(jumlah + 1)}
-                                        className="w-8 h-8 bg-white rounded-lg shadow-sm flex items-center justify-center text-gray-600 hover:bg-pink-50 hover:text-pink-600 transition-colors"
+                                        className="cursor-pointer w-8 h-8 bg-white rounded-lg shadow-sm flex items-center justify-center text-gray-600 hover:bg-pink-50 hover:text-pink-600 transition-colors"
                                     >
                                         +
                                     </button>
@@ -733,7 +733,7 @@ const ListPemesanan = () => {
                                 type="submit"
                                 className="w-full bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold py-4 px-6 rounded-xl hover:from-orange-600 hover:to-red-700 transform hover:scale-[1.02] transition-all duration-200 shadow-lg hover:shadow-xl"
                             >
-                                <div className="flex items-center justify-center">
+                                <div className="cursor-pointer flex items-center justify-center">
                                     <ShoppingBag className="w-5 h-5 mr-2" />
                                     Kirim Pesanan
                                 </div>
