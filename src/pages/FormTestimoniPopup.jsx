@@ -24,7 +24,8 @@ const FormTestimoniPopup = ({ show, onClose, pesanan }) => {
     setLoading(true);
 
     const { data: { session } } = await supabase.auth.getSession();
-    const userId = session?.user?.id;
+    const user = session?.user;
+    const userId = user?.id;
 
     if (!pesanan || !userId) {
       alert("Gagal mengirim testimoni: data tidak lengkap.");
@@ -32,6 +33,22 @@ const FormTestimoniPopup = ({ show, onClose, pesanan }) => {
       return;
     }
 
+    // 1️⃣ Auto insert ke tabel pelanggan (jika belum ada)
+    const { data: pelanggan, error: pelangganError } = await supabase
+      .from("pelanggan")
+      .select("id")
+      .eq("id", userId)
+      .single();
+
+    if (!pelanggan && !pelangganError) {
+      await supabase.from("pelanggan").insert({
+        id: userId,
+        nama: user.user_metadata?.full_name || user.email?.split("@")[0] || "Anonim",
+        email: user.email,
+      });
+    }
+
+    // 2️⃣ Upload foto ke storage (jika ada)
     let fotoUrl = null;
     if (foto) {
       const fileName = `foto-${Date.now()}-${foto.name}`;
@@ -53,12 +70,14 @@ const FormTestimoniPopup = ({ show, onClose, pesanan }) => {
       fotoUrl = publicUrl.publicUrl;
     }
 
+    // 3️⃣ Simpan testimoni ke database
     const { error } = await supabase.from("testimoni").insert([{
       id_user: userId,
       id_pesanan: pesanan.id_pesanan,
       ulasan,
       foto: fotoUrl,
       rating,
+      created_at: new Date(),
     }]);
 
     setLoading(false);

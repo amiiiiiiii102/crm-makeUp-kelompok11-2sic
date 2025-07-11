@@ -1,125 +1,114 @@
-import { useEffect, useState } from 'react';
-import { supabase } from "../supabase";
-import ArtikelForm from './ArtikelForm';
+import React, { useEffect, useState } from 'react';
+import { supabase } from '../supabase';
+import { FaStar } from 'react-icons/fa';
+import { Search, MessageCircle } from 'lucide-react';
 
-function ListArtikel() {
-  const [artikels, setArtikels] = useState([]);
-  const [editingArtikel, setEditingArtikel] = useState(null);
+export default function TestimoniList() {
+  const [data, setData] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
 
-  const fetchArtikels = async () => {
-    const { data, error } = await supabase
-      .from('artikel')
-      .select('*')
+  const fetchData = async () => {
+    const { data: testimoniData, error } = await supabase
+      .from('testimoni')
+      .select(`*, users:users(id, email), pesanan:pesanan(id_pesanan, produk:produk(name))`)
       .order('created_at', { ascending: false });
 
-    if (error) console.error(error);
-    else setArtikels(data);
-  };
-
-  const addArtikel = async (artikel) => {
-    const { error } = await supabase.from('artikel').insert([artikel]);
     if (error) {
-      console.error("Gagal insert:", error);
-      alert("Gagal menambah artikel. Lihat console.");
-    } else {
-      fetchArtikels();
+      console.error('Gagal ambil testimoni:', error);
+      return;
     }
-  };
 
-  const updateArtikel = async (artikel) => {
-    const { error } = await supabase
-      .from('artikel')
-      .update({
-        judulartikel: artikel.judulartikel,
-        thumbnailartikel: artikel.thumbnailartikel,
-        isiartikel: artikel.isiartikel,
-        statusartikel: artikel.statusartikel,
-      })
-      .eq('id', artikel.id);
+    const combined = testimoniData.map((item) => ({
+      ...item,
+      email: item.users?.email || '-',
+      nama_produk: item.pesanan?.produk?.name || '-',
+    }));
 
-    if (error) console.error(error);
-    else {
-      fetchArtikels();
-      setEditingArtikel(null);
-    }
-  };
-
-  const deleteArtikel = async (id) => {
-    const { error } = await supabase.from('artikel').delete().eq('id', id);
-    if (error) console.error(error);
-    else fetchArtikels();
+    setData(combined);
   };
 
   useEffect(() => {
-    fetchArtikels();
+    fetchData();
   }, []);
 
+  const filteredData = data.filter((item) =>
+    item.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.nama_produk.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.ulasan?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
-    <div className="max-w-6xl mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Manajemen Artikel</h1>
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50">
+      <div className="relative overflow-hidden bg-gradient-to-r from-orange-600 via-amber-600 to-yellow-600">
+        <div className="absolute inset-0 bg-black opacity-20"></div>
+        <div className="relative max-w-7xl mx-auto px-6 py-16 text-center">
+          <div className="flex justify-center mb-6">
+            <MessageCircle className="w-16 h-16 text-orange-200 animate-pulse" />
+          </div>
+          <h1 className="text-5xl md:text-6xl font-bold text-white mb-4 tracking-tight">
+            Manajemen <span className="text-orange-200">Testimoni</span>
+          </h1>
+          <p className="text-xl text-orange-100 mb-8 max-w-2xl mx-auto leading-relaxed">
+            Lihat ulasan pelanggan yang telah melakukan pembelian di Istana Cosmetik.
+          </p>
+        </div>
+      </div>
 
-      <ArtikelForm
-        addArtikel={addArtikel}
-        updateArtikel={updateArtikel}
-        editingArtikel={editingArtikel}
-      />
+      <div className="max-w-6xl mx-auto px-4 py-12">
+        <div className="flex flex-col md:flex-row items-center justify-between mb-6 gap-4">
+          <div className="relative w-full md:w-1/2">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-orange-400 w-5 h-5" />
+            <input
+              type="text"
+              placeholder="Cari email, produk, atau ulasan..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-12 pr-4 py-3 border-2 border-orange-200 rounded-full focus:outline-none focus:border-orange-400 focus:ring-4 focus:ring-orange-100 text-gray-700 bg-orange-50"
+            />
+          </div>
+        </div>
 
-      <div className="overflow-x-auto mt-6">
-        <table className="min-w-full border text-sm bg-white rounded shadow">
-          <thead>
-            <tr className="bg-orange-100 text-left text-sm text-orange-700">
-              <th className="p-3 border">#</th>
-              <th className="p-3 border">Judul</th>
-              <th className="p-3 border">Gambar</th>
-              <th className="p-3 border">Isi</th>
-              <th className="p-3 border">Aksi</th>
-            </tr>
-          </thead>
-          <tbody>
-            {artikels.map((artikel, index) => (
-              <tr key={artikel.id} className="hover:bg-orange-50">
-                <td className="p-3 border">{index + 1}</td>
-                <td className="p-3 border font-medium">{artikel.judulartikel}</td>
-                <td className="p-3 border">
-                  <img
-                    src={artikel.thumbnailartikel}
-                    alt="thumbnail"
-                    className="w-40 h-32 object-contain rounded"
-                  />
-                </td>
-                <td className="p-3 border text-gray-700">
-                  {artikel.isiartikel?.length > 100
-                    ? artikel.isiartikel.slice(0, 100) + '...'
-                    : artikel.isiartikel}
-                </td>
-                <td className="p-3 border space-x-2">
-                  <button
-                    onClick={() => setEditingArtikel(artikel)}
-                    className="text-blue-600 hover:underline"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => deleteArtikel(artikel.id)}
-                    className="text-red-600 hover:underline"
-                  >
-                    Hapus
-                  </button>
-                </td>
-              </tr>
-            ))}
-            {artikels.length === 0 && (
+        <div className="overflow-x-auto rounded-xl shadow-lg border border-orange-100">
+          <table className="min-w-full bg-white text-sm">
+            <thead className="bg-orange-100 text-orange-800">
               <tr>
-                <td colSpan="5" className="text-center p-4 text-gray-500">
-                  Belum ada artikel
-                </td>
+                <th className="p-4 text-left">Email</th>
+                <th className="p-4 text-left">Produk</th>
+                <th className="p-4 text-left">Ulasan</th>
+                <th className="p-4 text-left">Rating</th>
+                <th className="p-4 text-left">ID User</th>
+                <th className="p-4 text-left">ID Pesanan</th>
+                <th className="p-4 text-left">Tanggal</th>
               </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {filteredData.length === 0 ? (
+                <tr>
+                  <td colSpan="7" className="text-center p-6 text-gray-500">
+                    Tidak ada testimoni ditemukan.
+                  </td>
+                </tr>
+              ) : (
+                filteredData.map((item) => (
+                  <tr key={item.id} className="border-t hover:bg-orange-50">
+                    <td className="p-4 font-medium text-gray-800">{item.email}</td>
+                    <td className="p-4">{item.nama_produk}</td>
+                    <td className="p-4 text-gray-600">{item.ulasan}</td>
+                    <td className="p-4 flex gap-1">
+                      {Array.from({ length: item.rating || 0 }).map((_, i) => (
+                        <FaStar key={i} color="#f9b634" />
+                      ))}
+                    </td>
+                    <td className="p-4">{item.id_user}</td>
+                    <td className="p-4">{item.id_pesanan}</td>
+                    <td className="p-4">{new Date(item.created_at).toLocaleString('id-ID')}</td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
 }
-
-export default ListArtikel;
