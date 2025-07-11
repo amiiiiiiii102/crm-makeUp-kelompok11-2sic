@@ -44,10 +44,10 @@ const allMenuItems = [
 ];
 
 // Menu akun
-const accountItems = [
-  { name: 'Sign In', icon: <LogIn size={20} />, path: '/login' },
-  // Tambahkan Sign Up atau Setting akun jika dibutuhkan
-];
+// const accountItems = [
+//   { name: 'Sign In', icon: <LogIn size={20} />, path: '/login' },
+//   // Tambahkan Sign Up atau Setting akun jika dibutuhkan
+// ];
 
 const Sidebar = () => {
   const location = useLocation();
@@ -98,7 +98,7 @@ const Sidebar = () => {
         </nav>
 
         {/* Akun */}
-        <div className="mb-2">
+        {/* <div className="mb-2">
           <div className="text-xs font-semibold text-gray-500 mb-2">AKUN</div>
           <nav className="space-y-1">
             {accountItems.map((item) => (
@@ -118,7 +118,7 @@ const Sidebar = () => {
               </Link>
             ))}
           </nav>
-        </div>
+        </div> */}
       </div>
     </aside>
   );

@@ -29,13 +29,6 @@ export const AuthProvider = ({ children }) => {
       if (password.length < 6) {
         return { success: false, message: 'Password harus minimal 6 karakter' };
       }
-
-      // Check if email is admin email
-      if (email === AkunAdmin.email) {
-        return { success: false, message: 'Email tidak dapat digunakan untuk registrasi' };
-      }
-
-      // ✅ SUPABASE SIGNUP WITH EMAIL CONFIRMATION
      
 
       if (error) {
@@ -106,25 +99,38 @@ export const AuthProvider = ({ children }) => {
 
     // ✅ Coba login sebagai admin dulu
     const { data: adminData, error: adminError } = await supabase
-      .from('admin')
-      .select('*')
-      .eq('email', email)
-      .single();
+  .from('admin')
+  .select('*')
+  .eq('email', email)
+  .single();
 
-    if (adminData) {
-      const passwordMatch = await bcrypt.compare(password, adminData.password);
-      if (passwordMatch) {
-        const adminSession = {
-          id: adminData.id,
-          email: adminData.email,
-          role: 'admin',
-          loginAt: new Date().toISOString(),
-          isAdmin: true
-        };
-        setCurrentUser(adminSession);
-        return { success: true, message: 'Login admin berhasil', user: adminSession };
-      }
-    }
+if (adminError) {
+  console.error('Admin lookup error:', adminError);
+}
+
+if (adminData) {
+  const passwordMatch = await bcrypt.compare(password, adminData.password);
+  if (passwordMatch) {
+    const adminSession = {
+      id: adminData.id,
+      email: adminData.email,
+      role: 'admin',
+      loginAt: new Date().toISOString(),
+      isAdmin: true
+    };
+
+    // ✅ Simpan session admin ke localStorage
+    localStorage.setItem('adminSession', JSON.stringify(adminSession));
+
+    // ✅ Set state user saat ini
+    setCurrentUser(adminSession);
+
+    return { success: true, message: 'Login admin berhasil', user: adminSession };
+  } else {
+    return { success: false, message: 'Password salah' };
+  }
+}
+
 
     // 🔍 Kalau bukan admin, login sebagai user biasa via Supabase Auth
     const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
@@ -209,29 +215,35 @@ export const AuthProvider = ({ children }) => {
   // LOGOUT FUNCTION
   // ===============================
   const logout = async () => {
-    try {
-      setLoading(true);
-      
-      // Only sign out from Supabase if not admin
-      if (currentUser && !currentUser.isAdmin) {
-        const { error } = await supabase.auth.signOut();
-        if (error) {
-          console.error('Logout error:', error);
-          // Don't return error, still proceed with logout
-        }
+  try {
+    setLoading(true);
+
+    // Hapus session admin dari localStorage jika ada
+    localStorage.removeItem('adminSession');
+
+    // Jika user biasa (bukan admin), logout dari Supabase
+    if (currentUser && !currentUser.isAdmin) {
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        console.error('Logout Supabase error:', error);
+        // Tidak perlu return error, lanjutkan logout
       }
-      
-      setCurrentUser(null);
-      return { success: true, message: 'Logout berhasil' };
-    } catch (error) {
-      console.error('Logout error:', error);
-      // Force logout even if there's an error
-      setCurrentUser(null);
-      return { success: true, message: 'Logout berhasil' };
-    } finally {
-      setLoading(false);
     }
-  };
+
+    // Reset currentUser
+    setCurrentUser(null);
+
+    return { success: true, message: 'Logout berhasil' };
+  } catch (error) {
+    console.error('Logout error:', error);
+    setCurrentUser(null); // Paksa reset meskipun error
+    return { success: true, message: 'Logout berhasil dengan peringatan' };
+  } finally {
+    setLoading(false);
+  }
+};
+
+
   const handleDeleteAccount = async (userId, logout, navigate) => {
   const confirm = window.confirm('Apakah Anda yakin ingin menghapus akun Anda? Tindakan ini tidak dapat dibatalkan.');
 
@@ -271,62 +283,72 @@ export const AuthProvider = ({ children }) => {
   
   // Check if user session is still valid on app load
   const checkAuthSession = async () => {
-    try {
-      setInitializing(true);
-      
-      const { data: { session }, error } = await supabase.auth.getSession();
-      
-      if (error) {
-        console.error('Session check error:', error);
+  try {
+    setInitializing(true);
+
+    // ✅ 1. Cek apakah ada session admin di localStorage
+    const storedAdmin = localStorage.getItem('adminSession');
+    if (storedAdmin) {
+      const parsed = JSON.parse(storedAdmin);
+      setCurrentUser(parsed);
+      return; // ✅ Langsung keluar karena sudah admin
+    }
+
+    // ✅ 2. Jika bukan admin, cek session Supabase Auth (untuk user biasa)
+    const { data: { session }, error } = await supabase.auth.getSession();
+
+    if (error) {
+      console.error('Session check error:', error);
+      setCurrentUser(null);
+      return;
+    }
+
+    if (session && session.user) {
+      // Check if email is confirmed
+      if (!session.user.email_confirmed_at) {
+        await supabase.auth.signOut();
         setCurrentUser(null);
         return;
       }
 
-      if (session && session.user) {
-        // Check if email is confirmed
-        if (!session.user.email_confirmed_at) {
-          await supabase.auth.signOut();
-          setCurrentUser(null);
-          return;
-        }
+      // Get user data from database
+      const { data: userData, error: userError } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', session.user.id)
+        .single();
 
-        // Get user data from database
-        const { data: userData, error: userError } = await supabase
-          .from('users')
-          .select('*')
-          .eq('id', session.user.id)
-          .single();
-
-        if (userError || !userData) {
-          console.error('User data not found:', userError);
-          await supabase.auth.signOut();
-          setCurrentUser(null);
-          return;
-        }
-
-        // Restore user session
-        const userSession = {
-          id: userData.id,
-          id_users: userData.id_users || userData.id,
-          email: userData.email,
-          fotoprofilusers: userData.profile_picture || userData.fotoprofilusers,
-          role: userData.role || 'user',
-          loginAt: session.user.last_sign_in_at,
-          supabaseSession: session,
-          isAdmin: false
-        };
-
-        setCurrentUser(userSession);
-      } else {
+      if (userError || !userData) {
+        console.error('User data not found:', userError);
+        await supabase.auth.signOut();
         setCurrentUser(null);
+        return;
       }
-    } catch (error) {
-      console.error('Auth session check error:', error);
+
+      // Restore user session
+      const userSession = {
+        id: userData.id,
+        id_users: userData.id_users || userData.id,
+        email: userData.email,
+        fotoprofilusers: userData.profile_picture || userData.fotoprofilusers,
+        role: userData.role || 'user',
+        loginAt: session.user.last_sign_in_at,
+        supabaseSession: session,
+        isAdmin: false
+      };
+
+      setCurrentUser(userSession);
+    } else {
       setCurrentUser(null);
-    } finally {
-      setInitializing(false);
     }
-  };
+  } catch (error) {
+    console.error('Auth session check error:', error);
+    setCurrentUser(null);
+  } finally {
+    setInitializing(false);
+  }
+};
+
 
   // Listen to auth state changes
   const setupAuthListener = () => {

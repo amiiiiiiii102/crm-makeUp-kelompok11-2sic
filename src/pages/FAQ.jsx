@@ -141,13 +141,13 @@ export default function FAQ() {
             <div className="mt-3 flex gap-3">
               <button
                 onClick={() => handleShowForm(index)}
-                className="text-sm text-blue-600 hover:underline flex items-center gap-1"
+                className="cursor-pointer text-sm text-blue-600 hover:underline flex items-center gap-1"
               >
                 <Edit3 size={16} /> Edit
               </button>
               <button
                 onClick={() => handleDelete(index)}
-                className="text-sm text-red-600 hover:underline flex items-center gap-1"
+                className="cursor-pointer text-sm text-red-600 hover:underline flex items-center gap-1"
               >
                 <Trash2 size={16} /> Hapus
               </button>
