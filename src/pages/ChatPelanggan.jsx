@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { MessageCircle, ArrowLeft, Send, Edit3, Users, Clock, CheckCheck } from 'lucide-react';
+import { MessageCircle, ArrowLeft, Send, Edit3, Clock, CheckCheck } from 'lucide-react';
 import { supabase } from '../supabase';
 
 const ChatPelanggan = ({ adminId }) => {
@@ -11,6 +11,7 @@ const ChatPelanggan = ({ adminId }) => {
   const [editMode, setEditMode] = useState({ msgId: null });
   const [isChatRoom, setIsChatRoom] = useState(false);
   const bottomRef = useRef(null);
+  const chatListRef = useRef(null);
 
   const formatTime = iso => {
     const d = new Date(iso);
@@ -21,15 +22,13 @@ const ChatPelanggan = ({ adminId }) => {
     if (!adminId) return;
 
     const fetchChats = async () => {
-      const { data: convs, error } = await supabase
+      const { data: convs } = await supabase
         .from('conversations')
         .select('*')
         .eq('admin_id', adminId);
 
-      if (error || !convs?.length) return;
-
       const userIds = convs.map(c => c.user_id);
-      const { data: users, error: userErr } = await supabase
+      const { data: users } = await supabase
         .from('users')
         .select('id, email')
         .in('id', userIds);
@@ -47,7 +46,7 @@ const ChatPelanggan = ({ adminId }) => {
 
       const chatsWithEmail = convs.map(conv => ({
         ...conv,
-        email: users.find(u => u.id === conv.user_id)?.email || 'Unknown',
+        email: users.find(u => u.id === conv.user_id)?.email || `User ID: ${conv.user_id}`,
         unreadCount: unreadMap[conv.id] || 0,
       }));
 
@@ -59,53 +58,68 @@ const ChatPelanggan = ({ adminId }) => {
     return () => clearInterval(interval);
   }, [adminId]);
 
-  const loadMessages = async userId => {
-    const { data: conv, error } = await supabase
-      .from('conversations')
-      .select('id')
-      .eq('user_id', userId)
-      .eq('admin_id', adminId)
-      .maybeSingle();
-
-    if (error || !conv) return;
-
-    await supabase
-      .from('pesan')
-      .update({ is_read: true })
-      .eq('conversation_id', conv.id)
-      .eq('sender_role', 'pelanggan')
-      .eq('is_read', false);
-
-    const { data: pesanList, error: pesanErr } = await supabase
-      .from('pesan')
-      .select('*')
-      .eq('conversation_id', conv.id)
-      .order('sent_at', { ascending: true });
-
-    if (pesanErr) return;
-
-    setSelectedMessages(
-      pesanList.map(m => ({
-        id: m.id,
-        from: m.sender_role,
-        text: m.message,
-        time: formatTime(m.sent_at),
-        is_read: m.is_read,
-      }))
-    );
-  };
-
   useEffect(() => {
-    if (selectedUser && adminId) {
-      loadMessages(selectedUser);
-      const interval = setInterval(() => loadMessages(selectedUser), 5000);
-      return () => clearInterval(interval);
-    }
+    if (!selectedUser || !adminId) return;
+
+    const fetchAndSetMessages = async () => {
+      const { data: conv } = await supabase
+        .from('conversations')
+        .select('id')
+        .eq('user_id', selectedUser)
+        .eq('admin_id', adminId)
+        .maybeSingle();
+
+      if (!conv) {
+        setSelectedMessages([]);
+        return;
+      }
+
+      await supabase
+        .from('pesan')
+        .update({ is_read: true })
+        .eq('conversation_id', conv.id)
+        .eq('sender_role', 'pelanggan')
+        .eq('is_read', false);
+
+      const { data: pesanList } = await supabase
+        .from('pesan')
+        .select('*')
+        .eq('conversation_id', conv.id)
+        .order('sent_at', { ascending: true });
+
+      setSelectedMessages(
+        pesanList.map(m => ({
+          id: m.id,
+          from: m.sender_role,
+          text: m.message,
+          time: formatTime(m.sent_at),
+          is_read: m.is_read,
+        }))
+      );
+    };
+
+    fetchAndSetMessages();
+
+    const messageChannel = supabase
+      .channel(`chat_messages_${selectedUser}`)
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'pesan',
+        filter: `user_id=eq.${selectedUser}`,
+      }, fetchAndSetMessages)
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(messageChannel);
+    };
   }, [selectedUser, adminId]);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [selectedMessages]);
+    if (isChatRoom && bottomRef.current) {
+      bottomRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [selectedMessages, isChatRoom]);
 
   const handleSend = async () => {
     if (!inputText.trim() || !selectedUser) return;
@@ -120,21 +134,17 @@ const ChatPelanggan = ({ adminId }) => {
     let convId = conv?.id;
 
     if (!convId) {
-      const { data: newConv, error: convErr } = await supabase
+      const { data: newConv } = await supabase
         .from('conversations')
         .insert({
           user_id: selectedUser,
           admin_id: adminId,
-          started_at: new Date(),
+          started_at: new Date().toISOString(),
         })
         .select('id')
         .single();
-
-      if (convErr) return;
       convId = newConv?.id;
     }
-
-    if (!convId) return;
 
     if (editMode.msgId) {
       await supabase
@@ -149,35 +159,17 @@ const ChatPelanggan = ({ adminId }) => {
         admin_id: adminId,
         sender_role: 'admin',
         message: inputText,
-        sent_at: new Date(),
+        sent_at: new Date().toISOString(),
         is_read: false,
       });
     }
 
     setInputText('');
-    await loadMessages(selectedUser);
   };
-
-  const handleEdit = (msgId, oldText) => {
-    setInputText(oldText);
-    setEditMode({ msgId });
-  };
-
-  if (!adminId) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-center">
-          <div className="w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600 font-medium">Memuat data admin...</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="absolute inset-0 top-[64px] left-[240px] right-0 bottom-0 bg-gray-50 z-30 overflow-hidden">
       <div className="h-full flex flex-col">
-        {/* Header */}
         <div className="bg-white border-b border-gray-200 px-6 py-4 flex items-center space-x-3 sticky top-0 z-10">
           {isChatRoom && (
             <button
@@ -207,27 +199,23 @@ const ChatPelanggan = ({ adminId }) => {
           </div>
         </div>
 
-        {/* Content */}
-        <div className="flex-1 overflow-hidden">
+        <div className="flex-1 overflow-auto">
           {isChatRoom ? (
             <div className="h-full flex flex-col">
-              {/* Messages */}
-              <div className="flex-1 p-6 space-y-4 overflow-y-auto">
-                {selectedMessages.map((msg, idx) => (
+              <div className="flex-1 p-6 space-y-4 overflow-y-aut">
+                {selectedMessages.map((msg) => (
                   <div
-                    key={idx}
+                    key={msg.id}
                     className={`flex items-end space-x-2 ${
                       msg.from === 'admin' ? 'justify-end' : 'justify-start'
                     }`}
                   >
-                    {/* Avatar for customer messages (left side) */}
                     {msg.from === 'pelanggan' && (
                       <div className="w-8 h-8 rounded-full bg-gradient-to-br from-pink-400 to-purple-600 flex items-center justify-center text-xs font-semibold text-white">
                         {selectedUserEmail?.[0]?.toUpperCase() || 'P'}
                       </div>
                     )}
-                    
-                    {/* Message bubble */}
+
                     <div className={`max-w-xs lg:max-w-md px-4 py-3 rounded-2xl ${
                       msg.from === 'admin'
                         ? 'bg-orange-500 text-white'
@@ -237,7 +225,7 @@ const ChatPelanggan = ({ adminId }) => {
                         {msg.from === 'admin' ? 'Admin' : 'Pelanggan'}
                       </p>
                       <p className="text-sm leading-relaxed">{msg.text}</p>
-                      <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-200 border-opacity-20">
+                      <div className={`flex items-center justify-between mt-2 pt-2 ${msg.from === 'admin' ? 'border-t border-gray-200 border-opacity-20' : 'border-t border-gray-200'}`}>
                         <div className="flex items-center space-x-1 text-xs opacity-75">
                           <Clock size={12} />
                           <span>{msg.time}</span>
@@ -245,7 +233,10 @@ const ChatPelanggan = ({ adminId }) => {
                         <div className="flex items-center space-x-2">
                           {msg.from === 'admin' && (
                             <button
-                              onClick={() => handleEdit(msg.id, msg.text)}
+                              onClick={() => {
+                                setInputText(msg.text);
+                                setEditMode({ msgId: msg.id });
+                              }}
                               className="p-1 hover:bg-black hover:bg-opacity-10 rounded transition-colors"
                             >
                               <Edit3 size={12} />
@@ -263,7 +254,6 @@ const ChatPelanggan = ({ adminId }) => {
                       </div>
                     </div>
 
-                    {/* Avatar for admin messages (right side) */}
                     {msg.from === 'admin' && (
                       <div className="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center text-xs font-semibold text-white">
                         A
@@ -274,7 +264,6 @@ const ChatPelanggan = ({ adminId }) => {
                 <div ref={bottomRef} />
               </div>
 
-              {/* Input */}
               <div className="p-6 bg-white border-t border-gray-200">
                 <div className="flex items-end space-x-3">
                   <div className="flex-1">
@@ -299,16 +288,15 @@ const ChatPelanggan = ({ adminId }) => {
               </div>
             </div>
           ) : (
-            <div className="flex-1 p-6 overflow-y-auto">
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                <div className="px-6 py-4 border-b border-gray-200">
+            <div className="flex-1 p-6" ref={chatListRef}>
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 h-full overflow-hidden flex flex-col">
+                <div className="px-6 py-4 border-b border-gray-200 shrink-0">
                   <h2 className="text-lg font-semibold text-gray-900">Daftar Percakapan</h2>
                   <p className="text-sm text-gray-600 mt-1">Kelola semua percakapan dengan pelanggan</p>
                 </div>
-                
-                {chats.length ? (
-                  <div className="divide-y divide-gray-200">
-                    {chats.map((chat, i) => (
+                <div className="flex-1 overflow-y-auto divide-y divide-gray-200">
+                  {chats.length ? (
+                    chats.map((chat, i) => (
                       <div key={chat.id} className="px-6 py-4 hover:bg-gray-50 transition-colors">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center space-x-3">
@@ -341,15 +329,15 @@ const ChatPelanggan = ({ adminId }) => {
                           </button>
                         </div>
                       </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="px-6 py-12 text-center">
-                    <MessageCircle size={48} className="mx-auto text-gray-400 mb-4" />
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">Belum ada percakapan</h3>
-                    <p className="text-gray-600">Percakapan dengan pelanggan akan muncul di sini</p>
-                  </div>
-                )}
+                    ))
+                  ) : (
+                    <div className="px-6 py-12 text-center">
+                      <MessageCircle size={48} className="mx-auto text-gray-400 mb-4" />
+                      <h3 className="text-lg font-medium text-gray-900 mb-2">Belum ada percakapan</h3>
+                      <p className="text-gray-600">Percakapan dengan pelanggan akan muncul di sini</p>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           )}
