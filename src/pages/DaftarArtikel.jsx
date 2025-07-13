@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { supabase } from "../supabase";
-import { BookOpen, Sparkles, Search, X } from "lucide-react";
+import { Search, Sparkles, X } from "lucide-react";
 
 const DaftarArtikel = () => {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
+  const [kategori, setKategori] = useState("Semua");
   const [selectedArtikel, setSelectedArtikel] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+
   const articlesPerPage = 3;
 
   useEffect(() => {
@@ -22,52 +24,62 @@ const DaftarArtikel = () => {
       .eq("statusartikel", "publish")
       .order("created_at", { ascending: false });
 
-    if (error) console.error("Gagal mengambil artikel:", error);
-    else setArticles(data);
+    if (!error) setArticles(data);
     setLoading(false);
   };
 
   const filteredArticles = useMemo(() => {
-    return articles.filter((artikel) =>
-      artikel.judulartikel.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [articles, searchTerm]);
+    return articles
+      .filter((artikel) =>
+        kategori === "Semua" ? true : artikel.kategoriartikel === kategori
+      )
+      .filter((artikel) =>
+        artikel.judulartikel.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+  }, [articles, searchTerm, kategori]);
 
   const totalPages = Math.ceil(filteredArticles.length / articlesPerPage);
   const indexOfLastArticle = currentPage * articlesPerPage;
   const indexOfFirstArticle = indexOfLastArticle - articlesPerPage;
   const currentArticles = filteredArticles.slice(indexOfFirstArticle, indexOfLastArticle);
 
+  const kategoriOptions = ["Semua", "Skincare", "Makeup", "Tips", "Review"];
+
   return (
     <div className="min-h-screen bg-orange-50">
-      {/* Hero Section */}
+      {/* HERO */}
       <div className="relative bg-gradient-to-r from-orange-600 via-amber-600 to-yellow-600 pb-20 pt-16 text-white text-center overflow-hidden">
         <div className="absolute inset-0 bg-black opacity-10" />
         <div className="relative z-10 max-w-4xl mx-auto px-6">
-          <Sparkles className="w-12 h-12 text-orange-200 mx-auto mb-4 animate-pulse" />
+          <Sparkles className="w-12 h-12 mx-auto mb-4 text-orange-200 animate-pulse" />
           <h1 className="text-5xl font-bold mb-3">Daftar Artikel</h1>
           <p className="text-lg text-orange-100">
             Temukan informasi dan tips kecantikan terkini dari kami
           </p>
         </div>
-        <svg className="absolute bottom-0 w-full" viewBox="0 0 1440 120" fill="none">
-          <path
-            d="M0 120L60 105C120 90 240 60 360 45C480 30 600 30 720 37.5C840 45 960 60 1080 67.5C1200 75 1320 75 1380 75L1440 75V120H0Z"
-            fill="url(#gradient1)"
-          />
-          <defs>
-            <linearGradient id="gradient1" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="rgba(255,165,0,0.3)" />
-              <stop offset="100%" stopColor="white" />
-            </linearGradient>
-          </defs>
-        </svg>
       </div>
 
-      {/* Search Box */}
-      <div className="max-w-4xl mx-auto px-6 relative mt-10">
-        <div className="bg-white p-5 rounded-3xl shadow-xl border border-orange-200">
-          <div className="relative">
+      {/* FILTER & SEARCH */}
+      <div className="max-w-5xl mx-auto px-6 mt-10 space-y-4">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-white p-5 rounded-2xl shadow-lg border border-orange-200">
+          {/* Dropdown */}
+          <select
+            value={kategori}
+            onChange={(e) => {
+              setKategori(e.target.value);
+              setCurrentPage(1);
+            }}
+            className="w-full md:w-1/3 border-2 border-orange-200 bg-orange-50 text-orange-700 px-4 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-300"
+          >
+            {kategoriOptions.map((option) => (
+              <option key={option} value={option}>
+                {option === "Semua" ? "Semua Kategori" : option}
+              </option>
+            ))}
+          </select>
+
+          {/* Search */}
+          <div className="relative w-full md:w-2/3">
             <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-orange-400 w-5 h-5" />
             <input
               type="text"
@@ -77,13 +89,13 @@ const DaftarArtikel = () => {
                 setSearchTerm(e.target.value);
                 setCurrentPage(1);
               }}
-              className="w-full pl-12 pr-4 py-3 rounded-xl border-2 border-orange-200 bg-orange-50 placeholder:text-orange-400 text-gray-700 focus:outline-none focus:ring-2 focus:ring-orange-300"
+              className="w-full pl-12 pr-4 py-3 rounded-xl border-2 border-orange-200 focus:outline-none focus:ring-2 focus:ring-orange-300 bg-orange-50 text-gray-700 placeholder:text-orange-400"
             />
           </div>
         </div>
       </div>
 
-      {/* Artikel Grid */}
+      {/* ARTIKEL */}
       <div className="max-w-6xl mx-auto px-6 py-12">
         {loading ? (
           <p className="text-center text-gray-600">Memuat artikel...</p>
@@ -96,28 +108,27 @@ const DaftarArtikel = () => {
             {currentArticles.map((artikel) => (
               <div
                 key={artikel.id}
-                className="bg-white rounded-xl border border-orange-100 shadow-sm hover:shadow-lg transition-all overflow-hidden flex flex-col"
+                className="bg-white rounded-xl shadow-md overflow-hidden border border-orange-100 hover:shadow-xl transition"
               >
-                <div className="bg-orange-50 border-b border-orange-100 p-3 flex items-center justify-center h-52">
+                <div className="bg-white h-48 flex items-center justify-center border-b border-orange-100">
                   <img
                     src={artikel.thumbnailartikel || "/fallback.jpg"}
                     alt="Thumbnail"
-                    className="h-full object-contain rounded"
+                    className="max-h-44 object-contain"
                     onError={(e) => (e.target.src = "/fallback.jpg")}
                   />
                 </div>
-                <div className="p-5 flex flex-col flex-grow">
-                  <h2 className="text-lg font-bold text-orange-800 mb-2 line-clamp-2">
+                <div className="p-5">
+                  <h2 className="text-lg font-semibold text-orange-800 mb-2 line-clamp-2">
                     {artikel.judulartikel}
                   </h2>
                   <p className="text-sm text-gray-600 mb-4 line-clamp-3">
                     {artikel.isiartikel}
                   </p>
                   <button
+                    className="text-sm font-semibold text-orange-600 hover:underline"
                     onClick={() => setSelectedArtikel(artikel)}
-                    className="mt-auto inline-flex items-center text-sm text-orange-600 hover:text-orange-800 transition font-medium"
                   >
-                    <BookOpen className="w-4 h-4 mr-1" />
                     Baca Selengkapnya
                   </button>
                 </div>
@@ -126,10 +137,10 @@ const DaftarArtikel = () => {
           </div>
         )}
 
-        {/* Pagination */}
+        {/* PAGINATION */}
         {totalPages > 1 && (
           <div className="flex justify-center mt-12 space-x-2">
-            {Array.from({ length: totalPages }, (_, index) => (
+            {[...Array(totalPages)].map((_, index) => (
               <button
                 key={index}
                 onClick={() => setCurrentPage(index + 1)}
@@ -145,9 +156,9 @@ const DaftarArtikel = () => {
         )}
       </div>
 
-      {/* Modal Detail */}
+      {/* MODAL */}
       {selectedArtikel && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center px-4">
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center px-4">
           <div className="bg-white rounded-xl max-w-2xl w-full p-6 relative shadow-xl overflow-y-auto max-h-[90vh]">
             <button
               onClick={() => setSelectedArtikel(null)}
@@ -155,17 +166,19 @@ const DaftarArtikel = () => {
             >
               <X className="w-6 h-6" />
             </button>
-            <h2 className="text-2xl font-bold text-orange-700 mb-4">{selectedArtikel.judulartikel}</h2>
-
-            <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 mb-5 max-w-md mx-auto">
+            <h2 className="text-2xl font-bold text-orange-700 mb-4">
+              {selectedArtikel.judulartikel}
+            </h2>
+            <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-5">
               <img
                 src={selectedArtikel.thumbnailartikel || "/fallback.jpg"}
                 alt="Gambar Artikel"
-                className="max-h-64 w-full object-contain rounded"
+                className="max-h-64 mx-auto object-contain"
               />
             </div>
-
-            <p className="text-gray-700 whitespace-pre-line">{selectedArtikel.isiartikel}</p>
+            <p className="text-gray-700 whitespace-pre-line">
+              {selectedArtikel.isiartikel}
+            </p>
           </div>
         </div>
       )}

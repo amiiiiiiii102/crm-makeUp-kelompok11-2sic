@@ -9,6 +9,7 @@ const ArtikelForm = ({ mode = "tambah", artikelId }) => {
     thumbnailartikel: "",
     isiartikel: "",
     statusartikel: "draft",
+    kategoriartikel: "", // kategori baru
   });
 
   const navigate = useNavigate();
@@ -28,6 +29,7 @@ const ArtikelForm = ({ mode = "tambah", artikelId }) => {
             thumbnailartikel: data.thumbnailartikel,
             isiartikel: data.isiartikel,
             statusartikel: data.statusartikel,
+            kategoriartikel: data.kategoriartikel || "", // ambil kategori kalau ada
           });
         }
       };
@@ -37,14 +39,26 @@ const ArtikelForm = ({ mode = "tambah", artikelId }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { judulartikel, thumbnailartikel, isiartikel, statusartikel } = form;
+    const {
+      judulartikel,
+      thumbnailartikel,
+      isiartikel,
+      statusartikel,
+      kategoriartikel,
+    } = form;
 
-    if (!judulartikel || !thumbnailartikel || !isiartikel || !statusartikel) {
+    if (!judulartikel || !thumbnailartikel || !isiartikel || !statusartikel || !kategoriartikel) {
       alert("Semua field harus diisi");
       return;
     }
 
-    const dataPayload = { judulartikel, thumbnailartikel, isiartikel, statusartikel };
+    const dataPayload = {
+      judulartikel,
+      thumbnailartikel,
+      isiartikel,
+      statusartikel,
+      kategoriartikel,
+    };
     let error;
 
     if (mode === "edit") {
@@ -118,6 +132,22 @@ const ArtikelForm = ({ mode = "tambah", artikelId }) => {
               />
             </div>
           )}
+
+          <div>
+            <label className="block mb-1 font-medium text-orange-800">Kategori Artikel</label>
+            <select
+              className="w-full border border-orange-200 p-3 rounded-xl bg-orange-50 focus:ring-2 focus:ring-orange-300 outline-none"
+              value={form.kategoriartikel}
+              onChange={(e) => setForm({ ...form, kategoriartikel: e.target.value })}
+            >
+              <option value="">Pilih Kategori</option>
+              <option value="Tips">Tips</option>
+              <option value="Tutorial">Tutorial</option>
+              <option value="Produk">Produk</option>
+              <option value="Review">Review</option>
+              <option value="Berita">Berita</option>
+            </select>
+          </div>
 
           <div>
             <label className="block mb-1 font-medium text-orange-800">Isi Artikel</label>

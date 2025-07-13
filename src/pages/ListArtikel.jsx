@@ -10,7 +10,11 @@ export default function ListArtikel() {
   const navigate = useNavigate();
 
   const fetchArtikels = async () => {
-    const { data, error } = await supabase.from('artikel').select('*').order('created_at', { ascending: false });
+    const { data, error } = await supabase
+      .from('artikel')
+      .select('*')
+      .order('created_at', { ascending: false });
+
     if (!error) {
       setArtikels(data);
       setStats({
@@ -63,7 +67,7 @@ export default function ListArtikel() {
           ))}
         </div>
 
-        {/* Search */}
+        {/* Search + Tambah */}
         <div className="flex flex-col md:flex-row items-center justify-between mb-6 gap-4">
           <div className="relative w-full md:w-1/2">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-orange-400 w-5 h-5" />
@@ -93,6 +97,7 @@ export default function ListArtikel() {
                 <th className="p-4 text-left">Judul</th>
                 <th className="p-4 text-left">Gambar</th>
                 <th className="p-4 text-left">Isi</th>
+                <th className="p-4 text-left">Kategori</th>
                 <th className="p-4 text-left">Status</th>
                 <th className="p-4 text-left">Aksi</th>
               </tr>
@@ -100,7 +105,7 @@ export default function ListArtikel() {
             <tbody>
               {filtered.length === 0 ? (
                 <tr>
-                  <td colSpan="6" className="text-center p-6 text-gray-500">Tidak ada artikel</td>
+                  <td colSpan="7" className="text-center p-6 text-gray-500">Tidak ada artikel</td>
                 </tr>
               ) : (
                 filtered.map((artikel, i) => (
@@ -108,9 +113,17 @@ export default function ListArtikel() {
                     <td className="p-4">{i + 1}</td>
                     <td className="p-4 font-medium text-gray-800">{artikel.judulartikel}</td>
                     <td className="p-4">
-                      <img src={artikel.thumbnailartikel} alt="" className="w-24 h-20 object-cover rounded" onError={(e) => { e.target.onerror = null; e.target.src = '/fallback.png'; }} />
+                      <img
+                        src={artikel.thumbnailartikel}
+                        alt=""
+                        className="w-24 h-20 object-cover rounded"
+                        onError={(e) => { e.target.onerror = null; e.target.src = '/fallback.png'; }}
+                      />
                     </td>
                     <td className="p-4 text-gray-600">{artikel.isiartikel.slice(0, 100)}...</td>
+                    <td className="p-4 text-orange-700 font-medium">
+                      {artikel.kategoriartikel || '-'}
+                    </td>
                     <td className="p-4">
                       <span className={`px-3 py-1 text-xs font-semibold rounded-full ${
                         artikel.statusartikel === 'publish' ? 'bg-green-100 text-green-700' :
