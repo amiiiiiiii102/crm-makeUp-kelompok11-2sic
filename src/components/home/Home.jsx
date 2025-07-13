@@ -192,7 +192,7 @@ export default function Home() {
       <div><Produk withLayout={false} /></div>
       <div><Testimoni withLayout={false} /></div>
       <div><Artikel withLayout={false} /></div>
-
+      <div style={{ height: 60, backgroundColor: "#fff6ea" }}></div>
       <div><FAQ withLayout={false} /></div>
       <div><TokoPage withLayout={false} /></div>
 
