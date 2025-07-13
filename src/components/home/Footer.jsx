@@ -1,82 +1,77 @@
-// src/components/Footer.jsx
 import { Mail, Phone, MapPin, Instagram } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export default function Footer() {
-  const iconTextStyle = {
-    display: "flex",
-    alignItems: "center",
-    gap: 8,
-    marginBottom: 6,
+  // Fungsi untuk scroll ke atas saat link diklik
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
-    <footer style={{
-      backgroundColor: "#1e1e1e",
-      color: "#ffffff",
-      padding: "40px 30px",
-      fontSize: 14
-    }}>
-      <div style={{
-        display: "flex",
-        justifyContent: "space-between",
-        flexWrap: "wrap",
-        gap: 40,
-        marginBottom: 30
-      }}>
-        {/* Contact Us */}
+    <footer className="bg-gray-900 text-white px-6 py-12 mt-20">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-10">
+        
+        {/* Brand + Slogan */}
         <div>
-          <h4 style={{ marginBottom: 16, fontSize: 16 }}>CONTACT US</h4>
-          <div style={iconTextStyle}>
-            <MapPin size={14} />
-            <span>Jl. Suka Karya, Pekanbaru, Riau</span>
-          </div>
-          <div style={iconTextStyle}>
-            <Phone size={14} />
-            <span>(+62) 813-3772-3772</span>
-          </div>
-          <div style={iconTextStyle}>
-            <Mail size={14} />
-            <span>istana.cosmetic@gmail.com</span>
-          </div>
+          <img src="/images/logo.png" alt="Logo" className="w-12 mb-2" />
+          <h2 className="text-lg font-semibold text-orange-400">Istana Cosmetic</h2>
+          <p className="text-sm text-gray-400 mt-2">
+            Cantik itu pilihan, percaya diri itu kekuatan.
+          </p>
         </div>
 
-        {/* Opening Times */}
+        {/* Navigasi */}
         <div>
-          <h4 style={{ marginBottom: 16, fontSize: 16 }}>OPENING TIMES</h4>
-          <p>09:30 AM – 10:00 PM</p>
-          <p>Setiap Hari (Senin – Minggu)</p>
+          <h3 className="font-semibold text-lg mb-4 text-orange-300">Navigasi</h3>
+          <ul className="space-y-2 text-sm">
+            <li><Link to="/" onClick={scrollToTop} className="hover:text-orange-400">Home</Link></li>
+            <li><Link to="/produk" onClick={scrollToTop} className="hover:text-orange-400">Produk</Link></li>
+            <li><Link to="/artikel" onClick={scrollToTop} className="hover:text-orange-400">Artikel</Link></li>
+            <li><Link to="/testimoni" onClick={scrollToTop} className="hover:text-orange-400">Testimoni</Link></li>
+            <li><Link to="/faq" onClick={scrollToTop} className="hover:text-orange-400">FAQ</Link></li>
+            <li><Link to="/TokoPage" onClick={scrollToTop} className="hover:text-orange-400">Toko Kami</Link></li>
+          </ul>
         </div>
 
-        {/* Follow Us (Instagram) */}
+        {/* Kontak */}
         <div>
-          <h4 style={{ marginBottom: 16, fontSize: 16 }}>FOLLOW US</h4>
-          <div style={iconTextStyle}>
-            <Instagram size={14} />
-            <a
-              href="https://www.instagram.com/istana.cosmetics"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ color: "#f37021", textDecoration: "none" }}
-            >
-              @istana.cosmetics
+          <h3 className="font-semibold text-lg mb-4 text-orange-300">Hubungi Kami</h3>
+          <ul className="space-y-3 text-sm text-gray-400">
+            <li className="flex items-center gap-2">
+              <MapPin size={16} /> Jl. Suka Karya, Pekanbaru
+            </li>
+            <li className="flex items-center gap-2">
+              <Phone size={16} />
+              <a href="https://wa.me/6281337723772" target="_blank" rel="noopener noreferrer" className="hover:text-orange-400 transition">
+                (+62) 813-3772-3772
+              </a>
+            </li>
+            <li className="flex items-center gap-2">
+              <Mail size={16} />
+              <a href="mailto:istana.cosmetic@gmail.com" className="hover:text-orange-400 transition">
+                istana.cosmetic@gmail.com
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        {/* Sosial Media */}
+        <div>
+          <h3 className="font-semibold text-lg mb-4 text-orange-300">Follow Kami</h3>
+          <div className="flex gap-4">
+            <a href="https://www.instagram.com/istana.cosmetics" target="_blank" rel="noopener noreferrer">
+              <Instagram size={22} className="hover:text-orange-400 transition" />
             </a>
           </div>
-          <p style={{ fontSize: 12, color: "#aaa", marginTop: 8 }}>
-            Follow kami untuk promo & update terbaru!
+          <p className="text-xs text-gray-400 mt-3">
+            Dapatkan promo & update menarik ✨
           </p>
         </div>
       </div>
 
-      {/* Copyright */}
-      <div style={{
-        borderTop: "1px solid #333",
-        paddingTop: 20,
-        textAlign: "center",
-        fontSize: 13,
-        color: "#ccc"
-      }}>
-        © 2025 Istana Cosmetic. Cantik itu pilihan, percaya diri itu kekuatan.
+      {/* Footer Bawah */}
+      <div className="border-t border-gray-700 mt-10 pt-6 text-center text-sm text-gray-500">
+        © 2025 Istana Cosmetic. All rights reserved.
       </div>
     </footer>
   );

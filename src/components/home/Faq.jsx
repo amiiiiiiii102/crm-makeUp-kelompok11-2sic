@@ -148,7 +148,7 @@ export default function FAQ({ withLayout = true }) {
 
   return withLayout ? (
     <>
-      <Navbar />
+       <Navbar activeNav="faq" />
       {content}
       <Footer />
     </>
