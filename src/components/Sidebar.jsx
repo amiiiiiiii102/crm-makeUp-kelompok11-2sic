@@ -35,7 +35,7 @@ const allMenuItems = [
 
 
 
-  { name: 'Form Produk', icon: <ClipboardList size={20} />, path: '/ProductForm', roles: ['admin'] },
+  
   { name: 'Chat Pelanggan', icon: <MessageCircle size={20} />, path: '/ChatPelanggan', roles: ['admin'] },
   { name: 'Testimoni', icon: <Quote size={20} />, path: '/listtestimoni', roles: ['admin'] },
   { name: 'Testimoni', icon: <Quote size={20} />, path: '/formtestimoni', roles: ['pelanggan'] },
