@@ -6,6 +6,7 @@ import { Pencil, Trash2, Search, FilePlus2, FileText } from 'lucide-react';
 export default function ListArtikel() {
   const [artikels, setArtikels] = useState([]);
   const [search, setSearch] = useState('');
+  const [selectedKategori, setSelectedKategori] = useState('');
   const [stats, setStats] = useState({ total: 0, publish: 0, draft: 0, archived: 0 });
   const navigate = useNavigate();
 
@@ -36,11 +37,13 @@ export default function ListArtikel() {
   }, []);
 
   const filtered = artikels.filter((a) =>
-    a.judulartikel.toLowerCase().includes(search.toLowerCase())
+    a.judulartikel.toLowerCase().includes(search.toLowerCase()) &&
+    (selectedKategori === '' || a.kategoriartikel === selectedKategori)
   );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50">
+      {/* Header */}
       <div className="relative overflow-hidden bg-gradient-to-r from-orange-600 via-amber-600 to-yellow-600">
         <div className="absolute inset-0 bg-black opacity-20"></div>
         <div className="relative max-w-7xl mx-auto px-6 py-16 text-center">
@@ -56,8 +59,10 @@ export default function ListArtikel() {
         </div>
       </div>
 
+      {/* Konten */}
       <div className="max-w-6xl mx-auto px-4 py-12">
-        {/* Stats */}
+
+        {/* Statistik */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           {Object.entries(stats).map(([key, val]) => (
             <div key={key} className="bg-white p-6 rounded-2xl shadow text-center border border-orange-100">
@@ -67,9 +72,10 @@ export default function ListArtikel() {
           ))}
         </div>
 
-        {/* Search + Tambah */}
+        {/* Filter */}
         <div className="flex flex-col md:flex-row items-center justify-between mb-6 gap-4">
-          <div className="relative w-full md:w-1/2">
+          {/* Search */}
+          <div className="relative w-full md:w-1/3">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-orange-400 w-5 h-5" />
             <input
               type="text"
@@ -80,6 +86,22 @@ export default function ListArtikel() {
             />
           </div>
 
+          {/* Dropdown Kategori */}
+          <div className="w-full md:w-1/3">
+            <select
+              value={selectedKategori}
+              onChange={(e) => setSelectedKategori(e.target.value)}
+              className="w-full px-4 py-3 border-2 border-orange-200 rounded-full focus:outline-none focus:border-orange-400 focus:ring-4 focus:ring-orange-100 text-gray-700 bg-orange-50"
+            >
+              <option value="">Semua Kategori</option>
+              <option value="Skincare">Skincare</option>
+              <option value="Makeup">Makeup</option>
+              <option value="Tips">Tips</option>
+              <option value="Review">Review</option>
+            </select>
+          </div>
+
+          {/* Tombol Tambah */}
           <button
             onClick={() => navigate('/tambah-artikel')}
             className="bg-gradient-to-r from-orange-500 to-amber-500 text-white px-6 py-3 rounded-full text-sm font-semibold hover:from-orange-600 hover:to-amber-600 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center gap-2"
@@ -88,7 +110,7 @@ export default function ListArtikel() {
           </button>
         </div>
 
-        {/* Table */}
+        {/* Tabel Artikel */}
         <div className="overflow-x-auto rounded-xl shadow-lg border border-orange-100">
           <table className="min-w-full bg-white text-sm">
             <thead className="bg-orange-100 text-orange-800">

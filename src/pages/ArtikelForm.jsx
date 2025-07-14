@@ -136,17 +136,17 @@ const ArtikelForm = ({ mode = "tambah", artikelId }) => {
           <div>
             <label className="block mb-1 font-medium text-orange-800">Kategori Artikel</label>
             <select
-              className="w-full border border-orange-200 p-3 rounded-xl bg-orange-50 focus:ring-2 focus:ring-orange-300 outline-none"
-              value={form.kategoriartikel}
-              onChange={(e) => setForm({ ...form, kategoriartikel: e.target.value })}
-            >
-              <option value="">Pilih Kategori</option>
-              <option value="Tips">Tips</option>
-              <option value="Tutorial">Tutorial</option>
-              <option value="Produk">Produk</option>
-              <option value="Review">Review</option>
-              <option value="Berita">Berita</option>
-            </select>
+  className="w-full border border-orange-200 p-3 rounded-xl bg-orange-50 focus:ring-2 focus:ring-orange-300 outline-none"
+  value={form.kategoriartikel}
+  onChange={(e) => setForm({ ...form, kategoriartikel: e.target.value })}
+>
+  <option value="">Pilih Kategori</option>
+  <option value="Skincare">Skincare</option>
+  <option value="Makeup">Makeup</option>
+  <option value="Tips">Tips</option>
+  <option value="Review">Review</option>
+</select>
+
           </div>
 
           <div>
